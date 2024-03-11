@@ -55,7 +55,7 @@ router.post('/', async (req,res,next) => {
 
 router.delete("/", async(req,res,next) => {
     res.clearCookie('token')
-    return res,json({ message: "success"})
+    return res.json({ message: "success"})
 
 
 })
