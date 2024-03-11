@@ -1,5 +1,5 @@
 const express = require('express');
-const { Op } = require('sequelize');
+const { Op, json } = require('sequelize');
 const bcrypt = require('bcryptjs');
 
 const { setTokenCookie, restoreUser } = require('../../utils/auth');
@@ -49,6 +49,13 @@ router.post('/', async (req,res,next) => {
     return res.json({
         user:safeUser
     })
+
+
+})
+
+router.delete("/", async(req,res,next) => {
+    res.clearCookie('token')
+    return res,json({ message: "success"})
 
 
 })
