@@ -3,6 +3,8 @@ const router = require('express').Router();
 const sessionRouter = require('./sessions.js')
 const usersRouter = require('./users.js')
 
+
+const {handleValidationErrors} = require('../../utils/validation.js')
 const { setTokenCookie, restoreUser,requireAuth } = require('../../utils/auth.js');
 const { User } = require('../../db/models');
 
@@ -23,6 +25,8 @@ router.post('/test', function(req, res) {
 //     });
 
 router.use(restoreUser);
+
+router.use(handleValidationErrors);
 
 router.use('/session', sessionRouter);
 
