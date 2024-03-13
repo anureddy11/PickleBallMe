@@ -13,16 +13,22 @@ module.exports = {
     await User.bulkCreate([
       {
         email: 'demo@user.io',
+        firstName: 'demo',
+        lastName:'lition',
         username: 'Demo-lition',
         hashedPassword: bcrypt.hashSync('password')
       },
       {
         email: 'user1@user.io',
+        firstName: 'Fake1',
+        lastName:'Usereddy1',
         username: 'FakeUser1',
         hashedPassword: bcrypt.hashSync('password2')
       },
       {
         email: 'user2@user.io',
+        firstName: 'Fake2',
+        lastName:'Usereddy2',
         username: 'FakeUser2',
         hashedPassword: bcrypt.hashSync('password3')
       }
