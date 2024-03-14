@@ -2,7 +2,7 @@
 
 ## Database Schema Design
 
-`https://dbdiagram.io/d/MeetUp-Project-65e7eee4cd45b569fba1461e`
+![Db Schema](./Images/PickleBallUpSchema.png)
 
 ## API Documentation
 
@@ -25,7 +25,7 @@ All endpoints that require a current user to be logged in.
     }
     ```
 
-### All endpoints that require proper authorization
+### All endnts that require proper authorization
 
 All endpoints that require authentication and the current user does not have the
 correct role(s) or permission(s).
@@ -668,7 +668,7 @@ Creates and returns a new venue for a group specified by its id
   the group with a status of "co-host"
 * Request
   * Method: POST
-  * URL: /api/groups/:id/venues
+  * URL: /api/groups/:groupId/venues
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -1025,7 +1025,7 @@ Creates and returns a new event for a group specified by its id
   the group with a status of "co-host"
 * Request
   * Method: POST
-  * URL: /api/api/groups/:groupId/events
+  * URL: /api/groups/:groupId/events
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -1600,7 +1600,7 @@ Returns the attendees of an event specified by its id.
 * Require Authentication: false
 * Request
   * Method: GET
-  * URL: /api/attendees/:attendeesEventId
+  * URL: /api/events/:eventId/attendess
   * Body: none
 
 * Successful Response: If you ARE the organizer of the group or a member of the
