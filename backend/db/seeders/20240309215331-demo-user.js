@@ -7,6 +7,7 @@ let options = {};
 if (process.env.NODE_ENV === 'production') {
   options.schema = process.env.SCHEMA;
   options.tableName = 'Users'; // define your schema in options object
+  options.validate = true
 }
 
 module.exports = {
@@ -33,11 +34,10 @@ module.exports = {
         username: 'FakeUser2',
         hashedPassword: bcrypt.hashSync('password3')
       }
-    ], { ...options, validate: true });
+    ], options);
   },
 
   async down (queryInterface, Sequelize) {
-    options.tableName = 'Users';
     const Op = Sequelize.Op;
     return queryInterface.bulkDelete('Users', {
       username: { [Op.in]: ['Demo-lition', 'FakeUser1', 'FakeUser2'] }
