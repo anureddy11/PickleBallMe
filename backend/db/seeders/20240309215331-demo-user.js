@@ -6,7 +6,7 @@ const bcrypt = require("bcryptjs");
 let options = {};
 if (process.env.NODE_ENV === 'production') {
   options.schema = process.env.SCHEMA;
-  options.tableName = 'Users' // define your schema in options object
+  options.tableName = 'Users'; // define your schema in options object
 }
 
 module.exports = {
