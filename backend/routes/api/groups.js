@@ -41,7 +41,7 @@ router.put('/:id', async(req,res,next) => {
                     groupToUpdate[key] = updates[key];
                 }
             }
-        
+
             await groupToUpdate.save()
 
             res.json({
@@ -72,5 +72,40 @@ router.put('/:id', async(req,res,next) => {
     }
 
 })
+
+
+//Deletes a group
+router.delete('/:id', async (req, res, next) => {
+    try {
+        const deletedGroup = await Group.destroy({
+            where: { id: req.params.id }
+        });
+
+        // Check if the group was found and deleted
+        if (deletedGroup === 0) {
+            // If not found, send a not-found error response
+            return next({
+                status: "not-found",
+                message: `Could not remove Group ${req.params.id}`,
+                details: "Group not found"
+            });
+        }
+
+        res.json({
+            status: "success",
+            message: `Successfully removed Group ${req.params.id}`,
+        });
+    } catch(err) {
+        next({
+            data: id,
+            status: "error",
+            message: `Could not remove Group ${req.params.id}`,
+            details: err.errors ? err.errors.map(item => item.message).join(', ') : err.message
+        });
+    }
+});
+
+
+
 
 module.exports = router;
