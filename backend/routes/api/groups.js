@@ -106,6 +106,25 @@ router.delete('/:id', async (req, res, next) => {
 });
 
 
+//Add a new group
+router.post('/', async (req, res, next) => {
+
+    try {
+        const group = req.body
+        const newGroup = await Group.create({organizer_id:group.organizer_id, name:group.name, about:group.about, type:group.type, private:group.private, city:group.city, state: group.state})
+        res.json({
+            status: "success",
+            message: "Successfully created new group",
+        });
+    } catch(err) {
+        next({
+            status: "error",
+            message: 'Could not create new group',
+            details: err.errors ? err.errors.map(item => item.message).join(', ') : err.message
+        });
+    }
+});
+
 
 
 module.exports = router;
