@@ -2,7 +2,7 @@
 const router = require('express').Router();
 const sessionRouter = require('./sessions.js')
 const usersRouter = require('./users.js')
-
+const groupsRouter = require('./groups.js')
 
 const {handleValidationErrors} = require('../../utils/validation.js')
 const { setTokenCookie, restoreUser,requireAuth } = require('../../utils/auth.js');
@@ -31,6 +31,8 @@ router.use(handleValidationErrors);
 router.use('/session', sessionRouter);
 
 router.use('/users', usersRouter);
+
+router.use('/groups', groupsRouter)
 
 router.post('/test', (req, res) => {
   res.json({ requestBody: req.body });
