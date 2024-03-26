@@ -11,6 +11,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Group.belongsToMany(models.User,{
+        through:models.Member,
+        foreignKey:'group_id',
+        otherKey:'user_id'
+      })
     }
   }
   Group.init({
@@ -31,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
       type:DataTypes.STRING,
       allowNull:false
     },
-    
+
     private: {
       type:DataTypes.BOOLEAN,
       allowNull:false
