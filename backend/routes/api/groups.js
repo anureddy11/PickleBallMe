@@ -5,7 +5,7 @@ const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
-const { Group,User } = require('../../db/models');
+const { Group,User,GroupImage } = require('../../db/models');
 
 const router = express.Router()
 
@@ -18,7 +18,7 @@ router.get('/', async(req,res) => {
     return res.json({groups})
 })
 
-//Get details of a Group from an id
+//Get details of a Group from a groupid
 
 router.get('/:id', async(req,res,next) =>{
     try{
@@ -180,6 +180,64 @@ router.get('/current', async(req,res,next) =>{
       }
 
 
+})
+
+//Add an Image to a Group based on the Group's id
+
+router.post('/:groupId/images', async(req,res,next) =>{
+
+    try{
+        const userId = req.user.id //from the middleware from session router
+        const{groupId} = req.params //get the groupId
+        const newGroupImageData = req.body
+
+        //find the group
+        const group = await Group.findByPk(groupId)
+        //find the organizerid of the group
+
+        const organizerId = group.organizer_id
+        //if organizerid matches the userid then add image
+
+        if(userId){
+
+            if(organizerId === userId){
+
+            const newGroupImage = await GroupImage.create({
+                preview_image:newGroupImageData.preview_image,
+                image_url:newGroupImageData.image_url,
+                group_id:groupId,
+            })
+            res.json({
+                status: "success",
+                message: "Successfully created new groupimage",
+                newGroupImage
+            });
+
+            }else{
+                next({
+                    status: "new Image not added",
+                    message: `userId not matching organizerId`
+                });
+
+
+            }
+        }else{
+            next({
+                status: "user not found",
+                message: `Please login to add image to group.`,
+                details: 'group not found'
+            });
+
+        }
+
+
+    }catch(err) {
+        next({
+            status: "error",
+            message: 'Could not create new groupimage',
+            details: err.errors ? err.errors.map(item => item.message).join(', ') : err.message
+        });
+    }
 })
 
 
