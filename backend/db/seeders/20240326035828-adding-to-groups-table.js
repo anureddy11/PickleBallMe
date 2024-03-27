@@ -14,7 +14,7 @@ module.exports = {
    await Group.bulkCreate([
     {
       organizer_id:1,
-      name:'bay-club-starz',
+      name:'1bay-club-starz',
       about:'Above 4.0 in Bay Club Pleasanton',
       type: 'Advanced',
       private: true,
@@ -25,7 +25,7 @@ module.exports = {
 
     {
       organizer_id:2,
-      name:'bay-club-starters',
+      name:'1bay-club-starters',
       about:'Above 2.0 in Bay Club Pleasanton',
       type: 'Beginner',
       private: false,
@@ -36,7 +36,7 @@ module.exports = {
 
     {
       organizer_id:3,
-      name:'ny-bay-club-champs',
+      name:'1ny-bay-club-champs',
       about:'Above 4.0 in Bay Club NY',
       type: 'Advanced',
       private: true,

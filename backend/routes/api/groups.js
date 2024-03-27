@@ -5,7 +5,7 @@ const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
-const { Group } = require('../../db/models');
+const { Group,User } = require('../../db/models');
 
 const router = express.Router()
 
@@ -16,6 +16,39 @@ router.get('/', async(req,res) => {
     const groups = await Group.findAll()
 
     return res.json({groups})
+})
+
+//Get details of a Group from an id
+
+router.get('/:id', async(req,res,next) =>{
+    try{
+        const {id}=req.params
+        const group = await Group.findByPk(id)
+        if(id){
+            res.json({
+                data: id,
+                status: "success",
+                message: `Successfully updated group`,
+                group
+            });
+        }else{
+            next({
+                status: "not-found",
+                message: `Could not find group ${id}`,
+                details: 'group not found'
+            });
+
+        }
+
+    }catch{
+        next({
+            status: "error",
+            message: `Could not find group ${id}`,
+            details: err.errors ? err.errors.map(item => item.message).join(', ') : err.message
+        });
+
+    }
+
 })
 
 //Edit a group
@@ -124,6 +157,30 @@ router.post('/', async (req, res, next) => {
         });
     }
 });
+
+
+// Get all Groups joined or organized by the Current User
+router.get('/current', async(req,res,next) =>{
+
+    try{
+        const userId = req.user.id //from the middleware from session router
+
+        const joinedGroups = await User.findAll({
+
+            where: { id: userId },
+            include: Group
+
+        })
+        res.status(200).json({ joinedGroups });
+
+
+    }catch (error) {
+        console.error('Error fetching groups:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+      }
+
+
+})
 
 
 
