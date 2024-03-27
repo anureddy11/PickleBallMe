@@ -188,7 +188,7 @@ router.post('/:groupId/images', async(req,res,next) =>{
 
     try{
         const userId = req.user.id //from the middleware from session router
-        const{groupId} = req.params //get the groupId
+        const{groupId} = req.params //get the groupId from params
         const newGroupImageData = req.body
 
         //find the group
