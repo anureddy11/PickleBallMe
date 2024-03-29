@@ -5,11 +5,51 @@ const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
-const { Group,User,GroupImage } = require('../../db/models');
+const { Group,User,GroupImage,Venue } = require('../../db/models');
+const group = require('../../db/models/group');
+const { Model } = require('sequelize');
 
 const router = express.Router()
 
 
+// Venues Section
+// ### Get All Venues for a Group specified by its id
+
+router.get('/:groupId/venues', async(req,res,next) =>{
+    try{
+        const {groupId} = req.params
+
+
+        if(groupId){
+
+            const venues = await Venue.findAll(
+                {
+                    where:{group_id:groupId}
+                }
+            )
+
+         res.status(200).json({ venues });
+         return
+
+        }else{
+            next({
+                status: 404, //  HTTP status code for 'Not Found'
+                message: `Could not find group ${groupId}`,
+                details: 'group not found'
+            });
+        }
+
+    }catch (error) {
+        console.error('Error fetching venue data:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+      }
+})
+
+
+
+
+
+//Groups Only Section
 //Returns all groups
 router.get('/', async(req,res) => {
 
@@ -18,38 +58,6 @@ router.get('/', async(req,res) => {
     return res.json({groups})
 })
 
-//Get details of a Group from a groupid
-
-router.get('/:id', async(req,res,next) =>{
-    try{
-        const {id}=req.params
-        const group = await Group.findByPk(id)
-        if(id){
-            res.json({
-                data: id,
-                status: "success",
-                message: `Successfully updated group`,
-                group
-            });
-        }else{
-            next({
-                status: "not-found",
-                message: `Could not find group ${id}`,
-                details: 'group not found'
-            });
-
-        }
-
-    }catch{
-        next({
-            status: "error",
-            message: `Could not find group ${id}`,
-            details: err.errors ? err.errors.map(item => item.message).join(', ') : err.message
-        });
-
-    }
-
-})
 
 //Edit a group
 router.put('/:id', async(req,res,next) => {
@@ -77,7 +85,7 @@ router.put('/:id', async(req,res,next) => {
 
             await groupToUpdate.save()
 
-            res.json({
+            return res.json({
                 data: id,
                 status: "success",
                 message: `Successfully updated group`,
@@ -96,13 +104,10 @@ router.put('/:id', async(req,res,next) => {
 
 
 
-    } catch(err) {
-        next({
-            status: "error",
-            message: `Could not update group ${id}`,
-            details: err.errors ? err.errors.map(item => item.message).join(', ') : err.message
-        });
-    }
+    } catch (error) {
+        console.error('Error fetching group data:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+      }
 
 })
 
@@ -124,18 +129,14 @@ router.delete('/:id', async (req, res, next) => {
             });
         }
 
-        res.json({
+        return res.json({
             status: "success",
             message: `Successfully removed Group ${req.params.id}`,
         });
-    } catch(err) {
-        next({
-            data: id,
-            status: "error",
-            message: `Could not remove Group ${req.params.id}`,
-            details: err.errors ? err.errors.map(item => item.message).join(', ') : err.message
-        });
-    }
+    } catch (error) {
+        console.error('Error deleting data:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+      }
 });
 
 
@@ -145,7 +146,7 @@ router.post('/', async (req, res, next) => {
     try {
         const group = req.body
         const newGroup = await Group.create({organizer_id:group.organizer_id, name:group.name, about:group.about, type:group.type, private:group.private, city:group.city, state: group.state})
-        res.json({
+        return res.json({
             status: "success",
             message: "Successfully created new group",
         });
@@ -168,7 +169,9 @@ router.get('/current', async(req,res,next) =>{
         const joinedGroups = await User.findAll({
 
             where: { id: userId },
-            include: Group
+            include: {
+                model:Group
+            }
 
         })
         res.status(200).json({ joinedGroups });
@@ -207,7 +210,7 @@ router.post('/:groupId/images', async(req,res,next) =>{
                 image_url:newGroupImageData.image_url,
                 group_id:groupId,
             })
-            res.json({
+            return res.json({
                 status: "success",
                 message: "Successfully created new groupimage",
                 newGroupImage
@@ -231,13 +234,40 @@ router.post('/:groupId/images', async(req,res,next) =>{
         }
 
 
-    }catch(err) {
-        next({
-            status: "error",
-            message: 'Could not create new groupimage',
-            details: err.errors ? err.errors.map(item => item.message).join(', ') : err.message
-        });
-    }
+    }catch (error) {
+        console.error('Could not add an image:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+      }
+})
+
+
+// Get details of a Group from a groupid
+
+router.get('/:id', async(req,res,next) =>{
+    try{
+        const {id}=req.params
+        const group = await Group.findByPk(id)
+        if(id){
+            return res.json({
+                data: id,
+                status: "success",
+                message: `Successfully updated group`,
+                group
+            });
+        }else{
+            next({
+                status: "not-found",
+                message: `Could not find group ${id}`,
+                details: 'group not found'
+            });
+
+        }
+
+    }catch (error) {
+        console.error('Error fetching group data:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+      }
+
 })
 
 
