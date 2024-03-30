@@ -32,6 +32,15 @@ module.exports = (sequelize, DataTypes) => {
         hooks:true
       }
       )
+
+
+      Group.hasMany(
+        models.Event,
+        {foreignKey: 'group_id',
+        onDelete:'CASCADE',
+        hooks:true
+      }
+      )
     }
   }
   Group.init({
