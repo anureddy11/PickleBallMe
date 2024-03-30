@@ -79,6 +79,11 @@ router.post('/:groupId/venues', async(req,res) => {
 
 })
 
+//### Edit a Venue specified by its id
+
+
+
+
 //Groups Only Section
 //Returns all groups
 router.get('/', async(req,res) => {
@@ -226,6 +231,7 @@ router.post('/:groupId/images', async(req,res,next) =>{
 
         //find the group
         const group = await Group.findByPk(groupId)
+        
         //find the organizerid of the group
 
         const organizerId = group.organizer_id
