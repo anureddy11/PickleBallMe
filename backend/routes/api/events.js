@@ -5,7 +5,7 @@ const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
-const { Group,User,GroupImage,Venue,Event} = require('../../db/models');
+const { Group,User,GroupImage,Venue,Event,Member} = require('../../db/models');
 const { environment } = require('../../config');
 
 const router = express.Router()
@@ -42,6 +42,101 @@ router.get('/', async(req,res,next) => {
     //for each event look up number of users through the attendess table
     //add numattendees key to the allEvents
     return res.json({eventArray})
+})
+
+//### Get details of an Event specified by its id
+
+router.get("/:eventId", async(req,res,next)=>{
+
+    const{eventId} = req.params
+    const myEvent = await Event.findByPk(eventId, {
+        include: [
+            { model: User },
+            { model: Group },
+            { model: Venue },
+
+        ]
+    });
+
+    if (!myEvent) {
+        return res.status(404).json({ error: 'Event not found' });
+    }
+
+    // Calculate the number of attendees
+    const numAttendees = myEvent.Users.length;
+
+    // Add the calculated number of attendees to myEvent object
+    myEvent.dataValues.numAttendees = numAttendees;
+
+    return res.json({myEvent})
+})
+
+//Delete an Event specified by its id
+router.delete('/:eventId',requireAuth, async(req,res,next) =>{
+
+
+    let isCoHost = false
+
+    //check for the user
+    const userId = req.user.id
+
+    //find the group of the event
+    const {eventId} = req.params
+    const eventData = await Event.findByPk(eventId,{
+        include: [
+            { model:Group,
+              include:[
+                {
+                    model: User, // Include User table
+                }
+
+
+              ]
+                 },
+        ]
+    })
+
+    if (!eventData) {
+        return res.status(404).json({ error: 'Event not found' });
+    }
+
+    //check if organizer
+    const isOrganizer = eventData.Group.organizer_id === userId
+
+    //check if coHost
+    const users = eventData.Group.Users
+    let isCohost
+    for (let i=0;i<users.length;i++){
+        if(users[i].Member.user_id===userId && users[i].Member.status === 'active'){ //need to change active to cohost
+            isCoHost=true
+
+        }
+
+    }
+
+    //deleting the group if checks pass
+
+    if(isCoHost || isOrganizer){
+        const deleteEvent = await Event.destroy({
+            where: {id:eventId}
+        })
+    }else{
+        return res.json({
+            message: `Not Authorized since not a Cohost or Organizer`,
+        });
+
+    }
+
+    return res.json({
+        status: "success",
+        message: `Successfully removed Event ${eventId}`,
+    });
+
+
+
+
+
+
 })
 
 
