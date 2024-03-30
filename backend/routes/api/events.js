@@ -71,6 +71,8 @@ router.get("/:eventId", async(req,res,next)=>{
     return res.json({myEvent})
 })
 
+
+
 //Delete an Event specified by its id
 router.delete('/:eventId',requireAuth, async(req,res,next) =>{
 
@@ -133,11 +135,92 @@ router.delete('/:eventId',requireAuth, async(req,res,next) =>{
     });
 
 
+})
+
+//### Edit an Event specified by its id
+router.put('/:eventId',requireAuth, async(req,res,next) =>{
 
 
+    let isCoHost = false
 
+    //check for the user
+    const userId = req.user.id
+
+    //data from body
+    let updates = req.body
+
+    //check for venue data
+    if (updates.venue_id) {
+          const venue = await Venue.findByPk(updates.venue_id);
+          if (!venue) {
+            return res.status(400).json({ error: 'Venue does not exist.' });
+          }
+    }
+
+    //find the group of the event
+    const {eventId} = req.params
+    const eventData = await Event.findByPk(eventId,{
+        include: [
+            { model:Group,
+              include:[
+                {
+                    model: User, // Include User table
+                }
+
+
+              ]
+                 },
+        ]
+    })
+
+    if (!eventData) {
+        return res.status(404).json({ error: 'Event not found' });
+    }
+
+    //check if organizer
+    const isOrganizer = eventData.Group.organizer_id === userId
+
+    //check if coHost
+    const users = eventData.Group.Users
+    let isCohost
+    for (let i=0;i<users.length;i++){
+        if(users[i].Member.user_id===userId && users[i].Member.status === 'active'){ //need to change active to cohost
+            isCoHost=true
+
+        }
+
+    }
+
+ // Check if the user is a co-host or organizer
+if (isCoHost || isOrganizer) {
+    // Fetch the event to update
+
+    const eventToUpdate = await Event.findByPk(eventId);
+
+    try {
+        // Update the event with the provided updates
+        for (const key in updates) {
+            eventToUpdate[key] = updates[key];
+        }
+        await eventToUpdate.save();
+
+        // Return a success response
+        return res.json({ message: 'Event updated successfully',eventToUpdate });
+
+    } catch (error) {
+
+        // Handle validation errors
+        console.error( error);
+        return res.status(400).json({ error: 'Check your input data.' });
+    }
+} else {
+    // Return an error response if the user is not authorized
+    return res.status(403).json({ error: 'Not authorized. Only co-hosts or organizers can edit the event.' });
+}
 
 })
+
+
 
 
 module.exports = router;
