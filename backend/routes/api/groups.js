@@ -8,6 +8,7 @@ const { setTokenCookie, requireAuth } = require('../../utils/auth');
 const { Group,User,GroupImage,Venue } = require('../../db/models');
 const group = require('../../db/models/group');
 const { Model } = require('sequelize');
+const venue = require('../../db/models/venue');
 
 const router = express.Router()
 
@@ -47,7 +48,36 @@ router.get('/:groupId/venues', async(req,res,next) =>{
 
 
 
+//### Create a new Venue for a Group specified by its id
+router.post('/:groupId/venues', async(req,res) => {
 
+    try{
+        const {groupId} = req.params
+        const group= await Group.findByPk(groupId) // to check if the group exits
+        const  newVenueData = req.body
+        if(group){
+
+
+            const newVenue = await Venue.create({group_id:groupId, address:newVenueData.address, city:newVenueData.city, state:newVenueData.state, lat:newVenueData.lat, lng: newVenueData.lng,name:newVenueData.name})
+            res.json({
+                status: "success",
+                message: "Successfully created new group",
+            })
+        }else{
+            next({
+                status: "new venue not added",
+                message: `groupId not found`
+            });
+        }
+
+
+
+    }catch{
+        console.error('Error creating venue :', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+
+})
 
 //Groups Only Section
 //Returns all groups
