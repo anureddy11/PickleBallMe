@@ -4,6 +4,7 @@ const sessionRouter = require('./sessions.js')
 const usersRouter = require('./users.js')
 const groupsRouter = require('./groups.js')
 const venuesRouter = require('./venues.js')
+const eventRouter = require('./events.js')
 
 const {handleValidationErrors} = require('../../utils/validation.js')
 const { setTokenCookie, restoreUser,requireAuth } = require('../../utils/auth.js');
@@ -36,6 +37,8 @@ router.use('/users', usersRouter);
 router.use('/groups', groupsRouter)
 
 router.use('/venues', venuesRouter)
+
+router.use('/events', eventRouter)
 
 router.post('/test', (req, res) => {
   res.json({ requestBody: req.body });
