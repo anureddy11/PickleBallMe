@@ -5,7 +5,7 @@ const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
-const { Group,User,GroupImage,Venue } = require('../../db/models');
+const { Group,User,GroupImage,Venue,Event,Attendee, sequelize } = require('../../db/models');
 const group = require('../../db/models/group');
 const { Model } = require('sequelize');
 const venue = require('../../db/models/venue');
@@ -13,7 +13,53 @@ const venue = require('../../db/models/venue');
 const router = express.Router()
 
 
-// Venues Section
+//**Events Section
+router.get('/:groupId/events', async(req,res,next)=>{
+
+    const {groupId} = req.params
+    const group= await Group.findByPk(groupId) // to check if the group exits
+    console.log(groupId,group)
+
+    if (!group) {
+        return res.status(404).json({ error: 'Group not found' });
+    }
+
+    const eventData = await Event.findAll({
+        where: { group_id: groupId },
+        include: [
+            {
+                model: Venue
+            },
+            {
+                model: User,
+                attributes: []
+            }
+        ],
+        attributes: [
+            [sequelize.fn('COUNT', sequelize.col('Users.id')), 'numAttendees']
+        ],
+        group: ['Event.id', 'Venue.id'] // Grouping by Event and Venue to avoid duplications
+    });
+
+
+
+    if (!eventData) {
+        return res.status(404).json({ error: 'Event not found' });
+    }
+
+    return res.json({
+        status: "success",
+        eventData,
+    });
+
+
+
+        })
+
+
+
+
+//**Venues Section
 // ### Get All Venues for a Group specified by its id
 
 router.get('/:groupId/venues', async(req,res,next) =>{
@@ -231,7 +277,7 @@ router.post('/:groupId/images', async(req,res,next) =>{
 
         //find the group
         const group = await Group.findByPk(groupId)
-        
+
         //find the organizerid of the group
 
         const organizerId = group.organizer_id
