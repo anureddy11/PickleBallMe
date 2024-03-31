@@ -5,7 +5,7 @@ const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
-const { Group,User,GroupImage,Venue,Event,Member} = require('../../db/models');
+const { Group,User,GroupImage,Venue,Event,Member,EventImages} = require('../../db/models');
 const { environment } = require('../../config');
 
 const router = express.Router()
@@ -54,6 +54,7 @@ router.get("/:eventId", async(req,res,next)=>{
             { model: User },
             { model: Group },
             { model: Venue },
+            { model: EventImages}
 
         ]
     });

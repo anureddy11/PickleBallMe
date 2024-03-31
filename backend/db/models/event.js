@@ -26,6 +26,16 @@ module.exports = (sequelize, DataTypes) => {
         models.Group,
         {foreignKey: 'group_id'}
       )
+
+      Event.hasMany(
+        models.EventImages,
+        {
+          foreignKey:'event_id',
+          onDelete:'CASCADE',
+          hooks:true
+        }
+      )
+
     }
   }
   Event.init({
@@ -72,7 +82,7 @@ module.exports = (sequelize, DataTypes) => {
     description: {
       type: DataTypes.TEXT,
       allowNull: false, // Description cannot be null
-   
+
     },
     preview_image: {
       type: DataTypes.STRING,
