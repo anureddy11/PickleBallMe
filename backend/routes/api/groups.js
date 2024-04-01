@@ -70,6 +70,60 @@ router.get('/:groupId/members', async(req,res,next)=> {
 
 } )
 
+//### Request a Membership for a Group based on the Group's id
+
+router.post("/:groupId/membership", requireAuth, async (req,res,next) => {
+
+    const {groupId} = req.params
+    const group= await Group.findByPk(groupId) // to check if the group exits
+    console.log(groupId,group)
+
+    if (!group) {
+        return res.status(404).json({ error: 'Group not found' });
+    }
+
+    const userId = req.user.id
+
+    //check if user already is member
+        //Query the memberdata
+        const memberData = await Group.findByPk(groupId, {
+            attributes: [],
+            include: [{
+                model: User,
+                attributes: ['id'],
+                through: {
+                    model: Member,
+                    attributes: ['user_id','status']
+                }
+            }]
+        });
+        //created an array of user ids who are memebrs
+        const memberUserIdArray = [];
+
+        //array with member ids
+        memberData.Users.forEach(user => {
+            memberUserIdArray.push(user.Member.user_id);
+        });
+        //reject memebership if already exists
+        if (memberUserIdArray.includes(userId)) {
+            return res.status(404).json({ error: 'User Already a Member' });
+        }
+
+        const newMemberData = await Member.create({
+            user_id:userId,
+            group_id:groupId,
+            status: "pending"
+        })
+        res.json({
+            status: "success",
+            message: "Pending Request",
+            newMemberData
+        })
+
+
+
+})
+
 
 
 
