@@ -11,6 +11,63 @@ const { environment } = require('../../config');
 const router = express.Router()
 
 //**Attendees Section
+
+//Request to Attend an Event based on the Event's id
+//Question to Philip: Should we allow users to request attendance for the events which are part of groups that the user is not a member of?
+
+router.post("/:eventId/attendance", requireAuth, async (req,res,next) => {
+
+    const {eventId} = req.params
+    const event= await Event.findByPk(eventId) // to check if the group exits
+
+
+    if (!event) {
+        return res.status(404).json({ error: 'Event not found' });
+    }
+
+    const userId = req.user.id
+
+    //check if user already an attendee
+        //Query the attendeedata
+        const attendeeData = await Event.findByPk(eventId, {
+            attributes: [],
+            include: [{
+                model: User,
+                attributes: ['id'],
+                through: {
+                    model: Attendee,
+                    attributes: ['user_id','status']
+                }
+            }]
+        });
+        //created an array of user ids who are attendees
+        const attendeeUserIdArray = [];
+
+        //array with attendees ids
+        attendeeData.Users.forEach(user => {
+            attendeeUserIdArray.push(user.Attendee.user_id);
+        });
+        //reject memebership if already exists
+        if (attendeeUserIdArray.includes(userId)) {
+            return res.status(404).json({ error: 'User Already an attendee' });
+        }
+
+        const newAttendeeData = await Attendee.create({
+            user_id:userId,
+            event_id:eventId,
+            status: "pending"
+        })
+        res.json({
+            status: "success",
+            message: "Pending Request",
+            newAttendeeData
+        })
+
+
+
+})
+
+
 //### Get all Attendees of an Event specified by its id
 router.get('/:eventId/attendees', requireAuth ,async(req,res,next)=> {
     const {eventId} = req.params
