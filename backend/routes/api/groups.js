@@ -124,6 +124,63 @@ router.post("/:groupId/membership", requireAuth, async (req,res,next) => {
 
 })
 
+//### Change the status of a membership for a group specified by id
+router.put('/:groupId/membership', requireAuth, async(req,res,next) => {
+
+    const { groupId } = req.params;
+    const { memberId, status } = req.body;
+    const userId = req.user.id;
+    console.log(req.body)
+
+    // Check if the group exists
+    const group = await Group.findByPk(groupId);
+    if (!group) {
+        return res.status(404).json({ error: 'Group not found' });
+    }
+
+    // Check if the user is the organizer
+    const isOrganizer = group.organizer_id === userId;
+
+    // Check if the user has a membership
+    const memberToUpdate = await Member.findOne({
+        where: {
+            user_id: userId,
+            group_id: groupId
+        }
+    });
+
+
+    if (!memberToUpdate) {
+        return res.status(404).json({ error: 'Membership not found' });
+    }
+
+    // Authorization logic
+    if (status === 'co-host') {
+        if (!isOrganizer) {
+            return res.status(403).json({ error: 'Not Authorized. Need to be the organizer to change to co-host' });
+        }
+        memberToUpdate.status = 'co-host';
+    } else if (status === 'member') {
+        // Only the organizer or members with status can change to member
+        if (!isOrganizer && !memberToUpdate.status) {
+            return res.status(403).json({ error: 'Not Authorized. Need to be the organizer or a Member to change to member' });
+        }
+        memberToUpdate.status = 'member';
+    } else if (status === 'pending') {
+        return res.status(400).json({ error: 'Cannot change to pending from pending' });
+    } else {
+        return res.status(400).json({ error: 'Invalid status' });
+    }
+
+    // Save the updated member status
+    await memberToUpdate.save();
+
+    res.json({ status: 'success', message: 'Membership status updated successfully' });
+
+
+})
+
+
 
 
 
