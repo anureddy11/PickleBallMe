@@ -147,6 +147,7 @@ router.post("/:groupId/membership", requireAuth, async (req,res,next) => {
                 }
             }]
         });
+        
         //created an array of user ids who are memebrs
         const memberUserIdArray = [];
 
