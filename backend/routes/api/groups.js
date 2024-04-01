@@ -15,6 +15,56 @@ const router = express.Router()
 
 
 //**Members Section
+
+//### Delete membership to a group specified by id
+router.delete('/:groupId/members/:memberId', requireAuth, async(req,res,next)=>{
+    const { groupId, memberId } = req.params;
+    const userId = req.user.id;
+
+    // Check if the group exists
+    const group = await Group.findByPk(groupId);
+    if (!group) {
+        return res.status(404).json({ error: 'Group not found' });
+    }
+
+    // Check if the user is the organizer
+    const isOrganizer = group.organizer_id === userId;
+
+
+    // Check if the user has a membership
+    const userAuth = await Member.findOne({
+        where: {
+            user_id: userId,
+            group_id: groupId
+        }
+    })
+
+    // Check if the member exists
+    const memberToDelete = await Member.findOne({
+        where: {
+            id:memberId
+        }
+    })
+    if(!memberToDelete){
+        return res.status(404).json({ error: 'Member not found' });
+    }
+
+    let status = undefined
+    if(userAuth){
+        status = userAuth.status
+    }
+
+    if(isOrganizer || status==="co-host"){
+        await memberToDelete.destroy();
+        return res.json({
+            status: "success",
+            message: `Successfully removed member ${memberId}`
+        });
+    } else {
+        return res.status(404).json({ error: 'Not Authorized' });
+    }
+});
+
 //### Get all Members of a Group specified by its id
 router.get('/:groupId/members', async(req,res,next)=> {
     const {groupId} = req.params
