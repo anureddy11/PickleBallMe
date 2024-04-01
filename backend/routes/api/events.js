@@ -172,6 +172,63 @@ router.put('/:eventId/attendance', requireAuth, async(req,res,next) => {
 
 })
 
+//### Delete attendance to an event specified by id
+
+//### Delete membership to a group specified by id
+router.delete('/:eventId/attendance/:userId', requireAuth, async(req,res,next)=>{
+    const { eventId, userId } = req.params;
+    const loggedUserId = req.user.id;
+
+    // Check if the event exists
+    const event = await Event.findByPk(eventId);
+    if (!event) {
+        return res.status(404).json({ error: 'Event not found' });
+    }
+
+    const groupId = event.group_id
+    const group = await Group.findByPk(groupId);
+
+
+    // Check if the user is the organizer
+    const isOrganizer = group.organizer_id === loggedUserId;
+
+
+    // Check if the user has a membership
+    const userAuth = await Member.findOne({
+        where: {
+            user_id: loggedUserId,
+            group_id: groupId
+        }
+    })
+    //Loggeed in user membership status to the Group
+    let loggedUserStatus = undefined
+    if(userAuth){
+        loggedUserStatus = userAuth.status
+    }
+
+    // Check if the attendee exists
+    const attendeeToDelete = await Attendee.findOne({
+        where: {
+            user_id:userId,
+            event_id:eventId
+        }
+    })
+    if(!attendeeToDelete){
+        return res.status(404).json({ error: 'Attendee not found' });
+    }
+    console.log(isOrganizer,loggedUserStatus)
+
+    if(isOrganizer || loggedUserStatus ==="co-host"){
+        await attendeeToDelete.destroy();
+        return res.json({
+            status: "success",
+            message: 'Successfully removed attendee'
+        });
+    } else {
+        return res.status(403).json({ error: 'Not Authorized' });
+    }
+});
+
 
 
 //### Get all Attendees of an Event specified by its id
