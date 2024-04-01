@@ -14,6 +14,65 @@ const { route } = require('./events');
 const router = express.Router()
 
 
+//**Members Section
+//### Get all Members of a Group specified by its id
+router.get('/:groupId/members', async(req,res,next)=> {
+    const {groupId} = req.params
+    const group= await Group.findByPk(groupId) // to check if the group exits
+    console.log(groupId,group)
+
+    //check if organizer
+    const isOrganizer = group.organizer_id === req.user.id
+
+
+    if (!group) {
+        return res.status(404).json({ error: 'Group not found' });
+    }
+
+    const memberData = await Group.findByPk(groupId,{
+        include:[
+            {model:User}
+        ]
+    })
+
+    //check the membership status
+
+    //selecting the fields as per the readme docs
+    const members = memberData.Users.map(user => {
+
+        //if organizer send all memeber information
+        if(isOrganizer){
+                return {
+                    id: user.id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    Membership: {
+                        status: user.Member.status
+                    }
+                //else do not send member with pending status
+                };
+            }else{
+                //send for only members where status is not pending
+                if(user.Member.status!=="pending"){
+                        return {
+                            id: user.id,
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            Membership: {
+                                status: user.Member.status
+                            }
+                        }
+                }
+            }
+    });
+
+    res.json(members)
+
+} )
+
+
+
+
 //**Events Section
 //### Get all Events of a Group specified by its id
 
