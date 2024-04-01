@@ -19,49 +19,68 @@ router.post("/:eventId/attendance", requireAuth, async (req,res,next) => {
 
     const {eventId} = req.params
     const event= await Event.findByPk(eventId) // to check if the group exits
+    const {userId,save}= req.body
 
 
     if (!event) {
         return res.status(404).json({ error: 'Event not found' });
     }
 
-    const userId = req.user.id
+    const loogedUserId = req.user.id
 
-    //check if user already an attendee
-        //Query the attendeedata
-        const attendeeData = await Event.findByPk(eventId, {
-            attributes: [],
-            include: [{
-                model: User,
-                attributes: ['id'],
-                through: {
-                    model: Attendee,
-                    attributes: ['user_id','status']
-                }
-            }]
-        });
-        //created an array of user ids who are attendees
-        const attendeeUserIdArray = [];
+     //Get the group of the event
+     const groupId = event.group_id
+     const group = await Group.findByPk(groupId)
+     if (!group) {
+         return res.status(404).json({ error: 'Group not found' });
+     }
 
-        //array with attendees ids
-        attendeeData.Users.forEach(user => {
-            attendeeUserIdArray.push(user.Attendee.user_id);
-        });
-        //reject memebership if already exists
-        if (attendeeUserIdArray.includes(userId)) {
-            return res.status(404).json({ error: 'User Already an attendee' });
+    //check if organizer
+    const isOrganizer = group.organizer_id === loggedUserId
+
+        //Check if the the attendee already exists
+        const attendeeDate = await Attendee.findOne({
+
+            where:{
+                event_id:eventId,
+                user_id:userId
+
+            }
         }
+        )
 
-        const newAttendeeData = await Attendee.create({
-            user_id:userId,
-            event_id:eventId,
-            status: "pending"
-        })
-        res.json({
-            status: "success",
-            message: "Pending Request",
-            newAttendeeData
-        })
+    // Check if the user has a membership
+    const userAuth = await Member.findOne({
+        where: {
+            user_id: loggedUserId,
+            group_id: groupId
+        }
+    })
+     //Loggeed in user membership status to the Group
+     let userStatus = undefined
+
+     if(userAuth){
+         userStatus = userAuth.status
+     }
+
+        if(attendeeDate){
+            return res.status(404).json({ error: 'User Already an attendee' });
+        }else{
+            //check if the logged in user is orgnizr or member of the event's group (need to ask Philip a question here about need for loggedin user authorization)
+            //adding new attendee data
+                const newAttendeeData = await Attendee.create({
+                    user_id:userId,
+                    event_id:eventId,
+                    status: "pending"
+                })
+                res.json({
+                    status: "success",
+                    message: "Pending Request",
+                    newAttendeeData
+                })
+            }
+
+
 
 
 
@@ -124,38 +143,18 @@ router.put('/:eventId/attendance', requireAuth, async(req,res,next) => {
         return res.status(404).json({ error: "Attendee not found" });
     }
 
-     //check if user already an attendee
-        //Query the attendeedata
-        const attendeeData = await Event.findByPk(eventId, {
-            attributes: [],
-            include: [{
-                model: User,
-                attributes: ['id'],
-                through: {
-                    model: Attendee,
-                    attributes: ['user_id','status']
-                }
-            }]
-        });
-
-     //created an array of user ids who are attendees
-     const attendeeUserIdArray = [];
-
-      //array with member ids
-      attendeeData.Users.forEach(user => {
-        attendeeUserIdArray.push(user.Attendee.user_id);
-    });
-    //reject memebership if already exists
-    if (attendeeUserIdArray.includes(userId)) {
-        return res.status(404).json({ error: 'User Already an attendee' });
-    }
 
     // Authorization logic
     if (status === 'attending') {
         if (!isOrganizer || userStatus ==="co-host") {
             return res.status(403).json({ error: 'Not Authorized. Need to be the organizer to change to attending' });
         }
-        attendeeToUpdate.status = 'attending';
+        else if(attendeeToUpdate.status ==="attending"){
+            return res.status(404).json({ error: 'Status is already attending' });
+
+        }else{
+            attendeeToUpdate.status = 'attending';
+        }
 
     } else if (status === 'pending') {
         return res.status(400).json({ error: 'Cannot change to pending from pending' });
