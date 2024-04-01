@@ -10,6 +10,81 @@ const { environment } = require('../../config');
 
 const router = express.Router()
 
+//**Attendees Section
+//### Get all Attendees of an Event specified by its id
+router.get('/:eventId/attendees', requireAuth ,async(req,res,next)=> {
+    const {eventId} = req.params
+    const userId=req.user.id
+    const event= await Event.findByPk(eventId) // to check if the event exits
+    if (!event) {
+        return res.status(404).json({ error: 'Event not found' });
+    }
+
+    //Get the group of the event
+    const groupId = event.group_id
+    const group = await Group.findByPk(groupId)
+    if (!group) {
+        return res.status(404).json({ error: 'Group not found' });
+    }
+
+    //check if organizer
+    const isOrganizer = group.organizer_id === req.user.id
+
+    // Check if the user has a membership
+    const userAuth = await Member.findOne({
+        where: {
+            user_id: userId,
+            group_id: groupId
+        }
+    })
+     //Loggeed in user membership status to the Group
+     let status = undefined
+     if(userAuth){
+         status = userAuth.status
+     }
+
+
+    const attendeeData = await Event.findByPk(eventId,{
+        include:[
+            {model:User}
+        ]
+    })
+
+
+    //selecting the fields as per the readme docs
+    const attendees = attendeeData.Users.map(user => {
+
+        //if organizer send all memeber information
+        if(isOrganizer){
+                return {
+                    id: user.id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    attendeStatus: {
+                        status: user.Attendee.status
+                    }
+                //else do not send member with pending status
+                };
+            }else{
+                //send for only members where status is not pending
+                if(user.Attendee.status!=="pending"){
+                        return {
+                            id: user.id,
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            Membership: {
+                                status: user.Attendee.status
+                            }
+                        }
+                }
+            }
+    });
+
+    res.json(attendees)
+
+} )
+
+
 
 //** Event Images Sections
 //### Add an Image to an Event based on the Event's id

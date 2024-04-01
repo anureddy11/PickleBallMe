@@ -48,7 +48,7 @@ router.delete('/:groupId/members/:memberId', requireAuth, async(req,res,next)=>{
     if(!memberToDelete){
         return res.status(404).json({ error: 'Member not found' });
     }
-
+    //Loggeed in user membership status to the Group
     let status = undefined
     if(userAuth){
         status = userAuth.status
