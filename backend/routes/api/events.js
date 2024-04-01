@@ -5,11 +5,69 @@ const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
-const { Group,User,GroupImage,Venue,Event,Member,EventImages} = require('../../db/models');
+const { Group,User,GroupImage,Venue,Event,Member,EventImages,Attendee} = require('../../db/models');
 const { environment } = require('../../config');
 
 const router = express.Router()
 
+
+//** Event Images Sections
+//### Add an Image to an Event based on the Event's id
+router.post('/:eventId/images',requireAuth, async(req,res,next) =>{
+
+    const {eventId} =req.params
+    console.log(eventId,req.user.id)
+
+    //check if the user is attending the event
+    try {
+        // Check if the user is an attendee of the event
+        const attendee = await Attendee.findOne({
+            where: {
+                user_id: req.user.id,
+                event_id: eventId
+            }
+        });
+
+        if (attendee) {
+            // If the user is an attendee, create a new event image
+            const eventImageData = req.body;
+            const newEventImage = await EventImages.create({
+                preview_image: eventImageData.preview,
+                image_url: eventImageData.url
+            });
+
+            // Respond with success message and the newly created event image
+            res.json({
+                status: "success",
+                message: "Successfully created new event image",
+                newEventImage
+            });
+        } else {
+            // If the user is not an attendee, respond with a message indicating so
+            return res.json({
+                message: "User is not an attendee of this event"
+            });
+        }
+    } catch (error) {
+          // Log the error for debugging purposes
+    console.error("Error creating event image:", error);
+
+    // Respond with a 500 status code and a detailed error message
+    res.status(500).json({
+        error: "An error occurred while creating the event image",
+        details: error.message // Include the error message for debugging
+    });
+    }
+
+    //add the image and return image data
+
+    //throw error if the id is not linked to the event
+
+})
+
+
+
+//Get all Events
 router.get('/', async(req,res,next) => {
     const allEvents = await Event.findAll({
         include: [

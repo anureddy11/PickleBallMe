@@ -5,16 +5,19 @@ const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
-const { Group,User,GroupImage,Venue,Event,Attendee, sequelize } = require('../../db/models');
+const { Group,User,GroupImage,Venue,Event,Attendee,Member} = require('../../db/models');
 const group = require('../../db/models/group');
 const { Model } = require('sequelize');
 const venue = require('../../db/models/venue');
+const { route } = require('./events');
 
 const router = express.Router()
 
 
 //**Events Section
-router.get('/:groupId/events', async(req,res,next)=>{
+//### Get all Events of a Group specified by its id
+
+router.get('/:groupId/events' ,async(req,res,next)=>{
 
     const {groupId} = req.params
     const group= await Group.findByPk(groupId) // to check if the group exits
@@ -55,6 +58,73 @@ router.get('/:groupId/events', async(req,res,next)=>{
 
 
         })
+
+
+//### Create an Event for a Group specified by its id
+router.post('/:groupId/events',requireAuth,async(req,res,next) => {
+    let newEventData = req.body
+    const {groupId} = req.params
+
+    //find the group
+    const group= await Group.findByPk(groupId) // to check if the group exits
+    if (!group) {
+        return res.status(404).json({ error: 'Group not found' });
+    }
+
+    //check if organizer
+    const isOrganizer = group.organizer_id === req.user.id
+
+    // check if co-host
+    const membership = await Member.findOne({
+        where: {
+            user_id: req.user.id,   // User ID
+            group_id: groupId  // Group ID
+        }
+    })
+
+    //adding data to the events table
+   if(isOrganizer || membership.status==='active'){
+
+            //check if the venueId inserted has the group associated to it
+            const insertedVenueId = newEventData.venueId
+            const venueDate = await Venue.findByPk(insertedVenueId)
+            if(venueDate.group_id!==groupId){
+                return res.status(404).json({ error: 'Venue is not associated with this group' });
+            }
+
+
+            try {
+                // Attempt to create a new event
+                const newEvent = await Event.create({
+                    group_id:groupId,
+                    venue_id: newEventData.venueId,
+                    name: newEventData.name,
+                    type: newEventData.type,
+                    capacity: newEventData.capacity,
+                    price: newEventData.price,
+                    description: newEventData.description,
+                    start_date: newEventData.startDate,
+                    end_date: newEventData.endDate
+                });
+
+                // If event creation is successful, respond with success message
+                res.json({
+                    status: "success",
+                    message: `Successfully created new event for group ${groupId}`,
+                });
+            } catch (error) {
+                // If an error occurs during event creation, log the error and respond with status code 400
+                console.error('Error creating event :', error);
+                res.status(400);
+            }
+
+   }else{
+    return res.json({
+        message: `Not Authorized since not a Cohost or the Organizer`,
+    });
+   }
+
+})
 
 
 

@@ -46,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     venue_id: {
       type: DataTypes.INTEGER,
-      allowNull: false, // Venue ID cannot be null
+      allowNull: true, // Venue ID can be null
 
     },
     name: {
