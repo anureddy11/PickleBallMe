@@ -73,6 +73,54 @@ const requireAuth = function (req, _res, next) {
     return next(err);
   }
 
+// //if group Exists
+// const checkGroup = function(req,res,next) {
+//   const {groupId} = req.params
+//   // Check if the group exists
+
+//   const group = await Group.findByPk(groupId);
+//   if (group) return next();
+
+//   const err = new Error('Group does not exist');
+//     err.title = 'Group does not exist';
+//     err.errors = { message: 'Group does not exist' };
+//     err.status = 404;
+//     return next(err);
+
+// }
+
+
+//   //if current user is Organizer or has a membership
+//   const requireOrgMemAuth = function (req, _res, next) {
+//    const loggedUserId = req.user.id
+//    const {groupId} = req.params
+
+
+//     const group = await Group.findByPk(groupId);
+
+//     // Check if the user is the organizer
+//     const isOrganizer = group.organizer_id === loggedUserId;
+
+//      // Check if the user has a membership
+//      const membership = await Member.findOne({
+//             where: {
+//                 user_id: userId,
+//                 group_id: groupId
+//             }
+//         });
+
+//     if(isOrganizer || membership.status==='active') return next();
+
+//     const err = new Error('User not the Organizer or a Co-host');
+//     err.title = 'Group does not exist';
+//     err.errors = { message: 'Group does not exist' };
+//     err.status = 401;
+//     return next(err);
+
+//   }
+
+
+
 
   module.exports = {
     setTokenCookie,
