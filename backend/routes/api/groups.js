@@ -325,29 +325,35 @@ router.post('/:groupId/events',requireAuth,async(req,res,next) => {
 //**Venues Section
 // ### Get All Venues for a Group specified by its id
 
-router.get('/:groupId/venues', async(req,res,next) =>{
+router.get('/:groupId/venues',requireAuth,checkGroup, async(req,res,next) =>{
     try{
         const {groupId} = req.params
+        const group= await Group.findByPk(groupId) // to check if the group exits
+
+        //check if organizer
+        const isOrganizer = group.organizer_id === req.user.id
+
+        // Check if the user has a membership
+        const membership = await Member.findOne({
+            where: {
+                user_id: req.user.id,
+                group_id: groupId
+            }
+        })
 
 
-        if(groupId){
+        if(isOrganizer || membership.status==="co-host"){
+                const venues = await Venue.findAll(
+                    {
+                        where:{group_id:groupId}
+                    }
+                )
+            return res.status(200).json({ venues })
+            }else{
+                return res.status(403).json({ error: 'Not Authorized. Need to be the organizer or the co-host' })
+            }
 
-            const venues = await Venue.findAll(
-                {
-                    where:{group_id:groupId}
-                }
-            )
 
-         res.status(200).json({ venues })
-         return
-
-        }else{
-            next({
-                status: 404, //  HTTP status code for 'Not Found'
-                message: `Could not find group ${groupId}`,
-                details: 'group not found'
-            })
-        }
 
     }catch (error) {
         console.error('Error fetching venue data:', error)
@@ -358,26 +364,55 @@ router.get('/:groupId/venues', async(req,res,next) =>{
 
 
 //### Create a new Venue for a Group specified by its id
-router.post('/:groupId/venues', async(req,res) => {
+//middleware function to check if body has the correct credentials and password. This is used in the route handler right after
+const validateVenueCreation = [
+    check('address')
+        .notEmpty()
+        .withMessage('Street address is required'),
+    check('city')
+        .notEmpty()
+        .withMessage('City is required'),
+    check('state')
+        .notEmpty()
+        .withMessage('State is required'),
+    check('lat')
+        .isFloat({ min: -90, max: 90 })
+        .withMessage('Latitude must be within -90 and 90'),
+    check('lng')
+        .isFloat({ min: -180, max: 180 })
+        .withMessage('Longitude must be within -180 and 180'),
+    handleValidationErrors // Include handleValidationErrors middleware
+];
+
+router.post('/:groupId/venues',requireAuth,checkGroup,validateVenueCreation ,async(req,res) => {
 
     try{
         const {groupId} = req.params
         const group= await Group.findByPk(groupId) // to check if the group exits
         const  newVenueData = req.body
-        if(group){
 
+        //check if organizer
+        const isOrganizer = group.organizer_id === req.user.id
 
+        // Check if the user has a membership
+        const membership = await Member.findOne({
+            where: {
+                user_id: req.user.id,
+                group_id: groupId
+            }
+        })
+
+        if(isOrganizer || membership.status==="co-host"){
             const newVenue = await Venue.create({group_id:groupId, address:newVenueData.address, city:newVenueData.city, state:newVenueData.state, lat:newVenueData.lat, lng: newVenueData.lng,name:newVenueData.name})
             res.json({
                 status: "success",
                 message: "Successfully created new group",
+                newVenue
             })
         }else{
-            next({
-                status: "new venue not added",
-                message: `groupId not found`
-            })
+            return res.status(403).json({ error: 'Not Authorized. Need to be the organizer or the co-host' })
         }
+
 
 
 

@@ -1,69 +1,75 @@
 const express = require('express')
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs')
 
-const { check } = require('express-validator');
-const { handleValidationErrors } = require('../../utils/validation');
+const { check } = require('express-validator')
+const { handleValidationErrors } = require('../../utils/validation')
 
-const { setTokenCookie, requireAuth } = require('../../utils/auth');
-const { Group,User,GroupImage,Venue } = require('../../db/models');
+const { setTokenCookie, requireAuth,requireOrgMemAuth,checkGroup,checkMember, checkEvent } = require('../../utils/auth')
+const { Group,User,GroupImage,Venue,Event,Attendee,Member} = require('../../db/models')
+const group = require('../../db/models/group')
+const { Model } = require('sequelize')
+const venue = require('../../db/models/venue')
+const { route } = require('./events')
 
 const router = express.Router()
 
+//middleware function to check if body has the correct credentials and password. This is used in the route handler right after
+const validateVenueEdit = [
+    check('address')
+        .notEmpty()
+        .withMessage('Street address is required'),
+    check('city')
+        .notEmpty()
+        .withMessage('City is required'),
+    check('state')
+        .notEmpty()
+        .withMessage('State is required'),
+    check('lat')
+        .isFloat({ min: -90, max: 90 })
+        .withMessage('Latitude must be within -90 and 90'),
+    check('lng')
+        .isFloat({ min: -180, max: 180 })
+        .withMessage('Longitude must be within -180 and 180'),
+    handleValidationErrors // Include handleValidationErrors middleware
+];
+
 //### Edit a Venue specified by its id
-router.put('/:venueId/', async(req,res,next) =>{
-    console.log("venues is hit")
+router.put('/:venueId',requireAuth,validateVenueEdit, async(req,res,next) =>{
 
     try{
-        const userId = req.user.id //from the middleware from session router
-        const{venueId} = req.params //get the venueId from params
-        const newVenueUpdates = req.body
+        const {venueId} = req.params
+        const venue= await Venue.findByPk(venueId) // to check if the group exits
+        const  newVenueUpdates = req.body
 
-        //find the venue
-        const venue = await Venue.findByPk(venueId)
+        //find group
+       const group = await Group.findByPk(venue.group_id)
 
+        //check if organizer
+        const isOrganizer = group.organizer_id === req.user.id
 
-        //find the groupId of the venue
-        const groupId = venue.group_id
+        // Check if the user has a membership
+        const membership = await Member.findOne({
+            where: {
+                user_id: req.user.id,
+                group_id: venue.group_id
+            }
+        })
 
-
-
-        //find the group
-        const group = await Group.findByPk(groupId)
-
-         //find the organizerid of the group
-         const organizerId = group.organizer_id
-
-        if(userId){
-
-            if(organizerId === userId){
-
-                for(key in newVenueUpdates){
-                    venue[key]=newVenueUpdates[key]
-
-                }
-                await venue.save()
-
-            return res.json({
-                status: "success",
-                message: "Successfully edited the venue",
-            });
-
-            }else{
-                next({
-                    status: "unable to edit",
-                    message: `userId not matching organizerId`
-                });
-
+        if(isOrganizer || membership.status==="co-host"){
+            for(key in newVenueUpdates){
+                venue[key]=newVenueUpdates[key]
 
             }
+            await venue.save()
+            res.json({
+                status: "success",
+                message: "Successfully edited the venue",
+                venue
+            })
         }else{
-            next({
-                status: "user not found",
-                message: `Please login to add image to group.`,
-                details: 'group not found'
-            });
-
+            return res.status(403).json({ error: 'Not Authorized. Need to be the organizer or the co-host' })
         }
+
 
 
     }catch (error) {
