@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs')
 const { check } = require('express-validator')
 const { handleValidationErrors } = require('../../utils/validation')
 
-const { setTokenCookie, requireAuth } = require('../../utils/auth')
+const { setTokenCookie, requireAuth,requireOrgMemAuth,checkGroup,checkMember } = require('../../utils/auth')
 const { Group,User,GroupImage,Venue,Event,Attendee,Member} = require('../../db/models')
 const group = require('../../db/models/group')
 const { Model } = require('sequelize')
@@ -12,92 +12,6 @@ const venue = require('../../db/models/venue')
 const { route } = require('./events')
 
 const router = express.Router()
-
-//Authorization Middlewares
-//check Group Middleware
-const checkGroup = async function(req, res, next) {
-    try {
-        const { groupId } = req.params
-
-        // Check if the group exists
-        const group = await Group.findByPk(groupId)
-
-        if (group) {
-            return next()
-        } else {
-            const err = new Error('Group does not exist')
-            err.title = 'Group does not exist'
-            err.errors = { message: 'Group does not exist' }
-            err.status = 404
-            return next(err)
-        }
-    } catch (error) {
-        // Handle any errors that occur during the database operation
-        return next(error)
-    }
-}
-//check Memeber Middleware
-const checkMember = async function(req, res, next) {
-    try {
-        const loggedUserId = req.user.id;
-        const { groupId } = req.params;
-        let { memberId } = req.params || req.body;
-
-
-        // Check if the user has an active membership
-        const membership = await Member.findOne({
-            where: {
-                id:memberId
-            }
-        })
-
-        if (membership) {
-            return next()
-        } else {
-            const err = new Error('Membership does not exist')
-            err.title = 'Membership does not exist'
-            err.errors = { message: 'Membership does not exist' }
-            err.status = 404
-            return next(err)
-        }
-    } catch (error) {
-        // Handle any errors that occur during the database operation
-        return next(error)
-    }
-}
-
-    //if current user is Organizer or has a membership
-    const requireOrgMemAuth = async function (req, _res, next) {
-        try {
-            const loggedUserId = req.user.id
-            const { groupId } = req.params
-
-            // Check if the user is the organizer
-            const group = await Group.findByPk(groupId)
-            const isOrganizer = group.organizer_id === loggedUserId
-
-            // Check if the user has an active membership
-            const membership = await Member.findOne({
-                where: {
-                    user_id: loggedUserId,
-                    group_id: groupId
-                }
-            })
-
-            // If the user is the organizer or has a co-host membership, proceed
-            if (isOrganizer || (membership && membership.status === 'co-host')) {
-                return next()
-            } else {
-                const err = new Error('User is not the Organizer or a Co-host')
-                err.title = 'Unauthorized'
-                err.status = 401
-                return next(err)
-            }
-        } catch (error) {
-            // Handle any errors that occur during the database operation
-            return next(error)
-        }
-    }
 
 
 
@@ -481,7 +395,7 @@ router.post('/:groupId/venues', async(req,res) => {
 
 //Groups Only Section
 //Returns all groups
-router.get('/', async(req,res) => {
+router.get('/',requireAuth, async(req,res) => {
 
     const groups = await Group.findAll()
 
@@ -490,7 +404,7 @@ router.get('/', async(req,res) => {
 
 
 //Edit a group
-router.put('/:id', async(req,res,next) => {
+router.put('/:id', requireAuth,async(req,res,next) => {
     try {
         // Your code here
         let updates = req.body
@@ -508,7 +422,7 @@ router.put('/:id', async(req,res,next) => {
         if (groupToUpdate) {
             // Update only the fields that exist in the updates object
             for (const key in updates) {
-                if (updates.hasOwnProperty(key)) {
+                 {
                     groupToUpdate[key] = updates[key]
                 }
             }
@@ -516,9 +430,9 @@ router.put('/:id', async(req,res,next) => {
             await groupToUpdate.save()
 
             return res.json({
-                data: id,
-                status: "success",
+                status: "200",
                 message: `Successfully updated group`,
+                groupToUpdate
             })
         }
 
@@ -571,18 +485,20 @@ router.delete('/:id', async (req, res, next) => {
 
 
 //Add a new group
-router.post('/', async (req, res, next) => {
+router.post('/',requireAuth ,async (req, res, next) => {
 
     try {
+        const loggedUserId = req.user.id
         const group = req.body
-        const newGroup = await Group.create({organizer_id:group.organizer_id, name:group.name, about:group.about, type:group.type, private:group.private, city:group.city, state: group.state})
+        const newGroup = await Group.create({organizer_id:loggedUserId, name:group.name, about:group.about, type:group.type, private:group.private, city:group.city, state: group.state})
         return res.json({
-            status: "success",
+            status: "201",
             message: "Successfully created new group",
+            newGroup
         })
     } catch(err) {
         next({
-            status: "error",
+            status: 404,
             message: 'Could not create new group',
             details: err.errors ? err.errors.map(item => item.message).join(', ') : err.message
         })
@@ -591,20 +507,26 @@ router.post('/', async (req, res, next) => {
 
 
 // Get all Groups joined or organized by the Current User
-router.get('/current', async(req,res,next) =>{
+router.get('/current', async(req,res,next) =>{ //breaking because of the alias
 
     try{
         const userId = req.user.id //from the middleware from session router
 
-        const joinedGroups = await User.findAll({
+        const joinedGroups = await Group.findAll({
 
             where: { id: userId },
             include: {
-                model:Group
+                model:User,
+
             }
 
         })
-        res.status(200).json({ joinedGroups })
+            // Add numMembers field to each group object
+            joinedGroups.forEach(group => {
+                group.dataValues.numMembers = group.dataValues.Users.length;
+            });
+
+        res.status(200).json(joinedGroups);
 
 
     }catch (error) {
@@ -617,7 +539,7 @@ router.get('/current', async(req,res,next) =>{
 
 //Add an Image to a Group based on the Group's id
 
-router.post('/:groupId/images', async(req,res,next) =>{
+router.post('/:groupId/images',requireAuth, async(req,res,next) =>{
 
     try{
         const userId = req.user.id //from the middleware from session router
@@ -632,7 +554,7 @@ router.post('/:groupId/images', async(req,res,next) =>{
         const organizerId = group.organizer_id
         //if organizerid matches the userid then add image
 
-        if(userId){
+
 
             if(organizerId === userId){
 
@@ -642,7 +564,7 @@ router.post('/:groupId/images', async(req,res,next) =>{
                 group_id:groupId,
             })
             return res.json({
-                status: "success",
+                status: 200,
                 message: "Successfully created new groupimage",
                 newGroupImage
             })
@@ -655,14 +577,7 @@ router.post('/:groupId/images', async(req,res,next) =>{
 
 
             }
-        }else{
-            next({
-                status: "user not found",
-                message: `Please login to add image to group.`,
-                details: 'group not found'
-            })
 
-        }
 
 
     }catch (error) {
@@ -677,12 +592,38 @@ router.post('/:groupId/images', async(req,res,next) =>{
 router.get('/:id', async(req,res,next) =>{
     try{
         const {id}=req.params
-        const group = await Group.findByPk(id)
+        const groupCheck = await Group.findByPk(id, {
+            include:[{
+                model:User,
+                as:'Organizer'
+
+            }]
+        })
+        const numMembers = groupCheck.Organizer.length
+
+
+        const group = await Group.findByPk(id, {
+            include: [{
+                model: GroupImage
+            },
+            {
+                model: User,
+                as:'Organizer',
+                where: { id: groupCheck.organizer_id },
+                attributes: ['id', 'firstName', 'lastName'],
+                through: { attributes: [] }
+            },
+            {
+                model: Venue
+            },
+
+        ]
+        })
         if(id){
+
+            group.dataValues.numMembers =numMembers
+
             return res.json({
-                data: id,
-                status: "success",
-                message: `Successfully updated group`,
                 group
             })
         }else{

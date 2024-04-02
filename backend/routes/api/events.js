@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
-const { setTokenCookie, requireAuth } = require('../../utils/auth');
+const { setTokenCookie, requireAuth,requireOrgMemAuth,checkGroup,checkEvent } = require('../../utils/auth');
 const { Group,User,GroupImage,Venue,Event,Member,EventImages,Attendee} = require('../../db/models');
 const { environment } = require('../../config');
 
@@ -173,7 +173,6 @@ router.put('/:eventId/attendance', requireAuth, async(req,res,next) => {
 
 //### Delete attendance to an event specified by id
 
-//### Delete membership to a group specified by id
 router.delete('/:eventId/attendance/:userId', requireAuth, async(req,res,next)=>{
     const { eventId, userId } = req.params;
     const loggedUserId = req.user.id;
@@ -231,7 +230,7 @@ router.delete('/:eventId/attendance/:userId', requireAuth, async(req,res,next)=>
 
 
 //### Get all Attendees of an Event specified by its id
-router.get('/:eventId/attendees', requireAuth ,async(req,res,next)=> {
+router.get('/:eventId/attendees',async(req,res,next)=> {
     const {eventId} = req.params
     const userId=req.user.id
     const event= await Event.findByPk(eventId) // to check if the event exits

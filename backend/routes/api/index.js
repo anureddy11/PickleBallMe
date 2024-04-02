@@ -5,7 +5,7 @@ const usersRouter = require('./users.js')
 const groupsRouter = require('./groups.js')
 const venuesRouter = require('./venues.js')
 const eventRouter = require('./events.js')
-const attendeeRouter = require('./attendees.js')
+
 
 const {handleValidationErrors} = require('../../utils/validation.js')
 const { setTokenCookie, restoreUser,requireAuth } = require('../../utils/auth.js');
