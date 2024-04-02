@@ -11,6 +11,7 @@ const { Model } = require('sequelize')
 const venue = require('../../db/models/venue')
 const { route } = require('./events')
 const groupimage = require('../../db/models/groupimage')
+const user = require('../../db/models/user')
 
 const router = express.Router()
 
@@ -23,8 +24,6 @@ const router = express.Router()
 router.delete('/:groupId/members/:memberId',requireAuth,checkGroup,checkMember,requireOrgMemAuth, async(req,res,next)=>{
     const { groupId, memberId } = req.params
     const userId = req.user.id
-
-
 
     // // Find member
     const memberToDelete = await Member.findOne({
@@ -142,7 +141,7 @@ router.post("/:groupId/membership", requireAuth,checkGroup, async (req,res,next)
 })
 
 //### Change the status of a membership for a group specified by id
-router.put('/:groupId/membership', requireAuth,requireOrgMemAuth, async(req,res,next) => {
+router.put('/:groupId/membership', requireAuth,checkGroup,requireOrgMemAuth, async(req,res,next) => {
 
     const { groupId } = req.params
     const { memberId, status } = req.body
@@ -150,9 +149,7 @@ router.put('/:groupId/membership', requireAuth,requireOrgMemAuth, async(req,res,
 
     // Check if the group exists
     const group = await Group.findByPk(groupId)
-    if (!group) {
-        return res.status(404).json({ error: 'Group not found' })
-    }
+
 
     // Check if the user is the organizer
     const isOrganizer = group.organizer_id === userId
@@ -424,9 +421,24 @@ router.post('/:groupId/venues',requireAuth,checkGroup,validateVenueCreation ,asy
 
 //Groups Only Section
 //Returns all groups
-router.get('/',requireAuth, async(req,res) => {
+router.get('/',requireAuth, checkGroup,async(req,res) => {
 
-    const groups = await Group.findAll()
+    const groups = await Group.findAll({
+
+        include: {
+            model:User
+        }
+
+    })
+        // Add numMembers field to each group object
+        groups.forEach(group => {
+            group.dataValues.numMembers = group.dataValues.Users.length;
+        });
+
+        groups.forEach(group => {
+           delete group.dataValues.Users
+        });
+
 
     return res.json({groups})
 })
@@ -486,7 +498,7 @@ router.put('/:id', requireAuth,checkGroup,async(req,res,next) => {
 
 
 //Deletes a group
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', checkGroup,async (req, res, next) => {
     try {
         const deletedGroup = await Group.destroy({
             where: { id: req.params.id }
@@ -512,9 +524,35 @@ router.delete('/:id', async (req, res, next) => {
       }
 })
 
+const validateGroupCreate = [
+    check('name')
+        .exists().withMessage('Group name is required')
+        .notEmpty().withMessage('Group name cannot be empty')
+        .custom(async (value, { req }) => {
+            // Perform a query to check if a group with the same name exists
+            const existingGroup = await Group.findOne({
+                where: {
+                    name: value
+                }
+            });
+            if (existingGroup) {
+                throw new Error('Group name already exists');
+            }
+            return true;
+        }),
+    check('type')
+        .exists().withMessage('Group type is required')
+        .notEmpty().withMessage('Group type cannot be empty'),
+    check('private')
+        .exists().withMessage('Private status is required')
+        .isBoolean().withMessage('Private status must be a boolean value')
+        .notEmpty().withMessage('Private status cannot be empty'),
+        handleValidationErrors
+];
+
 
 //Add a new group
-router.post('/',requireAuth ,async (req, res, next) => {
+router.post('/',requireAuth, validateGroupCreate,async (req, res, next) => {
 
     try {
         const loggedUserId = req.user.id
@@ -536,7 +574,7 @@ router.post('/',requireAuth ,async (req, res, next) => {
 
 
 // Get all Groups joined or organized by the Current User
-router.get('/current', async(req,res,next) =>{ //breaking because of the alias
+router.get('/current',checkGroup, async(req,res,next) =>{ //breaking because of the alias
 
     try{
         const userId = req.user.id //from the middleware from session router
@@ -568,57 +606,53 @@ router.get('/current', async(req,res,next) =>{ //breaking because of the alias
 
 //Add an Image to a Group based on the Group's id
 
-router.post('/:groupId/images',requireAuth,checkGroup, async(req,res,next) =>{
+router.post('/:groupId/images', requireAuth, checkGroup, async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        const { groupId } = req.params;
+        const newGroupImageData = req.body;
 
-    try{
-        const userId = req.user.id //from the middleware from session router
-        const{groupId} = req.params //get the groupId from params
-        const newGroupImageData = req.body
+        // Find the group
+        const group = await Group.findByPk(groupId);
 
-        //find the group
-        const group = await Group.findByPk(groupId)
+        // Check if the group exists
+        if (!group) {
+            return res.status(404).json({ message: "Group not found" });
+        }
 
-        //find the organizerid of the group
+        const organizerId = group.organizer_id;
+        console.log(organizerId,userId)
 
-        const organizerId = group.organizer_id
-        //if organizerid matches the userid then add image
-
-
-
-            if(organizerId === userId){
-
+        // If organizerId matches userId, then add the image
+        if (organizerId === userId) {
             const newGroupImage = await GroupImage.create({
-                preview_image:newGroupImageData.preview_image,
-                image_url:newGroupImageData.image_url,
-                group_id:groupId,
-            })
-            return res.json({
+                preview_image: newGroupImageData.preview,
+                image_url: newGroupImageData.url,
+                group_id: groupId,
+            });
+
+            return res.status(200).json({
                 status: 200,
-                message: "Successfully created new groupimage",
+                message: "Successfully created new group image",
                 newGroupImage
-            })
-
-            }else{
-                next({
-                    status: "new Image not added",
-                    message: `userId not matching organizerId`
-                })
-
-
-            }
-
-
-
-    }catch (error) {
-        console.error('Could not add an image:', error)
-        res.status(500).json({ message: 'Could not add an image' })
-      }
-})
+            });
+        } else {
+            // Unauthorized access
+            return res.status(403).json({
+                status: 403,
+                message: "Not Authorized"
+            });
+        }
+    } catch (error) {
+        console.error('Could not add an image:', error);
+        res.status(500).json({ message: 'Could not add an image' });
+    }
+});
 
 
 // Get details of a Group from a groupid
 
-router.get('/:id', async(req,res,next) =>{
+router.get('/:id', checkGroup,async(req,res,next) =>{
     try{
         const {id}=req.params
         const groupCheck = await Group.findByPk(id, {

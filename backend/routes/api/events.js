@@ -19,14 +19,22 @@ router.post("/:eventId/attendance", requireAuth, async (req,res,next) => {
 
     const {eventId} = req.params
     const event= await Event.findByPk(eventId) // to check if the group exits
-    const {userId,save}= req.body
+    const {userId,status}= req.body
+
+    if(!userId){
+        return res.status(404).json({ error: 'Request does not contain valid userId' });
+    }
+
+    if(status!=="pending"){
+        return res.status(404).json({ error: 'Request does not contain valid status' });
+    }
 
 
     if (!event) {
         return res.status(404).json({ error: 'Event not found' });
     }
 
-    const loogedUserId = req.user.id
+    const loggedUserId = req.user.id
 
      //Get the group of the event
      const groupId = event.group_id
