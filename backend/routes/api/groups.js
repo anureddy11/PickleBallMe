@@ -10,6 +10,7 @@ const group = require('../../db/models/group')
 const { Model } = require('sequelize')
 const venue = require('../../db/models/venue')
 const { route } = require('./events')
+const groupimage = require('../../db/models/groupimage')
 
 const router = express.Router()
 
@@ -91,15 +92,11 @@ router.get('/:groupId/members',checkGroup, async(req,res,next)=> {
 
 //### Request a Membership for a Group based on the Group's id
 
-router.post("/:groupId/membership", requireAuth,checkMember,checkGroup, async (req,res,next) => {
+router.post("/:groupId/membership", requireAuth,checkGroup, async (req,res,next) => {
 
     const {groupId} = req.params
     const group= await Group.findByPk(groupId) // to check if the group exits
 
-
-    // if (!group) {
-    //     return res.status(404).json({ error: 'Group not found' })
-    // }
 
     const userId = req.user.id
 
@@ -210,7 +207,7 @@ router.put('/:groupId/membership', requireAuth,requireOrgMemAuth, async(req,res,
 //**Events Section
 //### Get all Events of a Group specified by its id
 
-router.get('/:groupId/events' ,async(req,res,next)=>{
+router.get('/:groupId/events',checkGroup,async(req,res,next)=>{
 
     const {groupId} = req.params
     const group= await Group.findByPk(groupId) // to check if the group exits
@@ -254,15 +251,12 @@ router.get('/:groupId/events' ,async(req,res,next)=>{
 
 
 //### Create an Event for a Group specified by its id
-router.post('/:groupId/events',requireAuth,async(req,res,next) => {
+router.post('/:groupId/events',requireAuth,checkGroup,async(req,res,next) => {
     let newEventData = req.body
     const {groupId} = req.params
 
     //find the group
     const group= await Group.findByPk(groupId) // to check if the group exits
-    if (!group) {
-        return res.status(404).json({ error: 'Group not found' })
-    }
 
     //check if organizer
     const isOrganizer = group.organizer_id === req.user.id
@@ -439,7 +433,7 @@ router.get('/',requireAuth, async(req,res) => {
 
 
 //Edit a group
-router.put('/:id', requireAuth,async(req,res,next) => {
+router.put('/:id', requireAuth,checkGroup,async(req,res,next) => {
     try {
         // Your code here
         let updates = req.body
@@ -574,7 +568,7 @@ router.get('/current', async(req,res,next) =>{ //breaking because of the alias
 
 //Add an Image to a Group based on the Group's id
 
-router.post('/:groupId/images',requireAuth, async(req,res,next) =>{
+router.post('/:groupId/images',requireAuth,checkGroup, async(req,res,next) =>{
 
     try{
         const userId = req.user.id //from the middleware from session router
@@ -617,7 +611,7 @@ router.post('/:groupId/images',requireAuth, async(req,res,next) =>{
 
     }catch (error) {
         console.error('Could not add an image:', error)
-        res.status(500).json({ message: 'Internal Server Error' })
+        res.status(500).json({ message: 'Could not add an image' })
       }
 })
 

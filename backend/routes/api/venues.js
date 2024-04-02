@@ -43,6 +43,9 @@ router.put('/:venueId',requireAuth,validateVenueEdit, async(req,res,next) =>{
 
         //find group
        const group = await Group.findByPk(venue.group_id)
+       if(!group){
+         return res.json("Group does not exist")
+       }
 
         //check if organizer
         const isOrganizer = group.organizer_id === req.user.id

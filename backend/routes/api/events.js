@@ -306,7 +306,7 @@ router.get('/:eventId/attendees',async(req,res,next)=> {
 
 //** Event Images Sections
 //### Add an Image to an Event based on the Event's id
-router.post('/:eventId/images',requireAuth, async(req,res,next) =>{
+router.post('/:eventId/images',requireAuth,checkGroup, async(req,res,next) =>{
 
     const {eventId} =req.params
     console.log(eventId,req.user.id)
