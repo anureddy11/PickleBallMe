@@ -14,15 +14,15 @@ module.exports = {
         allowNull: false
       },
       name: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         allowNull: false,
         unique:true
       },
       about: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
       },
       type: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         allowNull: false
       },
       private: {

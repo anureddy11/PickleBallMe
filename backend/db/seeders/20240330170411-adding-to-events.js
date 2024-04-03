@@ -18,7 +18,7 @@ module.exports = {
          name:'fake event 1',
          type: 'recreational',
          start_date: '2024-03-01',
-         end_date: '2024-4-01',   // Date object (month is zero-based)
+         end_date: '2024-04-01',   
          preview_image: 'no',
         },
         {
@@ -27,7 +27,7 @@ module.exports = {
           name:'fake event 2',
           type: 'competetive',
           start_date: '2024-03-01',
-         end_date: '2024-4-01',   // Date object (month is zero-based)
+         end_date: '2024-04-01',
           preview_image: 'no',
          },
          {
@@ -36,7 +36,7 @@ module.exports = {
           name:'fake event 3',
           type: 'recreational',
           start_date: '2024-03-01',
-         end_date: '2024-4-01',  // Date object (month is zero-based)
+         end_date: '2024-04-01',
           preview_image: 'no',
          },
          {
@@ -45,7 +45,7 @@ module.exports = {
            name:'fake event 4',
            type: 'competetive',
            start_date: '2024-03-01',
-          end_date: '2024-4-01',   // Date object (month is zero-based)
+          end_date: '2024-04-01',
            preview_image: 'no',
           },
 

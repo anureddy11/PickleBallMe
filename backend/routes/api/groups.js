@@ -421,13 +421,16 @@ router.post('/:groupId/venues',requireAuth,checkGroup,validateVenueCreation ,asy
 
 //Groups Only Section
 //Returns all groups
-router.get('/',requireAuth, checkGroup,async(req,res) => {
+router.get('/',requireAuth,async(req,res) => {
 
     const groups = await Group.findAll({
 
-        include: {
-            model:User
-        }
+        include: [{model:User},
+            {
+                model: GroupImage,
+                attributes: ['image_url']
+            }
+    ]
 
     })
         // Add numMembers field to each group object
@@ -445,22 +448,26 @@ router.get('/',requireAuth, checkGroup,async(req,res) => {
 
 
 //Edit a group
-router.put('/:id', requireAuth,checkGroup,async(req,res,next) => {
+router.put('/:groupId', requireAuth,checkGroup,async(req,res,next) => {
     try {
         // Your code here
         let updates = req.body
-        let {id} = req.params
-        let {organizer_id,name,about,type,private,city,state} = updates
+        let {groupId} = req.params
+        let {name,about,type,private,city,state} = updates
 
         const groupToUpdate = await Group.findOne({
             where:{
-                id:id
+                id:groupId
             }
         })
 
 
+          //check if organizer
+        const isOrganizer = groupToUpdate.organizer_id === req.user.id
 
-        if (groupToUpdate) {
+
+
+        if(isOrganizer){
             // Update only the fields that exist in the updates object
             for (const key in updates) {
                  {
@@ -475,17 +482,11 @@ router.put('/:id', requireAuth,checkGroup,async(req,res,next) => {
                 message: `Successfully updated group`,
                 groupToUpdate
             })
+        }else{
+            return res.status(403).json({ error: 'Not Authorized. Need to be the organizer of the group' })
         }
 
-        else{
 
-            next({
-                status: "not-found",
-                message: `Could not update group ${id}`,
-                details: 'group not found'
-            })
-
-        }
 
 
 
@@ -498,30 +499,49 @@ router.put('/:id', requireAuth,checkGroup,async(req,res,next) => {
 
 
 //Deletes a group
-router.delete('/:id', checkGroup,async (req, res, next) => {
+router.delete('/:groupId',requireAuth,checkGroup,async (req, res, next) => {
     try {
-        const deletedGroup = await Group.destroy({
-            where: { id: req.params.id }
-        })
+        // Your code here
+        let updates = req.body
+        let {groupId} = req.params
 
-        // Check if the group was found and deleted
-        if (deletedGroup === 0) {
-            // If not found, send a not-found error response
-            return next({
-                status: "not-found",
-                message: `Could not remove Group ${req.params.id}`,
-                details: "Group not found"
-            })
+
+        const groupToDelete = await Group.findOne({
+            where:{
+                id:groupId
+            }
+        })
+          //check if organizer
+        const isOrganizer = groupToDelete.organizer_id === req.user.id
+
+
+
+        if(isOrganizer){
+                const deleteGroup = await Group.destroy({
+
+                    where:{
+                        id:groupId
+                    }
+
+                })
+                return res.json({
+                    status: "200",
+                    message: `Successfully deleted group`,
+                    groupToUpdate
+                })
+        }else{
+            return res.status(403).json({ error: 'Not Authorized. Need to be the organizer or the co-host' })
         }
 
-        return res.json({
-            status: "success",
-            message: `Successfully removed Group ${req.params.id}`,
-        })
+
+
+
+
     } catch (error) {
-        console.error('Error deleting data:', error)
+        console.error('Error fetching group data:', error)
         res.status(500).json({ message: 'Internal Server Error' })
       }
+
 })
 
 const validateGroupCreate = [
@@ -535,6 +555,7 @@ const validateGroupCreate = [
                     name: value
                 }
             });
+            console.log(existingGroup)
             if (existingGroup) {
                 throw new Error('Group name already exists');
             }
@@ -551,18 +572,14 @@ const validateGroupCreate = [
 ];
 
 
-//Add a new group
+//Create a new group
 router.post('/',requireAuth, validateGroupCreate,async (req, res, next) => {
 
     try {
         const loggedUserId = req.user.id
         const group = req.body
         const newGroup = await Group.create({organizer_id:loggedUserId, name:group.name, about:group.about, type:group.type, private:group.private, city:group.city, state: group.state})
-        return res.json({
-            status: "201",
-            message: "Successfully created new group",
-            newGroup
-        })
+        return res.status(201).json(newGroup);
     } catch(err) {
         next({
             status: 404,
@@ -574,7 +591,7 @@ router.post('/',requireAuth, validateGroupCreate,async (req, res, next) => {
 
 
 // Get all Groups joined or organized by the Current User
-router.get('/current',checkGroup, async(req,res,next) =>{ //breaking because of the alias
+router.get('/current',requireAuth,checkGroup, async(req,res,next) =>{ //breaking because of the alias
 
     try{
         const userId = req.user.id //from the middleware from session router
@@ -611,14 +628,12 @@ router.post('/:groupId/images', requireAuth, checkGroup, async (req, res, next) 
         const userId = req.user.id;
         const { groupId } = req.params;
         const newGroupImageData = req.body;
+        console.log(groupId)
+
 
         // Find the group
         const group = await Group.findByPk(groupId);
 
-        // Check if the group exists
-        if (!group) {
-            return res.status(404).json({ message: "Group not found" });
-        }
 
         const organizerId = group.organizer_id;
         console.log(organizerId,userId)
@@ -631,11 +646,7 @@ router.post('/:groupId/images', requireAuth, checkGroup, async (req, res, next) 
                 group_id: groupId,
             });
 
-            return res.status(200).json({
-                status: 200,
-                message: "Successfully created new group image",
-                newGroupImage
-            });
+            return res.status(200).json(newGroupImage);
         } else {
             // Unauthorized access
             return res.status(403).json({
