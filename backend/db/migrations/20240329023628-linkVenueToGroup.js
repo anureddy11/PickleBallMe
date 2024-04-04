@@ -19,7 +19,7 @@ module.exports = {
         },
         onDelete: 'CASCADE'
 
-    })
+    },options)
   },
 
   async down (queryInterface, Sequelize) {

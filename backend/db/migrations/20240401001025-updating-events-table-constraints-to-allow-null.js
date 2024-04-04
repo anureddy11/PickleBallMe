@@ -12,12 +12,12 @@ module.exports = {
     await queryInterface.changeColumn('Events', 'preview_image', {
       type: Sequelize.STRING,
       allowNull: true, // Allow null values
-    });
+    },options);
 
     await queryInterface.changeColumn('Events', 'venue_id', {
       type: Sequelize.INTEGER,
       allowNull: true, // Allow null values
-    });
+    },options);
   },
 
   async down(queryInterface, Sequelize) {
@@ -26,11 +26,11 @@ module.exports = {
     await queryInterface.changeColumn('Events', 'preview_image', {
       type: Sequelize.STRING,
       allowNull: false, // Revert to disallow null values
-    });
+    },options);
 
     await queryInterface.changeColumn('Events', 'venue_id', {
       type: Sequelize.INTEGER,
       allowNull: false, // Revert to disallow null values
-    });
+    },options);
   },
 };

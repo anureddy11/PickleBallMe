@@ -12,17 +12,17 @@ module.exports = {
     await queryInterface.addColumn('Events', 'description', {
       type: Sequelize.STRING,
       allowNull: true,
-    });
+    },options);
 
     await queryInterface.addColumn('Events', 'price', {
       type: Sequelize.FLOAT,
       allowNull: true
-    });
+    },options);
 
     await queryInterface.addColumn('Events', 'capacity', {
       type: Sequelize.INTEGER,
       allowNull: true
-    });
+    },options);
   },
 
   async down(queryInterface, Sequelize) {
