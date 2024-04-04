@@ -31,7 +31,7 @@ module.exports = {
         event_id:3,
         image_url: '2abc'
         },
-    ])
+    ],{ ...options, validate: true })
   },
 
   async down (queryInterface, Sequelize) {

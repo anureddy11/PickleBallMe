@@ -1,4 +1,7 @@
 'use strict';
+
+const { sequelize } = require('../models');
+
 /** @type {import('sequelize-cli').Migration} */
 
 let options = {};
@@ -41,6 +44,18 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
+      price:{
+        type:Sequelize.FLOAT,
+        allowNull:true,
+      },
+      capacity:{
+        type:sequelize.INTEGER,
+        allowNull:true
+      },
+      description:{
+        type:sequelize.STRING,
+        allowNull:true
+      },
       start_date: {
         type: Sequelize.DATE,
         allowNull: false
@@ -51,7 +66,7 @@ module.exports = {
       },
       preview_image: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
       },
       createdAt: {
         allowNull: false,
