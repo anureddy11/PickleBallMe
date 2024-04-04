@@ -1383,7 +1383,7 @@ Request a new membership for a group specified by id.
 * Require Authentication: true
 * Request
   * Method: POST
-  * URL: /api/groups/:groupId/request-membership
+  * URL: /api/groups/:groupId/membership
   * Headers:
     * Content-Type: application/json
   * Body: none
@@ -1451,7 +1451,7 @@ Change the status of a membership for a group specified by id.
     * Current User must already be the organizer
 * Request
   * Method: PUT
-  * URL: /api/groups/:groupId/status-update
+  * URL: /api/groups/:groupId/
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -1693,7 +1693,7 @@ Request attendance for an event specified by id.
 * Require Authorization: Current User must be a member of the group
 * Request
   * Method: POST
-  * URL: /api/attendees/:attendeesEventId/request
+  * URL: /api/events/:eventId/attendance
   * Headers:
     * Content-Type: application/json
   * Body: none

@@ -1,5 +1,11 @@
 'use strict';
 
+let options = {};
+if (process.env.NODE_ENV === 'production') {
+  options.schema = process.env.SCHEMA;
+  options.tableName = 'Events';  // define your schema in options object
+}
+
 module.exports = {
   async up(queryInterface, Sequelize) {
     // Modify the Events table to allow null values for preview_image and venue_id columns
