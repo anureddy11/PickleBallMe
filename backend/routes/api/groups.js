@@ -557,11 +557,16 @@ router.get('/',requireAuth,async(req,res) => {
 
         groups.forEach(group => {
            delete group.dataValues.Users
+           group.dataValues.createdAt = new Date(group.dataValues.createdAt).toLocaleDateString();
+           group.dataValues.updatedAt = new Date(group.dataValues.updatedAt).toLocaleDateString();
         });
 
+        console.log(groups)
 
     return res.json({groups})
 })
+
+
 const validateGroupCreate = [
     check('name')
         .exists().withMessage('Group name is required')
@@ -845,6 +850,8 @@ router.get('/:id',async(req,res,next) =>{
                 return res.status(404).json({ message: "Group not found" });
             }
 
+
+
             // Extract organizer's id from the group
             const organizerId = groupCheck.organizer_id;
 
@@ -861,11 +868,13 @@ router.get('/:id',async(req,res,next) =>{
             // Convert the Sequelize object to JSON format
             const group = groupCheck.toJSON();
 
+
+
             // Add the organizer's information to the group object
             group.Organizer = organizer;
 
             // Respond with the group object
-            return res.json(group);
+            return res.status(200).json(group);
 
 
 
