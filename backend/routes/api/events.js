@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
+
 const { setTokenCookie, requireAuth,requireOrgMemAuth,checkGroup,checkEvent } = require('../../utils/auth');
 const { Group,User,GroupImage,Venue,Event,Member,EventImages,Attendee} = require('../../db/models');
 const { environment } = require('../../config');
@@ -16,65 +17,50 @@ const router = express.Router()
 //Question to Philip: Should we allow users to request attendance for the events which are part of groups that the user is not a member of?
 
 router.post("/:eventId/attendance", requireAuth, async (req,res,next) => {
-
     const {eventId} = req.params
-    const event= await Event.findByPk(eventId) // to check if the group exits
-    const {userId,status}= req.body
+    const event = await Event.findByPk(eventId)
+    const userId = req.user.id
 
-    if(!userId){
-        return res.status(404).json({ error: 'Request does not contain valid userId' });
+    if(!event){
+        res.status(404).json({"message":"event not found"})
     }
 
-    if(status!=="pending"){
-        return res.status(404).json({ error: 'Request does not contain valid status' });
-    }
+        //check if user already is an attendee
+        //Query the attendee data
+        const attendeeData = await Event.findByPk(eventId, {
+            attributes: [],
+            include: [{
+                model: User,
+                attributes: ['id'],
+                through: {
+                    model: Attendee,
+                    attributes: ['user_id','status']
+                }
+            }]
+        })
 
+        let pendingRequest = false;
+        let isAttendee = false;
 
-    if (!event) {
-        return res.status(404).json({ error: 'Event not found' });
-    }
-
-    const loggedUserId = req.user.id
-
-     //Get the group of the event
-     const groupId = event.group_id
-     const group = await Group.findByPk(groupId)
-     if (!group) {
-         return res.status(404).json({ error: 'Group not found' });
-     }
-
-    //check if organizer
-    const isOrganizer = group.organizer_id === loggedUserId
-
-        //Check if the the attendee already exists
-        const attendeeDate = await Attendee.findOne({
-
-            where:{
-                event_id:eventId,
-                user_id:userId
-
+        // Check if pending membership or already a member
+        const checkAttendee = attendeeData.toJSON();
+        checkAttendee.Users.forEach(attendee => {
+            if (attendee.id === userId) {
+                if (attendee.Attendee.status === "pending") {
+                    pendingRequest = true;
+                } else {
+                    isAttendee = true;
+                }
             }
+        });
+
+        if (pendingRequest) {
+            res.status(400).json("Request Pending");
         }
-        )
-
-    // Check if the user has a membership
-    const userAuth = await Member.findOne({
-        where: {
-            user_id: loggedUserId,
-            group_id: groupId
+        if (isAttendee) {
+            res.status(400).json("Already a member");
         }
-    })
-     //Loggeed in user membership status to the Group
-     let userStatus = undefined
 
-     if(userAuth){
-         userStatus = userAuth.status
-     }
-
-        if(attendeeDate){
-            return res.status(404).json({ error: 'User Already an attendee' });
-        }else{
-            //check if the logged in user is orgnizr or member of the event's group (need to ask Philip a question here about need for loggedin user authorization)
             //adding new attendee data
                 const newAttendeeData = await Attendee.create({
                     user_id:userId,
@@ -86,10 +72,8 @@ router.post("/:eventId/attendance", requireAuth, async (req,res,next) => {
                     message: "Pending Request",
                     newAttendeeData
                 })
-            }
 
-
-
+            return res.status(200).json(newAttendeeData)
 
 
 })
@@ -97,143 +81,158 @@ router.post("/:eventId/attendance", requireAuth, async (req,res,next) => {
 //##Change the status of an attendance for an event specified by id
 router.put('/:eventId/attendance', requireAuth, async(req,res,next) => {
 
-    const { eventId } = req.params;
-
-    const { userId, status } = req.body;
-    const loggedUserId = req.user.id;
+    const { eventId } = req.params
+    const { userId, status } = req.body
+    const loggerUserId = req.user.id
 
     // Check if the event exists
-    const event = await Event.findByPk(eventId);
-    if (!event) {
-        return res.status(404).json({ error: 'Event not found' });
+    const event = await Event.findByPk(eventId)
+    if(!event){
+        res.status(404).json({"message": "Event couldn't be found"})
     }
 
 
-
-    //Get the group of the event
     const groupId = event.group_id
+    // Check if the group exists
     const group = await Group.findByPk(groupId)
-    if (!group) {
-        return res.status(404).json({ error: 'Group not found' });
-    }
+
+        // find the membership to update
+        const attendanceToUpdate = await Attendee.findOne({
+            where: {
+                user_id:userId,
+                event_id: eventId
+            }
+        })
+
+        if (!attendanceToUpdate) {
+            return res.status(404).json({ error: "Attendance between the user and the event does not exist" })
+        }
 
 
-
-    //check if organizer
-    const isOrganizer = group.organizer_id === loggedUserId
-
-
+    // Check if the user is the organizer
+    const isOrganizer = group.organizer_id === loggerUserId
+    console.log(isOrganizer)
 
     // Check if the user has a membership
-    const userAuth = await Member.findOne({
+    let membership_status = null
+    const membership = await Member.findOne({
         where: {
-            user_id: loggedUserId,
+            user_id: loggerUserId,
             group_id: groupId
         }
     })
-     //Loggeed in user membership status to the Group
-     let userStatus = undefined
 
-     if(userAuth){
-         userStatus = userAuth.status
-     }
-
-
-    // Check if the userId is an attendee
-    const attendeeToUpdate = await Attendee.findOne({
-        where: {
-            user_id: userId,
-            event_id: eventId
-        }
-    });
-
-    if (!attendeeToUpdate ) {
-        return res.status(404).json({ error: "Attendee not found" });
+    if(membership){
+        membership_status = membership.status
     }
+
 
 
     // Authorization logic
-    if (status === 'attending') {
-        if (!isOrganizer || userStatus ==="co-host") {
-            return res.status(403).json({ error: 'Not Authorized. Need to be the organizer to change to attending' });
+        if (status === 'attending' || membership_status==="co-host") {
+            if(isOrganizer){
+
+                attendanceToUpdate.status = 'attending'
+                await attendanceToUpdate.save()
+                // const output = await Attendee.findOne({
+                //     where:{
+                //         user_id: userId,
+                //         event_id: eventId
+
+                //     }
+                // })
+                const output ={
+                    id:attendanceToUpdate.id,
+                    eventId:attendanceToUpdate.event_id,
+                    userId:attendanceToUpdate.user_id,
+                    status:attendanceToUpdate.status
+                }
+                res.status(200).json(output)
+
+            }else{
+                res.status(404).json("Not Authorized. Current User must already be the organizer or co-host ")
+            }
+
+        } else if (status === 'pending') {
+          res.status(400).json( {
+            "message": "Bad Request", // (or "Validation error" if generated by Sequelize),
+            "errors": {
+              "status" : "Cannot change an attendance status to pending"
+            }
+          })
+
+        } else {
+            return res.status(400).json({ error: 'Invalid status' })
         }
-        else if(attendeeToUpdate.status ==="attending"){
-            return res.status(404).json({ error: 'Status is already attending' });
-
-        }else{
-            attendeeToUpdate.status = 'attending';
-        }
-
-    } else if (status === 'pending') {
-        return res.status(400).json({ error: 'Cannot change to pending from pending' });
-
-    } else {
-        return res.status(400).json({ error: 'Invalid status' });
-    }
-
-    // Save the updated attendee status
-    await attendeeToUpdate.save();
-
-    res.json({ status: 'success', message: 'Attendance status updated successfully' });
-
 
 })
 
 //### Delete attendance to an event specified by id
 
 router.delete('/:eventId/attendance/:userId', requireAuth, async(req,res,next)=>{
-    const { eventId, userId } = req.params;
-    const loggedUserId = req.user.id;
+
+    const { eventId,userId } = req.params
+    const loggerUserId = req.user.id
 
     // Check if the event exists
-    const event = await Event.findByPk(eventId);
-    if (!event) {
-        return res.status(404).json({ error: 'Event not found' });
+    const event = await Event.findByPk(eventId)
+    if(!event){
+        res.status(404).json({"message": "Event couldn't be found"})
     }
 
+
     const groupId = event.group_id
-    const group = await Group.findByPk(groupId);
+    // Check if the group exists
+    const group = await Group.findByPk(groupId)
+
+        // find the membership to update
+        const attendeeToDelete = await Attendee.findOne({
+            where: {
+                user_id:userId,
+                event_id: eventId
+            }
+        })
+
+        if (!attendeeToDelete) {
+            return res.status(404).json({ error: "Attendance between the user and the event does not exist" })
+        }
 
 
     // Check if the user is the organizer
-    const isOrganizer = group.organizer_id === loggedUserId;
-
+    const isOrganizer = group.organizer_id === loggerUserId
+    console.log(isOrganizer)
 
     // Check if the user has a membership
-    const userAuth = await Member.findOne({
+    let membership_status = null
+    const membership = await Member.findOne({
         where: {
-            user_id: loggedUserId,
+            user_id: loggerUserId,
             group_id: groupId
         }
     })
-    //Loggeed in user membership status to the Group
-    let loggedUserStatus = undefined
-    if(userAuth){
-        loggedUserStatus = userAuth.status
+
+    if(membership){
+        membership_status = membership.status
     }
 
-    // Check if the attendee exists
-    const attendeeToDelete = await Attendee.findOne({
-        where: {
-            user_id:userId,
-            event_id:eventId
-        }
-    })
-    if(!attendeeToDelete){
-        return res.status(404).json({ error: 'Attendee not found' });
-    }
-    console.log(isOrganizer,loggedUserStatus)
 
-    if(isOrganizer || loggedUserStatus ==="co-host"){
-        await attendeeToDelete.destroy();
-        return res.json({
-            status: "success",
-            message: 'Successfully removed attendee'
-        });
-    } else {
-        return res.status(403).json({ error: 'Not Authorized' });
-    }
-});
+
+    // Authorization logic
+            if(isOrganizer || membership_status==="host" || userId===loggerUserId){
+                await attendeeToDelete.destroy();
+                res.status(200).json({
+                    "message": "Successfully deleted attendance from event"
+                  })
+
+            }else{
+                res.status(404).json("Not Authorized. Current User must already be the organizer or host ")
+            }
+
+
+})
+
+
+
 
 
 
@@ -275,6 +274,7 @@ router.get('/:eventId/attendees',async(req,res,next)=> {
             {model:User}
         ]
     })
+    console.log(attendeeData.toJSON())
 
 
     //selecting the fields as per the readme docs
@@ -316,9 +316,8 @@ router.get('/:eventId/attendees',async(req,res,next)=> {
 router.post('/:eventId/images',requireAuth, async(req,res,next) =>{
 
     const {eventId} =req.params
-    const {eventImageData} = req.body;
 
-    console.log(eventImageData)
+
 
     //find the event
     const event = await Event.findByPk(eventId)
@@ -344,19 +343,32 @@ router.post('/:eventId/images',requireAuth, async(req,res,next) =>{
 
 
     //check if attendee
-    const attendance = await Attendee.findAll({
-        where: { event_id: eventId }
+    let attendance_status=null
+    const attendance = await Attendee.findOne({
+        where: {
+            user_id: req.user.id,
+            event_id: eventId }
     })
 
-    if(attendance || membership_status ==="co-host" || membership_status ==="host"){
+    if(attendance){
+        attendance_status=attendance.toJSON().status
+    }
+
+
+    if( attendance_status==="member"|| membership_status ==="co-host" || membership_status ==="host"){
         const newEventImage = await EventImages.create({
 
-                preview_image: eventImageData.preview,
-                image_url: eventImageData.url,
+                preview_image: req.body.preview,
+                image_url: req.body.url,
                 event_id:eventId
 
             })
-        return res.status(200).res.json(newEventImage)
+        let output ={
+            id:newEventImage.id,
+            url:newEventImage.image_url,
+            preview:newEventImage.preview_image
+        }
+        return res.status(200).json(output)
     }else{
         return res.status(403).json({ error: 'Not Authorized. Need to be attending or the host or the co-host' })
     }
@@ -392,7 +404,7 @@ router.get('/', async(req,res,next) => {
         groupId: event.group_id,
         startDate: event.start_date,
         endDate: event.end_date,
-        previewImages: event.previewImage,
+        preview:event.preview_image,
         Group:{
             id:event.Group.id,
             name:event.Group.name,
@@ -405,7 +417,7 @@ router.get('/', async(req,res,next) => {
             state:event.Venue.state
 
         },
-        previewImages: event.EventImages[0].image_url,
+        // previewImages: event.EventImages[0].image_url,
 
 
 
@@ -530,6 +542,7 @@ router.delete('/:eventId',requireAuth, async(req,res,next) =>{
         const deleteEvent = await Event.destroy({
             where: {id:eventId}
         })
+        return res.status(200).json("Successfully deleted");
     }else{
         return res.json({
             message: `Not Authorized since not a Cohost or Organizer`,
@@ -545,8 +558,54 @@ router.delete('/:eventId',requireAuth, async(req,res,next) =>{
 
 })
 
+
+//middleware function to check if body has the correct credentials and password. This is used in the route handler right after
+const validateEventBody = [
+    check('name')
+        .notEmpty()
+        .withMessage('Name is required')
+        .isLength({ min: 5 })
+        .withMessage('Name must be at least 5 characters'),
+    check('type')
+        .notEmpty()
+        .withMessage('Type is required')
+        .isIn(['Online', 'In person'])
+        .withMessage('Type must be either Online or In person'),
+    check('capacity')
+        .notEmpty()
+        .withMessage('Capacity is required')
+        .isInt({ min: 1 })
+        .withMessage('Capacity must be a positive integer'),
+    check('price')
+        .optional({ nullable: true })
+        .isFloat({ min: 0 })
+        .withMessage('Price must be a positive number'),
+    check('description')
+        .notEmpty()
+        .withMessage('Description is required'),
+    check('startDate')
+        .notEmpty()
+        .withMessage('Start date is required')
+        .custom((value, { req }) => {
+            const startDate = new Date(value);
+            const currentDate = new Date();
+            return startDate > currentDate;
+        })
+        .withMessage('Start date must be in the future'),
+    check('endDate')
+        .notEmpty()
+        .withMessage('End date is required')
+        .custom((value, { req }) => {
+            const startDate = new Date(req.body.startDate);
+            const endDate = new Date(value);
+            return endDate > startDate;
+        })
+        .withMessage('End date must be after start date'),
+        handleValidationErrors
+]
+
 //### Edit an Event specified by its id
-router.put('/:eventId',requireAuth, async(req,res,next) =>{
+router.put('/:eventId',requireAuth, validateEventBody,async(req,res,next) =>{
 
 
     let isCoHost = false
@@ -558,8 +617,8 @@ router.put('/:eventId',requireAuth, async(req,res,next) =>{
     let updates = req.body
 
     //check for venue data
-    if (updates.venue_id) {
-          const venue = await Venue.findByPk(updates.venue_id);
+    if (updates.venueId) {
+          const venue = await Venue.findByPk(updates.venueId)
           if (!venue) {
             return res.status(400).json({ error: 'Venue does not exist.' });
           }
@@ -612,8 +671,18 @@ if (isCoHost || isOrganizer) {
         }
         await eventToUpdate.save();
 
-        // Return a success response
-        return res.json({ message: 'Event updated successfully',eventToUpdate });
+       let output={
+        venueId:eventToUpdate.venue_id,
+        name:eventToUpdate.name,
+        type:eventToUpdate.type,
+        capacity:eventToUpdate.capacity,
+        price:eventToUpdate.price,
+        description:eventToUpdate.description,
+        startDate:eventToUpdate.startDate,
+        endDate:eventToUpdate.endDate
+       }
+       return res.status(200).json(output)
+
 
     } catch (error) {
 

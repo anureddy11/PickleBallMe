@@ -36,7 +36,7 @@ const validateVenueEdit = [
 //### Edit a Venue specified by its id
 router.put('/:venueId',requireAuth,validateVenueEdit, async(req,res,next) =>{
 
-    try{
+
         const {venueId} = req.params
         const venue= await Venue.findByPk(venueId) // to check if the group exits
         const  newVenueUpdates = req.body
@@ -63,6 +63,12 @@ router.put('/:venueId',requireAuth,validateVenueEdit, async(req,res,next) =>{
             }
         })
 
+        if(!membership){
+            return res.status(404).json("membership does not exist")
+        }
+
+        console.log(group.organizer_id,req.user.id,isOrganizer,membership.status)
+
         if(isOrganizer || membership.status==="co-host"){
             for(key in newVenueUpdates){
                 venue[key]=newVenueUpdates[key]
@@ -74,12 +80,6 @@ router.put('/:venueId',requireAuth,validateVenueEdit, async(req,res,next) =>{
             return res.status(403).json({ error: 'Not Authorized. Need to be the organizer or the co-host' })
         }
 
-
-
-    }catch (error) {
-        console.error('Could not add an image:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
-      }
     })
 
 
