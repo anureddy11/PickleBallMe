@@ -380,7 +380,63 @@ router.post('/:eventId/images',requireAuth, async(req,res,next) =>{
 
 //Get all Events
 router.get('/', async(req,res,next) => {
+
+    //pagination section
+
+    let {page,size,name,type,startDate} = req.query
+    console.log(req)
+    // console.log(page,size,name,type,startDate)
+
+    if (isNaN(page) || page < 1) page = 1;
+    if (isNaN(size) || size < 1) size = 20;
+
+    if (size > 10) size = 20;
+
+    const where = {};
+    const pagination = {};
+    pagination.limit = size;
+    pagination.offset = size * (page - 1);
+
+    if (name && name !== '') {
+        where.name = name
+      } else if (name === '') {
+        res.status(400);
+        return res.json({
+          errors: [
+            { message: 'name filter should not be empty' }
+          ]
+        });
+      }
+
+      if (type && type !== '') {
+        where.type = type
+      } else if (type === '') {
+        res.status(400);
+        return res.json({
+          errors: [
+            { message: 'type filter should not be empty' }
+          ]
+        });
+      }
+
+      if (startDate && startDate !== '') {
+        where.startDate = startDate
+      } else if (startDate === '') {
+        res.status(400);
+        return res.json({
+          errors: [
+            { message: 'startDate filter should not be empty' }
+          ]
+        });
+      }
+
+      console.log(where)
+
+
+    //query
     const allEvents = await Event.findAll({
+        where,
+        ...pagination,
         include: [
             { model: User },
             { model: Group },
@@ -391,6 +447,7 @@ router.get('/', async(req,res,next) => {
             { model: Venue },
         ]
     })
+
 
     if (!allEvents) {
         return res.status(404).json({ error: 'Event not found' })
@@ -669,6 +726,8 @@ if (isCoHost || isOrganizer) {
         for (const key in updates) {
             eventToUpdate[key] = updates[key];
         }
+        //since formar of venueId is different addign this change manuallu
+        eventToUpdate["venue_id"]=updates["venueId"]
         await eventToUpdate.save();
 
        let output={
