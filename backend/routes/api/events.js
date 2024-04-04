@@ -311,58 +311,56 @@ router.get('/:eventId/attendees',async(req,res,next)=> {
 } )
 
 
-
 //** Event Images Sections
 //### Add an Image to an Event based on the Event's id
-router.post('/:eventId/images',requireAuth,checkGroup, async(req,res,next) =>{
+router.post('/:eventId/images',requireAuth, async(req,res,next) =>{
 
     const {eventId} =req.params
-    console.log(eventId,req.user.id)
+    const {eventImageData} = req.body;
 
-    //check if the user is attending the event
-    try {
-        // Check if the user is an attendee of the event
-        const attendee = await Attendee.findOne({
-            where: {
-                user_id: req.user.id,
-                event_id: eventId
-            }
-        });
+    console.log(eventImageData)
 
-        if (attendee) {
-            // If the user is an attendee, create a new event image
-            const eventImageData = req.body;
-            const newEventImage = await EventImages.create({
-                preview_image: eventImageData.preview,
-                image_url: eventImageData.url
-            });
-
-            // Respond with success message and the newly created event image
-            res.json({
-                status: "success",
-                message: "Successfully created new event image",
-                newEventImage
-            });
-        } else {
-            // If the user is not an attendee, respond with a message indicating so
-            return res.json({
-                message: "User is not an attendee of this event"
-            });
-        }
-    } catch (error) {
-          // Log the error for debugging purposes
-    console.error("Error creating event image:", error);
-
-    // Respond with a 500 status code and a detailed error message
-    res.status(500).json({
-        error: "An error occurred while creating the event image",
-        details: error.message // Include the error message for debugging
-    });
+    //find the event
+    const event = await Event.findByPk(eventId)
+    if(!event){
+        return res.status(404).json({ error: 'Event not found' });
     }
 
-    //add the image and return image data
+    //find group
+    const groupId= event.group_id
 
-    //throw error if the id is not linked to the event
+
+      // Check if the user has a membership
+      const membership = await Member.findOne({
+        where: {
+            user_id: req.user.id,
+            group_id: groupId
+        }
+    })
+    let membership_status =null
+    if(membership){
+        membership_status=membership.status
+    }
+
+
+    //check if attendee
+    const attendance = await Attendee.findAll({
+        where: { event_id: eventId }
+    })
+
+    if(attendance || membership_status ==="co-host" || membership_status ==="host"){
+        const newEventImage = await EventImages.create({
+
+                preview_image: eventImageData.preview,
+                image_url: eventImageData.url,
+                event_id:eventId
+
+            })
+        return res.status(200).res.json(newEventImage)
+    }else{
+        return res.status(403).json({ error: 'Not Authorized. Need to be attending or the host or the co-host' })
+    }
+
 
 })
 
@@ -374,24 +372,42 @@ router.get('/', async(req,res,next) => {
         include: [
             { model: User },
             { model: Group },
+            {
+                model: EventImages,
+                attributes: ['image_url']
+            },
             { model: Venue },
-
         ]
     })
 
-    console.log(allEvents)
+    if (!allEvents) {
+        return res.status(404).json({ error: 'Event not found' })
+    }
 
     //find each event
-    const eventArray = allEvents.map(event => ({
+    const Events= allEvents.map(event => ({
         id: event.id,
         name: event.name,
         venueId: event.venue_id,
         groupId: event.group_id,
         startDate: event.start_date,
         endDate: event.end_date,
-        previewImage: event.previewImage,
-        groupData:event.Group,
-        venueData:event.Venue,
+        previewImages: event.previewImage,
+        Group:{
+            id:event.Group.id,
+            name:event.Group.name,
+            city:event.Group.city,
+            State:event.Group.state
+            },
+        Venue:{
+            id:event.Venue.id,
+            city:event.Venue.city,
+            state:event.Venue.state
+
+        },
+        previewImages: event.EventImages[0].image_url,
+
+
 
         //find # of attendees
         numAttendees: event.Users.length
@@ -400,7 +416,7 @@ router.get('/', async(req,res,next) => {
     //find each event
     //for each event look up number of users through the attendess table
     //add numattendees key to the allEvents
-    return res.json({eventArray})
+    return res.json({Events})
 })
 
 //### Get details of an Event specified by its id
@@ -428,7 +444,39 @@ router.get("/:eventId", async(req,res,next)=>{
     // Add the calculated number of attendees to myEvent object
     myEvent.dataValues.numAttendees = numAttendees;
 
-    return res.json({myEvent})
+    const output= {
+        id: myEvent.id,
+        name: myEvent.name,
+        venueId: myEvent.venue_id,
+        groupId: myEvent.group_id,
+        startDate: myEvent.start_date,
+        endDate: myEvent.end_date,
+        Group:{
+            id:myEvent.Group.id,
+            name:myEvent.Group.name,
+            city:myEvent.Group.city,
+            State:myEvent.Group.state
+            },
+        Venue:{
+            id:myEvent.Venue.id,
+            city:myEvent.Venue.city,
+            state:myEvent.Venue.state
+
+        },
+        EventImages: myEvent.EventImages.map(image => ({
+            id: image.id,
+            url: image.image_url,
+            preview:image.preview_image
+        })),
+
+
+
+
+        //find # of attendees
+        numAttendees: myEvent.Users.length
+    }
+
+    return res.status(200).json(output)
 })
 
 

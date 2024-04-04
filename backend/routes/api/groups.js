@@ -5,7 +5,7 @@ const { check } = require('express-validator')
 const { handleValidationErrors } = require('../../utils/validation')
 
 const { setTokenCookie, requireAuth,requireOrgMemAuth,checkGroup,checkMember } = require('../../utils/auth')
-const { Group,User,GroupImage,Venue,Event,Attendee,Member} = require('../../db/models')
+const { Group,User,GroupImage,Venue,Event,Attendee,Member,EventImages} = require('../../db/models')
 const group = require('../../db/models/group')
 const { Model } = require('sequelize')
 const venue = require('../../db/models/venue')
@@ -214,37 +214,58 @@ router.get('/:groupId/events',checkGroup,async(req,res,next)=>{
         return res.status(404).json({ error: 'Group not found' })
     }
 
-    const eventData = await Event.findAll({
-        where: { group_id: groupId },
+    const allEvents = await Event.findAll({
+        where:{group_id:groupId},
         include: [
-            {
-                model: Venue
-            },
-            {
-                model: User,
-                attributes: []
-            }
-        ],
-        attributes: [
-            [sequelize.fn('COUNT', sequelize.col('Users.id')), 'numAttendees']
-        ],
-        group: ['Event.id', 'Venue.id'] // Grouping by Event and Venue to avoid duplications
+            { model: User },
+            { model: Group },
+            {model: EventImages},
+            { model: Venue },
+        ]
     })
 
 
-
-    if (!eventData) {
+    if (!allEvents) {
         return res.status(404).json({ error: 'Event not found' })
     }
 
-    return res.json({
-        status: "success",
-        eventData,
-    })
+    //find each event
+    const Events= allEvents.map(event => ({
+        id: event.id,
+        name: event.name,
+        venueId: event.venue_id,
+        groupId: event.group_id,
+        startDate: event.start_date,
+        endDate: event.end_date,
+        previewImages: event.previewImage,
+        Group:{
+            id:event.Group.id,
+            name:event.Group.name,
+            city:event.Group.city,
+            State:event.Group.state
+            },
+        Venue:{
+            id:event.Venue.id,
+            city:event.Venue.city,
+            state:event.Venue.state
+
+        },
+        previewImages: event.EventImages[0].image_url,
 
 
 
-        })
+        //find # of attendees
+        numAttendees: event.Users.length
+    }));
+
+    //find each event
+    //for each event look up number of users through the attendess table
+    //add numattendees key to the allEvents
+    return res.status(200).json({Events})
+
+
+
+})
 
 
 //### Create an Event for a Group specified by its id
@@ -265,14 +286,18 @@ router.post('/:groupId/events',requireAuth,checkGroup,async(req,res,next) => {
             group_id: groupId  // Group ID
         }
     })
+    if(!membership){
+        return res.status(403).json({ error: 'Not Authorized. You are not a member of group ' })
+    }
 
     //adding data to the events table
    if(isOrganizer || membership.status==='active'){
 
             //check if the venueId inserted has the group associated to it
             const insertedVenueId = newEventData.venueId
-            const venueDate = await Venue.findByPk(insertedVenueId)
-            if(venueDate.group_id!==groupId){
+            const venueData = await Venue.findByPk(insertedVenueId)
+
+            if(venueData.group_id!==Number(groupId)){
                 return res.status(404).json({ error: 'Venue is not associated with this group' })
             }
 
@@ -290,12 +315,9 @@ router.post('/:groupId/events',requireAuth,checkGroup,async(req,res,next) => {
                     start_date: newEventData.startDate,
                     end_date: newEventData.endDate
                 })
-
+                const {id,group_id,updatedAt,createdAt, ...output}=newEvent.toJSON()
                 // If event creation is successful, respond with success message
-                res.json({
-                    status: "success",
-                    message: `Successfully created new event for group ${groupId}`,
-                })
+                return res.status(200).json(output)
             } catch (error) {
                 // If an error occurs during event creation, log the error and respond with status code 400
                 console.error('Error creating event :', error)
@@ -319,10 +341,13 @@ router.post('/:groupId/events',requireAuth,checkGroup,async(req,res,next) => {
 router.get('/:groupId/venues',requireAuth,checkGroup, async(req,res,next) =>{
     try{
         const {groupId} = req.params
+
         const group= await Group.findByPk(groupId) // to check if the group exits
 
         //check if organizer
         const isOrganizer = group.organizer_id === req.user.id
+        console.log(isOrganizer)
+
 
         // Check if the user has a membership
         const membership = await Member.findOne({
@@ -331,12 +356,17 @@ router.get('/:groupId/venues',requireAuth,checkGroup, async(req,res,next) =>{
                 group_id: groupId
             }
         })
+        if(!membership){
+            return res.status(403).json({ error: 'Not Authorized. You are not a member of group ' })
+        }
+
 
 
         if(isOrganizer || membership.status==="co-host"){
                 const venues = await Venue.findAll(
                     {
-                        where:{group_id:groupId}
+                        where:{group_id:groupId},
+                        attributes:['id','group_id','address','city','state','lat','lng']
                     }
                 )
             return res.status(200).json({ venues })
@@ -392,14 +422,14 @@ router.post('/:groupId/venues',requireAuth,checkGroup,validateVenueCreation ,asy
                 group_id: groupId
             }
         })
+        if(!membership){
+            return res.status(403).json({ error: 'Not Authorized. You are not a member of group ' })
+        }
 
         if(isOrganizer || membership.status==="co-host"){
             const newVenue = await Venue.create({group_id:groupId, address:newVenueData.address, city:newVenueData.city, state:newVenueData.state, lat:newVenueData.lat, lng: newVenueData.lng,name:newVenueData.name})
-            res.json({
-                status: "success",
-                message: "Successfully created new group",
-                newVenue
-            })
+            const { createdAt, updatedAt, ...venueWithoutTimestamps } = newVenue.toJSON();
+            return res.status(200).json(venueWithoutTimestamps)
         }else{
             return res.status(403).json({ error: 'Not Authorized. Need to be the organizer or the co-host' })
         }
