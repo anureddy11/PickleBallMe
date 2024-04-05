@@ -850,8 +850,13 @@ router.get('/:id',async(req,res,next) =>{
             // Fetch the group with the given id
             const groupCheck = await Group.findByPk(id, {
                 include: [
-                    { model: GroupImage },
-                    { model: Venue }
+                    {
+                        model: GroupImage,
+                        attributes: ['id', 'image_url', 'preview_image'] // Attributes should be in quotes
+                    },
+                    {
+                        model: Venue
+                    }
                 ]
             });
 
