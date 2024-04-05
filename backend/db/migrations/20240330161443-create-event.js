@@ -25,7 +25,7 @@ module.exports = {
           model:'Groups',
           key:'id'
         },
-        onDelete:'Cascade'
+        onDelete:'CASCADE'
       },
       venue_id: {
         type: Sequelize.INTEGER,
@@ -34,7 +34,7 @@ module.exports = {
           model:'Venues',
           key:'id'
         },
-        onDelete:'Cascade'
+        onDelete:'CASCADE'
       },
       name: {
         type: Sequelize.STRING,
@@ -42,18 +42,18 @@ module.exports = {
       },
       type: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
       },
       price:{
         type:Sequelize.FLOAT,
         allowNull:true,
       },
       capacity:{
-        type:sequelize.INTEGER,
+        type: Sequelize.INTEGER,
         allowNull:true
       },
       description:{
-        type:sequelize.STRING,
+        type: Sequelize.STRING,
         allowNull:true
       },
       start_date: {
