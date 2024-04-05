@@ -469,8 +469,8 @@ router.get('/', async(req,res,next) => {
         name: event.name,
         venueId: event.venue_id,
         groupId: event.group_id,
-        startDate: event.start_date,
-        endDate: event.end_date,
+        startDate: new Date(event.start_date).toLocaleString(),
+        endDate: new Date(event.end_date).toLocaleString(),
         preview:event.preview_image,
         Group:{
             id:event.Group.id,
@@ -528,8 +528,8 @@ router.get("/:eventId", async(req,res,next)=>{
         name: myEvent.name,
         venueId: myEvent.venue_id,
         groupId: myEvent.group_id,
-        startDate: myEvent.start_date,
-        endDate: myEvent.end_date,
+        startDate: new Date(event.start_date).toLocaleString(),
+        endDate: new Date(event.end_date).toLocaleString(),
         Group:{
             id:myEvent.Group.id,
             name:myEvent.Group.name,

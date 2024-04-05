@@ -557,8 +557,8 @@ router.get('/',async(req,res) => {
 
         groups.forEach(group => {
            delete group.dataValues.Users
-           group.dataValues.createdAt = new Date(group.dataValues.createdAt).toLocaleDateString();
-           group.dataValues.updatedAt = new Date(group.dataValues.updatedAt).toLocaleDateString();
+           group.dataValues.createdAt = new Date(group.dataValues.createdAt).toLocaleString();
+           group.dataValues.updatedAt = new Date(group.dataValues.updatedAt).toLocaleString();
         });
 
     return res.json({groups})
@@ -623,8 +623,8 @@ router.put('/:groupId', requireAuth,checkGroup,validateGroupCreate,async(req,res
             await groupToUpdate.save()
 
             //date format change
-            groupToUpdate.dataValues.createdAt = new Date(groupToUpdate.dataValues.createdAt).toLocaleDateString();
-            groupToUpdate.dataValues.updatedAt = new Date(groupToUpdate.dataValues.updatedAt).toLocaleDateString();
+            groupToUpdate.dataValues.createdAt = new Date(groupToUpdate.dataValues.createdAt).toLocaleString();
+            groupToUpdate.dataValues.updatedAt = new Date(groupToUpdate.dataValues.updatedAt).toLocaleString();
 
             return res.status(200).json(
 
@@ -673,8 +673,8 @@ router.delete('/:groupId',requireAuth,checkGroup,async (req, res, next) => {
 
                 })
                  //date format change
-            groupToDelete.dataValues.createdAt = new Date(groupToDelete.dataValues.createdAt).toLocaleDateString();
-            groupToDelete.dataValues.updatedAt = new Date(groupToDelete.dataValues.updatedAt).toLocaleDateString();
+            groupToDelete.dataValues.createdAt = new Date(groupToDelete.dataValues.createdAt).toLocaleString();
+            groupToDelete.dataValues.updatedAt = new Date(groupToDelete.dataValues.updatedAt).toLocaleString();
 
             return res.json({
                     status: "200",
@@ -712,8 +712,8 @@ router.post('/',requireAuth, validateGroupCreate,async (req, res, next) => {
         });
 
         //date formatting
-        newGroup.dataValues.createdAt = new Date(newGroup.dataValues.createdAt).toLocaleDateString();
-        newGroup.dataValues.updatedAt = new Date(newGroup.dataValues.updatedAt).toLocaleDateString();
+        newGroup.dataValues.createdAt = new Date(newGroup.dataValues.createdAt).toLocaleString();
+        newGroup.dataValues.updatedAt = new Date(newGroup.dataValues.updatedAt).toLocaleString();
 
 
         return res.status(201).json(newGroup);
@@ -810,8 +810,8 @@ router.get('/current',requireAuth, async(req,res,next) =>{ //breaking because of
         }
 
         transformedGroups.forEach(group => {
-            group.dataValues.createdAt = new Date(group.dataValues.createdAt).toLocaleDateString();
-            group.dataValues.updatedAt = new Date(group.dataValues.updatedAt).toLocaleDateString();
+            group.dataValues.createdAt = new Date(group.dataValues.createdAt).toLocaleString();
+            group.dataValues.updatedAt = new Date(group.dataValues.updatedAt).toLocaleString();
          });
 
         res.json({Groups:transformedGroups})
