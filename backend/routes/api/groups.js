@@ -673,7 +673,7 @@ router.delete('/:groupId',requireAuth,checkGroup,async (req, res, next) => {
                 return res.json({
                     status: "200",
                     message: `Successfully deleted group`,
-                    groupToUpdate
+                    groupToDelete
                 })
         }else{
             return res.status(403).json({ error: 'Not Authorized. Need to be the organizer or the co-host' })
@@ -697,6 +697,14 @@ router.post('/',requireAuth, validateGroupCreate,async (req, res, next) => {
         const loggedUserId = req.user.id
         const group = req.body
         const newGroup = await Group.create({organizer_id:loggedUserId, name:group.name, about:group.about, type:group.type, private:group.private, city:group.city, state: group.state})
+
+        //adding the newly created user and group data to member table
+        await Member.create({
+            user_id: loggedUserId,
+            group_id: newGroup.id,
+            status: "Organizer"
+        });
+
         return res.status(201).json(newGroup);
     } catch(err) {
         next({
@@ -744,6 +752,8 @@ router.get('/current',requireAuth, async(req,res,next) =>{ //breaking because of
                 }
             ]
         });
+
+
         // Transform the groups to the desired format
         const transformedGroups = groups.map(group => {
             // Extracting group information
