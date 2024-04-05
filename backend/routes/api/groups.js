@@ -494,9 +494,12 @@ const validateVenueCreation = [
 
 router.post('/:groupId/venues',requireAuth,checkGroup,validateVenueCreation ,async(req,res) => {
 
-    try{
+
         const {groupId} = req.params
+
         const group= await Group.findByPk(groupId) // to check if the group exits
+
+        console.log(group)
         const  newVenueData = req.body
 
         //check if organizer
@@ -524,10 +527,7 @@ router.post('/:groupId/venues',requireAuth,checkGroup,validateVenueCreation ,asy
 
 
 
-    }catch{
-        console.error('Error creating venue :', error)
-        res.status(500).json({ message: 'Internal Server Error' })
-    }
+
 
 })
 
@@ -560,8 +560,6 @@ router.get('/',async(req,res) => {
            group.dataValues.createdAt = new Date(group.dataValues.createdAt).toLocaleDateString();
            group.dataValues.updatedAt = new Date(group.dataValues.updatedAt).toLocaleDateString();
         });
-
-        console.log(groups)
 
     return res.json({groups})
 })
@@ -624,6 +622,10 @@ router.put('/:groupId', requireAuth,checkGroup,validateGroupCreate,async(req,res
 
             await groupToUpdate.save()
 
+            //date format change
+            groupToUpdate.dataValues.createdAt = new Date(groupToUpdate.dataValues.createdAt).toLocaleDateString();
+            groupToUpdate.dataValues.updatedAt = new Date(groupToUpdate.dataValues.updatedAt).toLocaleDateString();
+
             return res.status(200).json(
 
                 groupToUpdate
@@ -670,10 +672,14 @@ router.delete('/:groupId',requireAuth,checkGroup,async (req, res, next) => {
                     }
 
                 })
-                return res.json({
+                 //date format change
+            groupToDelete.dataValues.createdAt = new Date(groupToDelete.dataValues.createdAt).toLocaleDateString();
+            groupToDelete.dataValues.updatedAt = new Date(groupToDelete.dataValues.updatedAt).toLocaleDateString();
+
+            return res.json({
                     status: "200",
                     message: `Successfully deleted group`,
-                    groupToDelete
+
                 })
         }else{
             return res.status(403).json({ error: 'Not Authorized. Need to be the organizer or the co-host' })
@@ -705,7 +711,14 @@ router.post('/',requireAuth, validateGroupCreate,async (req, res, next) => {
             status: "Organizer"
         });
 
+        //date formatting
+        newGroup.dataValues.createdAt = new Date(newGroup.dataValues.createdAt).toLocaleDateString();
+        newGroup.dataValues.updatedAt = new Date(newGroup.dataValues.updatedAt).toLocaleDateString();
+
+
         return res.status(201).json(newGroup);
+
+
     } catch(err) {
         next({
             status: 404,
@@ -796,6 +809,10 @@ router.get('/current',requireAuth, async(req,res,next) =>{ //breaking because of
             return res.status(404).json({ message: "No groups found for the user" });
         }
 
+        transformedGroups.forEach(group => {
+            group.dataValues.createdAt = new Date(group.dataValues.createdAt).toLocaleDateString();
+            group.dataValues.updatedAt = new Date(group.dataValues.updatedAt).toLocaleDateString();
+         });
 
         res.json({Groups:transformedGroups})
 
@@ -821,13 +838,22 @@ router.post('/:groupId/images', requireAuth, checkGroup, async (req, res, next) 
 
         // If organizerId matches userId, then add the image
         if (organizerId === userId) {
+
             const newGroupImage = await GroupImage.create({
                 preview_image: newGroupImageData.preview,
                 image_url: newGroupImageData.url,
                 group_id: groupId,
-            });
+            })
 
-            return res.status(201).json(newGroupImage);
+            //formating POJO to match output
+            output = newGroupImage.toJSON()
+            output_object = {
+                id:output.id,
+                preview:output.preview_image,
+                url:output.image_url
+            }
+
+            return res.status(201).json(output_object);
         } else {
             // Unauthorized access
             return res.status(403).json({
