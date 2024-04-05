@@ -67,13 +67,8 @@ router.post("/:eventId/attendance", requireAuth, async (req,res,next) => {
                     event_id:eventId,
                     status: "pending"
                 })
-                res.json({
-                    status: "success",
-                    message: "Pending Request",
-                    newAttendeeData
-                })
 
-            return res.status(200).json(newAttendeeData)
+            return res.status(201).json(newAttendeeData)
 
 
 })
@@ -368,7 +363,7 @@ router.post('/:eventId/images',requireAuth, async(req,res,next) =>{
             url:newEventImage.image_url,
             preview:newEventImage.preview_image
         }
-        return res.status(200).json(output)
+        return res.status(201).json(output)
     }else{
         return res.status(403).json({ error: 'Not Authorized. Need to be attending or the host or the co-host' })
     }

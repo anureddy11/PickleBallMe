@@ -161,7 +161,7 @@ router.post("/:groupId/membership", requireAuth,checkGroup, async (req,res,next)
             group_id:groupId,
             status: "pending"
         })
-        return res.status(200).json(newMemberData)
+        return res.status(201).json(newMemberData)
 
 
 
@@ -404,7 +404,7 @@ router.post('/:groupId/events',validateEventBody,requireAuth,checkGroup,async(re
                 })
                 const {id,group_id,updatedAt,createdAt, ...output}=newEvent.toJSON()
                 // If event creation is successful, respond with success message
-                return res.status(200).json(output)
+                return res.status(201).json(output)
             } catch (error) {
                 // If an error occurs during event creation, log the error and respond with status code 400
                 console.error('Error creating event :', error)
@@ -516,7 +516,7 @@ router.post('/:groupId/venues',requireAuth,checkGroup,validateVenueCreation ,asy
         if(isOrganizer || membership.status==="co-host"){
             const newVenue = await Venue.create({group_id:groupId, address:newVenueData.address, city:newVenueData.city, state:newVenueData.state, lat:newVenueData.lat, lng: newVenueData.lng,name:newVenueData.name})
             const { createdAt, updatedAt, ...venueWithoutTimestamps } = newVenue.toJSON();
-            return res.status(200).json(venueWithoutTimestamps)
+            return res.status(201).json(venueWithoutTimestamps)
         }else{
             return res.status(403).json({ error: 'Not Authorized. Need to be the organizer or the co-host' })
         }
@@ -827,7 +827,7 @@ router.post('/:groupId/images', requireAuth, checkGroup, async (req, res, next) 
                 group_id: groupId,
             });
 
-            return res.status(200).json(newGroupImage);
+            return res.status(201).json(newGroupImage);
         } else {
             // Unauthorized access
             return res.status(403).json({
