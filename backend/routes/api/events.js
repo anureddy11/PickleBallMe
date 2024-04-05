@@ -281,7 +281,7 @@ router.get('/:eventId/attendees',async(req,res,next)=> {
                     id: user.id,
                     firstName: user.firstName,
                     lastName: user.lastName,
-                    attendeStatus: {
+                    Attendance: {
                         status: user.Attendee.status
                     }
                 //else do not send member with pending status
