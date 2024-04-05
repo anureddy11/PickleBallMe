@@ -387,10 +387,25 @@ router.get('/', async(req,res,next) => {
     console.log(req)
     // console.log(page,size,name,type,startDate)
 
-    if (isNaN(page) || page < 1) page = 1;
-    if (isNaN(size) || size < 1) size = 20;
+    if (isNaN(page) || page < 1){
+        page = 1
+        errors: [
+            { message: 'Page must be greater than or equal to 1' }
+          ]
+    }
+    if (isNaN(size) || size < 1) {
+        size = 20;
+        errors: [
+            { message: 'Size must be between 1 and 20' }
+          ]
+    }
 
-    if (size > 10) size = 20;
+    if (size > 20) {
+        size = 20;
+        errors: [
+            { message: 'Size must be between 1 and 20' }
+          ]
+    }
 
     const where = {};
     const pagination = {};
