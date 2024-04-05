@@ -538,7 +538,7 @@ router.post('/:groupId/venues',requireAuth,checkGroup,validateVenueCreation ,asy
 
 //Groups Only Section
 //Returns all groups
-router.get('/',requireAuth,async(req,res) => {
+router.get('/',async(req,res) => {
 
     const groups = await Group.findAll({
 
