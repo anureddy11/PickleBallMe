@@ -55,10 +55,10 @@ router.post("/:eventId/attendance", requireAuth, async (req,res,next) => {
         });
 
         if (pendingRequest) {
-            res.status(400).json("Request Pending");
+            res.status(400).json({"message":"Request Pending"});
         }
         if (isAttendee) {
-            res.status(400).json("Already a member");
+            res.status(400).json({"message":"Already an attendee"});
         }
 
             //adding new attendee data
@@ -183,7 +183,7 @@ router.delete('/:eventId/attendance/:userId', requireAuth, async(req,res,next)=>
         })
 
         if (!attendeeToDelete) {
-            return res.status(404).json({ error: "Attendance between the user and the event does not exist" })
+            return res.status(404).json({ "message": "Attendance between the user and the event does not exist" })
         }
 
 
