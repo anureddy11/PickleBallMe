@@ -561,14 +561,11 @@ router.get('/',async(req,res) => {
         Groups.forEach(group => {
             group.dataValues.numMembers = group.dataValues.Users.length
             group.dataValues.previewImage = group.GroupImages.length > 0 ? group.GroupImages[0].preview_image : null
-            console.log( group.dataValues.previewImage)
-        });
+            delete group.dataValues.Users
+            group.dataValues.createdAt = new Date(group.dataValues.createdAt).toLocaleString();
+            group.dataValues.updatedAt = new Date(group.dataValues.updatedAt).toLocaleString();
+         });
 
-        Groups.forEach(group => {
-           delete group.dataValues.Users
-        //    group.dataValues.createdAt = new Date(group.dataValues.createdAt).toLocaleString();
-        //    group.dataValues.updatedAt = new Date(group.dataValues.updatedAt).toLocaleString();
-        });
 
     return res.json({Groups})
 })

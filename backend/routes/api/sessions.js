@@ -12,6 +12,8 @@ const router = express.Router();
 
 
 
+
+
 //middleware function to check if body has the correct credentials and password. This is used in the route handler right after
 const validateLogin = [
     check('credential')
