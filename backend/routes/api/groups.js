@@ -808,9 +808,15 @@ router.get('/current',requireAuth, async(req,res,next) =>{ //breaking because of
                     firstName: user.firstName,
                     lastName: user.lastName
                 };
-            })//not using this
+            })
 
-                        // Creating the transformed group object
+            //finding image url
+            let previewImage=null
+            if(group.dataValues.GroupImages[0].image_url){
+                 previewImage = group.dataValues.GroupImages[0].image_url
+            }
+
+
             return {
                 id,
                 organizerId,
@@ -823,7 +829,8 @@ router.get('/current',requireAuth, async(req,res,next) =>{ //breaking because of
                 createdAt,
                 updatedAt,
                 numMembers,
-                // Include other fields as needed, such as 'GroupImages', 'Venues', etc.
+                previewImage:previewImage
+
             };
         })
 
