@@ -35,26 +35,46 @@ const validateSignup = [
 
 router.post(
     '/',validateSignup,
-    async (req, res) => {
-      const { email, password, username,firstName,lastName } = req.body;
-      const hashedPassword = bcrypt.hashSync(password);
-      const user = await User.create({ firstName, lastName, email, username, hashedPassword });
 
-      const safeUser = {
-       id: user.id,
-        firstName:user.firstName,
-        lastName:user.lastName,
-        email: user.email,
-        username: user.username,
-      };
+          async (req, res) => {
+            try{
+            const { email, password, username,firstName,lastName } = req.body;
+            const hashedPassword = bcrypt.hashSync(password);
+            const user = await User.create({ firstName, lastName, email, username, hashedPassword });
 
-      await setTokenCookie(res, safeUser);
+            const safeUser = {
+            id: user.id,
+              firstName:user.firstName,
+              lastName:user.lastName,
+              email: user.email,
+              username: user.username,
+            };
 
-      return res.json({
-        user: safeUser
-      });
-    }
-  );
+            await setTokenCookie(res, safeUser);
+
+            return res.json({
+              user: safeUser
+            });
+          }catch (error) {
+          if (error.name === 'SequelizeUniqueConstraintError') {
+              const { fields } = error;
+              const errorMessage = {};
+              fields.forEach(field => {
+                  errorMessage[field] = `User with that ${field} already exists`;
+              });
+              return res.status(500).json({
+                  message: 'User already exists',
+                  errors: errorMessage
+              });
+          } else {
+              // Handle other errors
+              console.error(error);
+              return res.status(500).json({ message: 'Internal Server Error' });
+          }
+      }
+    })
+
+  ;
 
 
 module.exports = router
