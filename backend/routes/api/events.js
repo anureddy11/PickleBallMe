@@ -68,7 +68,14 @@ router.post("/:eventId/attendance", requireAuth, async (req,res,next) => {
                     status: "pending"
                 })
 
-            return res.status(201).json(newAttendeeData)
+        const newAttendeeDataForOutput = newAttendeeData.toJSON()
+
+        const respose ={
+            userId:newAttendeeDataForOutput.user_id,
+            status:newAttendeeDataForOutput.status
+        }
+
+            return res.status(201).json(respose)
 
 
 })
@@ -138,7 +145,6 @@ router.put('/:eventId/attendance', requireAuth, async(req,res,next) => {
                 // })
                 const output ={
                     id:attendanceToUpdate.id,
-                    eventId:attendanceToUpdate.event_id,
                     userId:attendanceToUpdate.user_id,
                     status:attendanceToUpdate.status
                 }

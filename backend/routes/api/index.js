@@ -55,15 +55,15 @@ router.post('/test', (req, res) => {
 
 
 
-// // Error handling middleware to remove stack
-// router.use((err, req, res, next) => {
-//   console.error(err); // Log the error for debugging purposes
+// Error handling middleware to remove stack
+router.use((err, req, res, next) => {
+  console.error(err); // Log the error for debugging purposes
 
-//   // Send response without stack trace
-//   res.status(err.status || 500).json({
-//       error: err
-//   });
-// });
+  // Send response without stack trace
+  res.status(err.status || 500).json({
+      error: err
+  });
+});
 
 
 
