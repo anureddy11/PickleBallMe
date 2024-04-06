@@ -463,6 +463,12 @@ router.get('/:groupId/venues',requireAuth,checkGroup, async(req,res,next) =>{
                         attributes:['id','group_id','address','city','state','lat','lng']
                     }
                 )
+
+                Venues.forEach(venue => {
+                    venue.dataValues.groupId = venue.dataValues.group_id;
+                    delete venue.dataValues.group_id;
+                });
+
             return res.status(200).json({ Venues })
             }else{
                 return res.status(403).json({ error: 'Not Authorized. Need to be the organizer or the co-host' })
@@ -631,6 +637,8 @@ router.put('/:groupId', requireAuth,checkGroup,validateGroupCreate,async(req,res
             await groupToUpdate.save()
 
             //date format change
+            groupToUpdate.dataValues.organizerId = groupToUpdate.dataValues.organizer_id
+            delete groupToUpdate.dataValues.organizer_id
             groupToUpdate.dataValues.createdAt = new Date(groupToUpdate.dataValues.createdAt).toLocaleString();
             groupToUpdate.dataValues.updatedAt = new Date(groupToUpdate.dataValues.updatedAt).toLocaleString();
 
