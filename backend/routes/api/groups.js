@@ -408,9 +408,13 @@ router.post('/:groupId/events',requireAuth,checkGroup,validateEventBody,async(re
                 const response = {
                     ...output,
                     venueId: newEvent.venue_id,
-                    groupId: parseInt(newEvent.group_id)
+                    groupId: parseInt(newEvent.group_id),
+                    starDate: new Date(newEvent.start_date).toLocaleString(),
+                    endDate: new Date(newEvent.end_date).toLocaleString(),
                 };
-                delete response.venue_id;
+                delete response.venue_id
+                delete response.start_date
+                delete response.end_date
                 return res.status(201).json(response)
             } catch (error) {
                 // If an error occurs during event creation, log the error and respond with status code 400
@@ -531,7 +535,11 @@ router.post('/:groupId/venues',requireAuth,checkGroup,validateVenueCreation ,asy
 
         if(isOrganizer || membership.status==="co-host"){
             const newVenue = await Venue.create({group_id:groupId, address:newVenueData.address, city:newVenueData.city, state:newVenueData.state, lat:newVenueData.lat, lng: newVenueData.lng,name:newVenueData.name})
+
+            newVenue.dataValues.groupId = newVenue.dataValues.group_id
+            this.deletenewVenue.dataValues.group_id
             const { createdAt, updatedAt, ...venueWithoutTimestamps } = newVenue.toJSON();
+
             return res.status(201).json(venueWithoutTimestamps)
         }else{
             return res.status(403).json({ error: 'Not Authorized. Need to be the organizer or the co-host' })
