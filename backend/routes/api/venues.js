@@ -43,13 +43,13 @@ router.put('/:venueId',requireAuth,validateVenueEdit, async(req,res,next) =>{
 
          //check if venue exist
        if(!venue){
-        return res.status(404).json("Venue does not exist")
+        return res.status(404).json({error:"Venue does not exist"})
        }
 
         //find group
        const group = await Group.findByPk(venue.group_id)
        if(!group){
-         return res.status(404).json("Group does not exist")
+         return res.status(404).json({error:"Group does not exist"})
        }
 
         //check if organizer
@@ -64,7 +64,7 @@ router.put('/:venueId',requireAuth,validateVenueEdit, async(req,res,next) =>{
         })
 
         if(!membership){
-            return res.status(404).json("membership does not exist")
+            return res.status(404).json({error:"membership does not exist"})
         }
 
         console.log(group.organizer_id,req.user.id,isOrganizer,membership.status)
@@ -74,8 +74,19 @@ router.put('/:venueId',requireAuth,validateVenueEdit, async(req,res,next) =>{
                 venue[key]=newVenueUpdates[key]
             }
             await venue.save()
-            const { createdAt, updatedAt, ...venueWithoutTimestamps } =venue.toJSON();
-            return res.status(200).json(venueWithoutTimestamps)
+            const { createdAt, updatedAt, ...venueWithoutTimestamps } = venue.toJSON();
+
+
+            venueWithoutTimestamps.groupId = venueWithoutTimestamps.group_id;
+            delete venueWithoutTimestamps.group_id
+            delete venueWithoutTimestamps.name
+
+            const response = {
+                ...venueWithoutTimestamps,
+                id: venueId,
+            };
+
+            return res.status(200).json(response);
         }else{
             return res.status(403).json({ error: 'Not Authorized. Need to be the organizer or the co-host' })
         }

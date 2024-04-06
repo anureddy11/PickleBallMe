@@ -53,7 +53,8 @@ router.delete('/:groupId/membership/:memberId',requireAuth,checkGroup,checkMembe
             await memberToDelete.destroy()
             return res.status(200).json( {"message": "Successfully deleted membership from group"})
      }else{
-        return res.status(404).json({"message":"No the host"})
+        return res.status(404).json({"message":"Not the host"})
+
      }
     })
 
@@ -351,7 +352,7 @@ const validateEventBody = [
 
 
 //### Create an Event for a Group specified by its id
-router.post('/:groupId/events',validateEventBody,requireAuth,checkGroup,async(req,res,next) => {
+router.post('/:groupId/events',requireAuth,checkGroup,validateEventBody,async(req,res,next) => {
     let newEventData = req.body
     const {groupId} = req.params
     console.log(groupId)
@@ -402,9 +403,15 @@ router.post('/:groupId/events',validateEventBody,requireAuth,checkGroup,async(re
                     start_date: newEventData.startDate,
                     end_date: newEventData.endDate
                 })
-                const {id,group_id,updatedAt,createdAt, ...output}=newEvent.toJSON()
+                const {group_id,updatedAt,createdAt, ...output}=newEvent.toJSON()
                 // If event creation is successful, respond with success message
-                return res.status(201).json(output)
+                const response = {
+                    ...output,
+                    venueId: newEvent.venue_id,
+                    groupId: parseInt(newEvent.group_id)
+                };
+                delete response.venue_id;
+                return res.status(201).json(response)
             } catch (error) {
                 // If an error occurs during event creation, log the error and respond with status code 400
                 console.error('Error creating event :', error)
@@ -537,31 +544,33 @@ router.post('/:groupId/venues',requireAuth,checkGroup,validateVenueCreation ,asy
 
 
 //Groups Only Section
-//Returns all groups
+//Get all groups
 router.get('/',async(req,res) => {
 
-    const groups = await Group.findAll({
+    const Groups = await Group.findAll({
 
         include: [{model:User},
             {
                 model: GroupImage,
-                attributes: ['image_url']
+                attributes: ['preview_image']
             }
     ]
 
     })
         // Add numMembers field to each group object
-        groups.forEach(group => {
-            group.dataValues.numMembers = group.dataValues.Users.length;
+        Groups.forEach(group => {
+            group.dataValues.numMembers = group.dataValues.Users.length
+            group.dataValues.previewImage = group.GroupImages.length > 0 ? group.GroupImages[0].preview_image : null
+            console.log( group.dataValues.previewImage)
         });
 
-        groups.forEach(group => {
+        Groups.forEach(group => {
            delete group.dataValues.Users
            group.dataValues.createdAt = new Date(group.dataValues.createdAt).toLocaleString();
            group.dataValues.updatedAt = new Date(group.dataValues.updatedAt).toLocaleString();
         });
 
-    return res.json({groups})
+    return res.json({Groups})
 })
 
 
