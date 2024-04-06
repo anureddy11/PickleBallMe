@@ -457,13 +457,13 @@ router.get('/:groupId/venues',requireAuth,checkGroup, async(req,res,next) =>{
 
 
         if(isOrganizer || membership.status==="co-host"){
-                const venues = await Venue.findAll(
+                const Venues = await Venue.findAll(
                     {
                         where:{group_id:groupId},
                         attributes:['id','group_id','address','city','state','lat','lng']
                     }
                 )
-            return res.status(200).json({ venues })
+            return res.status(200).json({ Venues })
             }else{
                 return res.status(403).json({ error: 'Not Authorized. Need to be the organizer or the co-host' })
             }
@@ -819,8 +819,8 @@ router.get('/current',requireAuth, async(req,res,next) =>{ //breaking because of
         }
 
         transformedGroups.forEach(group => {
-            group.dataValues.createdAt = new Date(group.dataValues.createdAt).toLocaleString();
-            group.dataValues.updatedAt = new Date(group.dataValues.updatedAt).toLocaleString();
+            group.createdAt = new Date(group.createdAt).toLocaleString();
+            group.updatedAt = new Date(group.updatedAt).toLocaleString();
          });
 
         res.json({Groups:transformedGroups})
@@ -854,7 +854,7 @@ router.post('/:groupId/images', requireAuth, checkGroup, async (req, res, next) 
                 group_id: groupId,
             })
 
-            //formating POJO to match output
+            //formating
             output = newGroupImage.toJSON()
             output_object = {
                 id:output.id,
@@ -890,14 +890,18 @@ router.get('/:id',async(req,res,next) =>{
                         attributes: ['id', 'image_url', 'preview_image'] // Attributes should be in quotes
                     },
                     {
-                        model: Venue
+                        model: Venue,
+                        attributes:['id','group_id','address','city','state','lat','lng']
+                    },
+                    {
+                        model:User
                     }
                 ]
             });
 
             // If group is not found, return 404 error
             if (!groupCheck) {
-                return res.status(404).json({ message: "Group not found" });
+                return res.status(404).json({ error:  "Group not found" });
             }
 
 
@@ -912,19 +916,48 @@ router.get('/:id',async(req,res,next) =>{
 
             // If organizer is not found, return 404 error
             if (!organizer) {
-                return res.status(404).json({ message: "Organizer not found" });
+                return res.status(404).json({ error: "Organizer not found" });
             }
 
             // Convert the Sequelize object to JSON format
             const group = groupCheck.toJSON();
+
+             // Add numMembers field to each group object
+            group.numMembers = groupCheck.Users.length;
+            delete group.Users;
+
+
+
+
 
 
 
             // Add the organizer's information to the group object
             group.Organizer = organizer;
 
+            const response = {
+                id: group.id,
+                organizerId: organizer.id,
+                name: group.name,
+                about: group.about,
+                type: group.type,
+                private: group.private,
+                city: group.city,
+                state: group.state,
+                createdAt: new Date(group.createdAt).toLocaleString(),
+                updatedAt: new Date(group.updatedAt).toLocaleString(),
+                numMembers: group.numMembers,
+                GroupImages: group.GroupImages,
+                Organizer: {
+                    id: organizer.id,
+                    firstName: organizer.firstName,
+                    lastName: organizer.lastName
+                },
+                Venues: group.Venues
+            };
+
             // Respond with the group object
-            return res.status(200).json(group);
+            return res.status(200).json(response);
 
 
 

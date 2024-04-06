@@ -29,6 +29,8 @@ router.post('/test', function(req, res) {
 //     return res.json({ user: user });
 //     });
 
+
+
 router.use(restoreUser);
 
 router.use(handleValidationErrors);
@@ -50,6 +52,21 @@ router.use('/group-images', groupImagesRouter)
 router.post('/test', (req, res) => {
   res.json({ requestBody: req.body });
 });
+
+
+// Error handling middleware to remove stack
+router.use((err, req, res, next) => {
+  console.error(err); // Log the error for debugging purposes
+
+  // Send response without stack trace
+  res.status(err.status || 500).json({
+      error: err
+  });
+});
+
+
+
+
 
 module.exports = router;
 
