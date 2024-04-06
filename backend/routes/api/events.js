@@ -467,6 +467,7 @@ router.get('/', async(req,res,next) => {
     const Events= allEvents.map(event => ({
         id: event.id,
         name: event.name,
+        price:event.price,
         venueId: event.venue_id,
         groupId: event.group_id,
         startDate: new Date(event.start_date).toLocaleString(),
@@ -513,6 +514,7 @@ router.get("/:eventId", async(req,res,next)=>{
         ]
     });
 
+
     if (!myEvent) {
         return res.status(404).json({ error: 'Event not found' });
     }
@@ -523,13 +525,15 @@ router.get("/:eventId", async(req,res,next)=>{
     // Add the calculated number of attendees to myEvent object
     myEvent.dataValues.numAttendees = numAttendees;
 
+
     const output= {
         id: myEvent.id,
         name: myEvent.name,
+        price: parseFloat((myEvent.price).toFixed(2)),
         venueId: myEvent.venue_id,
         groupId: myEvent.group_id,
-        startDate: new Date(event.start_date).toLocaleString(),
-        endDate: new Date(event.end_date).toLocaleString(),
+        startDate: new Date(myEvent.start_date).toLocaleString(),
+        endDate: new Date(myEvent.end_date).toLocaleString(),
         Group:{
             id:myEvent.Group.id,
             name:myEvent.Group.name,
@@ -554,6 +558,8 @@ router.get("/:eventId", async(req,res,next)=>{
         //find # of attendees
         numAttendees: myEvent.Users.length
     }
+
+    console.log(output)
 
     return res.status(200).json(output)
 })
@@ -645,7 +651,7 @@ const validateEventBody = [
         .withMessage('Capacity must be a positive integer'),
     check('price')
         .optional({ nullable: true })
-        .isFloat({ min: 0 })
+        .isFloat({ min: 1 })
         .withMessage('Price must be a positive number'),
     check('description')
         .notEmpty()

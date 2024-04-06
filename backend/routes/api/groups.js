@@ -566,8 +566,8 @@ router.get('/',async(req,res) => {
 
         Groups.forEach(group => {
            delete group.dataValues.Users
-           group.dataValues.createdAt = new Date(group.dataValues.createdAt).toLocaleString();
-           group.dataValues.updatedAt = new Date(group.dataValues.updatedAt).toLocaleString();
+        //    group.dataValues.createdAt = new Date(group.dataValues.createdAt).toLocaleString();
+        //    group.dataValues.updatedAt = new Date(group.dataValues.updatedAt).toLocaleString();
         });
 
     return res.json({Groups})
