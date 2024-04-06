@@ -149,10 +149,10 @@ router.post("/:groupId/membership", requireAuth,checkGroup, async (req,res,next)
         });
 
         if (pendingRequest) {
-            res.status(400).json("Request Pending");
+            res.status(400).json({"message":"Request Pending"});
         }
         if (isMember) {
-            res.status(400).json("Already a member");
+            res.status(400).json({"message":"Already a member"});
         }
 
 
@@ -215,7 +215,7 @@ router.put('/:groupId/membership', requireAuth,checkGroup, async(req,res,next) =
 
                 memberToUpdate.status = 'co-host'
                 await memberToUpdate.save()
-                res.status(200).json("Membership successfully updated")
+                res.status(200).json({"message":"Membership successfully updated"})
 
             }else{
                 res.status(404).json("Not Authorized. Current User must already be the organizer ")
@@ -225,7 +225,7 @@ router.put('/:groupId/membership', requireAuth,checkGroup, async(req,res,next) =
             if(membership_status==="co-host" || isOrganizer){
                 memberToUpdate.status = 'member'
                 await memberToUpdate.save()
-                res.status(200).json("Membership successfully updated")
+                res.status(200).json({"message":"Membership successfully updated"})
             }else{
                 res.status(404).json("Not Authorized. Current User must already be the organizer or the co-host ")
             }
@@ -872,7 +872,7 @@ router.post('/:groupId/images', requireAuth, checkGroup, async (req, res, next) 
         }
     } catch (error) {
         console.error('Could not add an image:', error);
-        res.status(500).json({ message: 'Could not add an image' });
+        res.status(500).json({ error: 'Could not add an image' });
     }
 });
 

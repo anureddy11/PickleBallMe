@@ -151,7 +151,7 @@ router.put('/:eventId/attendance', requireAuth, async(req,res,next) => {
                 res.status(200).json(output)
 
             }else{
-                res.status(404).json("Not Authorized. Current User must already be the organizer or co-host ")
+                res.status(404).json({error:"Not Authorized. Current User must already be the organizer or co-host "})
             }
 
         } else if (status === 'pending') {
@@ -226,7 +226,7 @@ router.delete('/:eventId/attendance/:userId', requireAuth, async(req,res,next)=>
                   })
 
             }else{
-                res.status(404).json("Not Authorized. Current User must already be the organizer or host ")
+                res.status(404).json({error:"Not Authorized. Current User must already be the organizer or host "})
             }
 
 

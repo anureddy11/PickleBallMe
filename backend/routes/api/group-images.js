@@ -26,7 +26,7 @@ router.delete('/:groupImageId',requireAuth, async (req,res,next) =>{
     const groupImage = await GroupImage.findByPk(groupImageId)
 
     if(!groupImage){
-        res.status(404).json("Group Image not found")
+        res.status(404).json({Error:"Group Image not found"})
     }
 
     const groupId = groupImage.group_id
@@ -59,7 +59,7 @@ router.delete('/:groupImageId',requireAuth, async (req,res,next) =>{
           })
 
     }else{
-        res.status(404).json("Not Authorized. Current User must already be the organizer or host ")
+        res.status(404).json({Error:"Not Authorized. Current User must already be the organizer or host "})
     }
 
 
