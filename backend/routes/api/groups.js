@@ -149,10 +149,10 @@ router.post("/:groupId/membership", requireAuth,checkGroup, async (req,res,next)
         });
 
         if (pendingRequest) {
-            res.status(400).json({"message":"Request Pending"});
+            return res.status(400).json({"message":"Request Pending"});
         }
         if (isMember) {
-            res.status(400).json({"message":"Already a member"});
+            return res.status(400).json({"message":"Already a member"});
         }
 
 
