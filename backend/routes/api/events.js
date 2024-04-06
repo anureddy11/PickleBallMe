@@ -342,9 +342,9 @@ router.post('/:eventId/images',requireAuth, async(req,res,next) =>{
     if(attendance){
         attendance_status=attendance.toJSON().status
     }
+    console.log(attendance_status,membership_status)
 
-
-    if( attendance_status==="member"|| membership_status ==="co-host" || membership_status ==="host"){
+    if( attendance_status || membership_status ==="co-host" || membership_status ==="host"){
         const newEventImage = await EventImages.create({
 
                 preview_image: req.body.preview,
