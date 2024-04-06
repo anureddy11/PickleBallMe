@@ -560,8 +560,10 @@ router.get('/',async(req,res) => {
         // Add numMembers field to each group object
         Groups.forEach(group => {
             group.dataValues.numMembers = group.dataValues.Users.length
+            group.dataValues.organizerId = group.dataValues.organizer_id
             group.dataValues.previewImage = group.GroupImages.length > 0 ? group.GroupImages[0].preview_image : null
             delete group.dataValues.Users
+            delete group.dataValues.organizer_id
             group.dataValues.createdAt = new Date(group.dataValues.createdAt).toLocaleString();
             group.dataValues.updatedAt = new Date(group.dataValues.updatedAt).toLocaleString();
          });
@@ -631,6 +633,7 @@ router.put('/:groupId', requireAuth,checkGroup,validateGroupCreate,async(req,res
             //date format change
             groupToUpdate.dataValues.createdAt = new Date(groupToUpdate.dataValues.createdAt).toLocaleString();
             groupToUpdate.dataValues.updatedAt = new Date(groupToUpdate.dataValues.updatedAt).toLocaleString();
+
 
             return res.status(200).json(
 
