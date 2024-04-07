@@ -78,10 +78,14 @@ router.post(
 
 
             }else{
-
+                  const errorObject = error.errors
+                  const errorMessage = {};
+                errorObject.forEach(errorType =>{
+                  errorMessage["message"] = errorType.message
+                })
                   return res.status(500).json({
                     message: 'User already exists',
-                    errors: error
+                    errors: errorMessage
                 });
               }
 
