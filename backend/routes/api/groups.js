@@ -34,7 +34,8 @@ router.delete('/:groupId/membership/:memberId',requireAuth,checkGroup,checkMembe
     // // Find member
     const memberToDelete = await Member.findOne({
         where: {
-            id:memberId
+            user_id:memberId,
+            group_id:groupId
         }
     })
 
