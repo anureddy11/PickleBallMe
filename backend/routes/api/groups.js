@@ -53,7 +53,7 @@ router.delete('/:groupId/membership/:memberId',requireAuth,checkGroup,checkMembe
          membership_status = membership.status
      }
 
-     if(membership_status==="host"){
+     if(membership_status==="host" || memberToDelete.user_id===userId){
             await memberToDelete.destroy()
             return res.status(200).json( {"message": "Successfully deleted membership from group"})
      }else{
