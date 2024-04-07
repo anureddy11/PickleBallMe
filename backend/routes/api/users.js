@@ -1,11 +1,15 @@
 const express = require('express')
 const bcrypt = require('bcryptjs');
+const cors = require('cors');
 
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
 const { User } = require('../../db/models');
+
+const { environment } = require('../../config');
+const isProduction = environment === 'production';
 
 
 const router = express.Router()
@@ -61,21 +65,37 @@ router.post(
             });
           }catch (error) {
           if (error.name === 'SequelizeUniqueConstraintError') {
-              const { fields } = error;
-              const errorMessage = {};
+            if(!isProduction){
+                    const { fields } = error;
+                    const errorMessage = {};
+                    fields.forEach(field => {
+                        errorMessage[field] = `User with that ${field} already exists`;
+                    })
+                    return res.status(500).json({
+                      message: 'User already exists',
+                      errors: errorMessage
+            });
 
 
-              // Check if 'fields' exists and is an object before iterating over it
-            if (fields && typeof fields === 'object') {
-              Object.keys(fields.errors).forEach(field => {
-                  errorMessage["message"] = `${field.message} must be unique`;
-              });
-      }
+            }else{
+                    const { fields } = error;
+                     const errorMessage = {};
 
-              return res.status(500).json({
-                  message: 'User already exists',
-                  errors: errorMessage
-              });
+                  // Check if 'fields' exists and is an array before iterating over it
+                  if (Array.isArray(fields) && fields.length > 0) {
+                      fields.forEach(field => {
+                          errorMessage[field] = `User with that ${field} already exists`;
+                      });
+                  }
+
+        return res.status(500).json({
+            message: 'User already exists',
+            errors: errorMessage
+        });
+
+
+
+            }
           } else {
               // Handle other errors
               console.error(error);
