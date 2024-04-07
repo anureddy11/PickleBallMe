@@ -17,6 +17,9 @@ const member = require('../../db/models/member')
 
 const router = express.Router()
 
+const { environment } = require('../../config');
+const isProduction = environment === 'production';
+
 
 
 
@@ -536,11 +539,20 @@ router.post('/:groupId/venues',requireAuth,checkGroup,validateVenueCreation ,asy
         if(isOrganizer || membership.status==="co-host"){
             const newVenue = await Venue.create({group_id:groupId, address:newVenueData.address, city:newVenueData.city, state:newVenueData.state, lat:newVenueData.lat, lng: newVenueData.lng,name:newVenueData.name})
 
-            // newVenue.dataValues.groupId = newVenue.dataValues.group_id
-            // this.deletenewVenue.dataValues.group_id
+        if(!isProduction){
+            newVenue.dataValues.groupId = newVenue.dataValues.group_id
+            delete newVenue.dataValues.group_id
             const { createdAt, updatedAt, ...venueWithoutTimestamps } = newVenue.toJSON();
 
             return res.status(201).json(venueWithoutTimestamps)
+        }else{
+            console.log(newVenue)
+            newVenue.groupId = newVenue.group_id
+            delete newVenue.group_id
+            const { createdAt, updatedAt, ...venueWithoutTimestamps } = newVenue.toJSON();
+
+            return res.status(201).json(venueWithoutTimestamps)
+        }
         }else{
             return res.status(403).json({ error: 'Not Authorized. Need to be the organizer or the co-host' })
         }
