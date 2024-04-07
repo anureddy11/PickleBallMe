@@ -65,14 +65,16 @@ router.post(
               const errorMessage = {};
 
 
-              if (Array.isArray(fields) && fields.length > 0) {
-                fields.forEach(field => {
-                    errorMessage[field] = `User with that ${field} already exists`;
-                });
-            }
+              // Check if 'fields' exists and is an object before iterating over it
+            if (fields && typeof fields === 'object') {
+              Object.keys(fields).forEach(field => {
+                  errorMessage[field] = `${field} must be unique`;
+              });
+      }
+
               return res.status(500).json({
                   message: 'User already exists',
-                  errors: error
+                  errors: errorMessage
               });
           } else {
               // Handle other errors
