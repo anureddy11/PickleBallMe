@@ -84,6 +84,7 @@ app.use((err, _req, res, _next) => {
     res.status(err.status || 500);
     console.error(err);
     if(isProduction){
+      console.log(err)
       res.json({
         title: err.title || 'Server Error',
         message: err.message,

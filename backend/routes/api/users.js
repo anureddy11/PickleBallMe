@@ -63,9 +63,13 @@ router.post(
           if (error.name === 'SequelizeUniqueConstraintError') {
               const { fields } = error;
               const errorMessage = {};
-              fields.forEach(field => {
-                  errorMessage[field] = `User with that ${field} already exists`;
-              });
+
+              
+              if (Array.isArray(fields) && fields.length > 0) {
+                fields.forEach(field => {
+                    errorMessage[field] = `User with that ${field} already exists`;
+                });
+            }
               return res.status(500).json({
                   message: 'User already exists',
                   errors: errorMessage
