@@ -407,13 +407,8 @@ router.post('/:groupId/events',requireAuth,checkGroup,validateEventBody,async(re
                     end_date: newEventData.endDate
                 })
 
-                //Add the current user as the host to the attendee table
-                const newHost = await Attendee.create({
-                    user_id: req,user_id,
-                    event_id: newEvent.id,
-                    status:"host"
-                })
-                
+
+
                 const {group_id,updatedAt,createdAt, ...output}=newEvent.toJSON()
                 // If event creation is successful, respond with success message
                 const response = {
@@ -426,6 +421,15 @@ router.post('/:groupId/events',requireAuth,checkGroup,validateEventBody,async(re
                 delete response.venue_id
                 delete response.start_date
                 delete response.end_date
+
+                 //Add the current user as the host to the attendee table
+                 const newHost = await Attendee.create({
+                    user_id: req.user.id,
+                    event_id: response.id,
+                    status:"host"
+                })
+
+
                 return res.status(201).json(response)
             } catch (error) {
                 // If an error occurs during event creation, log the error and respond with status code 400
