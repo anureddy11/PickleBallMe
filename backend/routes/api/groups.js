@@ -201,7 +201,9 @@ router.put('/:groupId/membership', requireAuth,checkGroup, async(req,res,next) =
      // find the membership to update
      const memberToUpdate = await Member.findOne({
         where: {
-            user_id:memberId
+            user_id:memberId,
+            group_id: groupId
+
         }
     })
 
