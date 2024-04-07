@@ -64,7 +64,7 @@ router.post(
               const { fields } = error;
               const errorMessage = {};
 
-              
+
               if (Array.isArray(fields) && fields.length > 0) {
                 fields.forEach(field => {
                     errorMessage[field] = `User with that ${field} already exists`;
@@ -72,7 +72,7 @@ router.post(
             }
               return res.status(500).json({
                   message: 'User already exists',
-                  errors: errorMessage
+                  errors: error
               });
           } else {
               // Handle other errors
