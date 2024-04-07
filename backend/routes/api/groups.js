@@ -536,8 +536,8 @@ router.post('/:groupId/venues',requireAuth,checkGroup,validateVenueCreation ,asy
         if(isOrganizer || membership.status==="co-host"){
             const newVenue = await Venue.create({group_id:groupId, address:newVenueData.address, city:newVenueData.city, state:newVenueData.state, lat:newVenueData.lat, lng: newVenueData.lng,name:newVenueData.name})
 
-            newVenue.dataValues.groupId = newVenue.dataValues.group_id
-            this.deletenewVenue.dataValues.group_id
+            // newVenue.dataValues.groupId = newVenue.dataValues.group_id
+            // this.deletenewVenue.dataValues.group_id
             const { createdAt, updatedAt, ...venueWithoutTimestamps } = newVenue.toJSON();
 
             return res.status(201).json(venueWithoutTimestamps)
