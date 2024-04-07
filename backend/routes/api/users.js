@@ -67,8 +67,8 @@ router.post(
 
               // Check if 'fields' exists and is an object before iterating over it
             if (fields && typeof fields === 'object') {
-              Object.keys(fields).forEach(field => {
-                  errorMessage[field] = `${field} must be unique`;
+              Object.keys(fields.errors).forEach(field => {
+                  errorMessage["message"] = `${field.message} must be unique`;
               });
       }
 
