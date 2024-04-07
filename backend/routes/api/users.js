@@ -65,6 +65,8 @@ router.post(
             });
           }catch (error) {
           if (error.name === 'SequelizeUniqueConstraintError') {
+
+            //if not in production
             if(!isProduction){
                     const { fields } = error;
                     const errorMessage = {};

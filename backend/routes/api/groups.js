@@ -844,6 +844,7 @@ router.get('/current',requireAuth, async(req,res,next) =>{ //breaking because of
         transformedGroups.forEach(group => {
             group.createdAt = new Date(group.createdAt).toLocaleString();
             group.updatedAt = new Date(group.updatedAt).toLocaleString();
+            delete group.GroupImage
          });
 
         res.json({Groups:transformedGroups})
