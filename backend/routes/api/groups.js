@@ -604,6 +604,7 @@ router.get('/',async(req,res) => {
             group.dataValues.organizerId = group.dataValues.organizer_id
             group.dataValues.previewImage = group.GroupImages.length > 0 ? group.GroupImages[0].preview_image : null
             delete group.dataValues.Users
+            delete group.dataValues.GroupImages
             delete group.dataValues.organizer_id
             group.dataValues.createdAt = new Date(group.dataValues.createdAt).toLocaleString();
             group.dataValues.updatedAt = new Date(group.dataValues.updatedAt).toLocaleString();
@@ -848,10 +849,10 @@ router.get('/current',requireAuth, async(req,res,next) =>{ //breaking because of
             })
 
             //finding image url
-            let previewImage=null
-            if(group.dataValues.GroupImages[0].image_url){
-                 previewImage = group.dataValues.GroupImages[0].image_url
-            }
+            let previewImage = null;
+                if (group.GroupImages.length > 0) {
+                    previewImage = group.GroupImages[0].image_url;
+                }
 
 
             return {
@@ -866,7 +867,7 @@ router.get('/current',requireAuth, async(req,res,next) =>{ //breaking because of
                 createdAt,
                 updatedAt,
                 numMembers,
-                previewImage:previewImage
+                previewImage
 
             };
         })
