@@ -263,7 +263,6 @@ router.get('/:eventId/attendees',async(req,res,next)=> {
             {model:User}
         ]
     })
-    console.log(attendeeData.toJSON())
 
 
     //selecting the fields as per the readme docs
