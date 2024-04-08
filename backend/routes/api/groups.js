@@ -569,7 +569,7 @@ router.post('/:groupId/venues',requireAuth,checkGroup,validateVenueCreation ,asy
             console.log(newVenue)
             newVenue.dataValues.groupId = Number(groupId)
             delete newVenue.organizer_id
-            delete newVenue.group_id
+            delete newVenue.dataValues.group_id
             const { createdAt, updatedAt, ...venueWithoutTimestamps } = newVenue.toJSON();
 
             return res.status(201).json(venueWithoutTimestamps)
