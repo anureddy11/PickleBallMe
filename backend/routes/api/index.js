@@ -50,7 +50,7 @@ router.use('/event-images', eventImagesRouter)
 router.use('/group-images', groupImagesRouter)
 
 // Catch-all route (fallback)
-router.use('/', async (req, res, next) => {
+router.use('/home', async (req, res, next) => {
   res.status(200).json({ "Message": "Welcome to Anurag's first application" });
 });
 
