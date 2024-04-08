@@ -166,7 +166,12 @@ router.post("/:groupId/membership", requireAuth,checkGroup, async (req,res,next)
             group_id:groupId,
             status: "pending"
         })
-        return res.status(201).json(newMemberData)
+
+        const response = {
+            memberId: newMemberData.dataValues.user_id, 
+            status: newMemberData.dataValues.status
+        };
+        return res.status(201).json(response)
 
 
 

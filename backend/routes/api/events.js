@@ -486,7 +486,6 @@ router.get('/', async(req,res,next) => {
         //find # of attendees
         numAttendees: event.Users.length
     }));
-
     //find each event
     //for each event look up number of users through the attendess table
     //add numattendees key to the allEvents
