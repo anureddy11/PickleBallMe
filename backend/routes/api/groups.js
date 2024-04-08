@@ -168,7 +168,7 @@ router.post("/:groupId/membership", requireAuth,checkGroup, async (req,res,next)
         })
 
         const response = {
-            memberId: newMemberData.dataValues.user_id, 
+            memberId: newMemberData.dataValues.user_id,
             status: newMemberData.dataValues.status
         };
         return res.status(201).json(response)
@@ -567,8 +567,9 @@ router.post('/:groupId/venues',requireAuth,checkGroup,validateVenueCreation ,asy
             return res.status(201).json(venueWithoutTimestamps)
         }else{
             console.log(newVenue)
-            newVenue.dataValues.groupId = groupId
+            newVenue.dataValues.groupId = Number(groupId)
             delete newVenue.organizer_id
+            delete newVenue.group_id
             const { createdAt, updatedAt, ...venueWithoutTimestamps } = newVenue.toJSON();
 
             return res.status(201).json(venueWithoutTimestamps)
