@@ -593,7 +593,7 @@ router.get('/',async(req,res) => {
         include: [{model:User},
             {
                 model: GroupImage,
-                attributes: ['preview_image']
+                attributes: ['preview_image','image_url']
             }
     ]
 
@@ -602,7 +602,12 @@ router.get('/',async(req,res) => {
         Groups.forEach(group => {
             group.dataValues.numMembers = group.dataValues.Users.length
             group.dataValues.organizerId = group.dataValues.organizer_id
-            group.dataValues.previewImage = group.GroupImages.length > 0 ? group.GroupImages[0].preview_image : null
+             //finding image url
+             let previewImage = null;
+             if (group.GroupImages.length > 0) {
+                 previewImage = group.GroupImages[0].image_url;
+             }
+             group.dataValues.previewImage=previewImage
             delete group.dataValues.Users
             delete group.dataValues.GroupImages
             delete group.dataValues.organizer_id
