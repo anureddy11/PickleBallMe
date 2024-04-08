@@ -49,9 +49,10 @@ router.use('/event-images', eventImagesRouter)
 
 router.use('/group-images', groupImagesRouter)
 
-router.use('', async(req,res,next) =>{
-  res.status(200).json({"Message":"Welcome to Anurag's first application"})
-})
+// Catch-all route (fallback)
+router.use('/', async (req, res, next) => {
+  res.status(200).json({ "Message": "Welcome to Anurag's first application" });
+});
 
 router.post('/test', (req, res) => {
   res.json({ requestBody: req.body });
