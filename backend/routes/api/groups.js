@@ -614,10 +614,13 @@ router.get('/',async(req,res) => {
 })
 
 
+
+
 const validateGroupCreate = [
     check('name')
         .exists().withMessage('Group name is required')
         .notEmpty().withMessage('Group name cannot be empty')
+        .isLength({ max: 6 }).withMessage('Group name cannot be more than 6 characters')
         .custom(async (value, { req }) => {
             // Perform a query to check if a group with the same name exists
             const existingGroup = await Group.findOne({
@@ -638,7 +641,13 @@ const validateGroupCreate = [
         .exists().withMessage('Private status is required')
         .isBoolean().withMessage('Private status must be a boolean value')
         .notEmpty().withMessage('Private status cannot be empty'),
-        handleValidationErrors
+    check('city')
+        .exists().withMessage("City must exist")
+        .notEmpty().withMessage('City cannot be empty'),
+    check('state')
+        .exists().withMessage("State must exist")
+        .notEmpty().withMessage('State cannot be empty'),
+    handleValidationErrors
 ];
 
 //Edit a group
@@ -767,7 +776,8 @@ router.post('/',requireAuth, validateGroupCreate,async (req, res, next) => {
         newGroup.dataValues.createdAt = new Date(newGroup.dataValues.createdAt).toLocaleString();
         newGroup.dataValues.updatedAt = new Date(newGroup.dataValues.updatedAt).toLocaleString();
 
-
+        newGroup.dataValues.organizerId = loggedUserId
+        delete newGroup.dataValues.organizer_id
         return res.status(201).json(newGroup);
 
 
