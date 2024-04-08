@@ -386,7 +386,7 @@ router.post('/:groupId/events',requireAuth,checkGroup,validateEventBody,async(re
     }
 
     //adding data to the events table
-   if(isOrganizer || membership.status==='active'){
+   if(isOrganizer || membership.status==='co-host'){
 
             //check if the venueId inserted has the group associated to it
             const insertedVenueId = newEventData.venueId
