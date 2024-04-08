@@ -621,7 +621,7 @@ const validateGroupCreate = [
     check('name')
         .exists().withMessage('Group name is required')
         .notEmpty().withMessage('Group name cannot be empty')
-        .isLength({ max: 6 }).withMessage('Group name cannot be more than 6 characters')
+        .isLength({ max: 60 }).withMessage('Group name cannot be more than 6 characters')
         .custom(async (value, { req }) => {
             // Perform a query to check if a group with the same name exists
             const existingGroup = await Group.findOne({
