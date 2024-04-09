@@ -26,7 +26,7 @@ router.delete('/:groupImageId',requireAuth, async (req,res,next) =>{
     const groupImage = await GroupImage.findByPk(groupImageId)
 
     if(!groupImage){
-        res.status(404).json({Error:"Group Image not found"})
+        res.status(404).json({"message":"Couldn't find an Image with the specified id"})
     }
 
     const groupId = groupImage.group_id

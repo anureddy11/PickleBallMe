@@ -14,7 +14,6 @@ const router = express.Router()
 //**Attendees Section
 
 //Request to Attend an Event based on the Event's id
-//Question to Philip: Should we allow users to request attendance for the events which are part of groups that the user is not a member of?
 
 router.post("/:eventId/attendance", requireAuth, async (req,res,next) => {
     const {eventId} = req.params
@@ -107,7 +106,7 @@ router.put('/:eventId/attendance', requireAuth, async(req,res,next) => {
         })
 
         if (!attendanceToUpdate) {
-            return res.status(404).json({ error: "Attendance between the user and the event does not exist" })
+            return res.status(404).json({ "message": "Attendance between the user and the event does not exist" })
         }
 
 
@@ -310,7 +309,7 @@ router.post('/:eventId/images',requireAuth, async(req,res,next) =>{
     //find the event
     const event = await Event.findByPk(eventId)
     if(!event){
-        return res.status(404).json({ error: 'Event not found' });
+        return res.status(404).json({ "message": 'Event not found' });
     }
 
     //find group
@@ -358,7 +357,7 @@ router.post('/:eventId/images',requireAuth, async(req,res,next) =>{
         }
         return res.status(201).json(output)
     }else{
-        return res.status(403).json({ error: 'Not Authorized. Need to be attending or the host or the co-host' })
+        return res.status(403).json({ "message": 'Not Authorized. Need to be attending or the host or the co-host' })
     }
 
 
@@ -685,7 +684,7 @@ router.put('/:eventId',requireAuth, validateEventBody,async(req,res,next) =>{
     if (updates.venueId) {
           const venue = await Venue.findByPk(updates.venueId)
           if (!venue) {
-            return res.status(400).json({ error: 'Venue does not exist.' });
+            return res.status(400).json({ "message": 'Venue does not exist.' });
           }
     }
 
@@ -706,7 +705,7 @@ router.put('/:eventId',requireAuth, validateEventBody,async(req,res,next) =>{
     })
 
     if (!eventData) {
-        return res.status(404).json({ error: 'Event not found' });
+        return res.status(404).json({ "message": 'Event not found' });
     }
 
     //check if organizer
@@ -716,7 +715,7 @@ router.put('/:eventId',requireAuth, validateEventBody,async(req,res,next) =>{
     const users = eventData.Group.Users
     let isCohost
     for (let i=0;i<users.length;i++){
-        if(users[i].Member.user_id===userId && users[i].Member.status === 'active'){ //need to change active to cohost
+        if(users[i].Member.user_id===userId && users[i].Member.status === 'co-host'){ //need to change active to cohost
             isCoHost=true
 
         }
@@ -755,11 +754,11 @@ if (isCoHost || isOrganizer) {
 
         // Handle validation errors
         console.error( error);
-        return res.status(400).json({ error: 'Check your input data.' });
+        return res.status(400).json({ "message": 'Check your input data.' });
     }
 } else {
     // Return an error response if the user is not authorized
-    return res.status(403).json({ error: 'Not authorized. Only co-hosts or organizers can edit the event.' });
+    return res.status(403).json({ "message": 'Not authorized. Only co-hosts or organizers can edit the event.' });
 }
 
 })

@@ -25,7 +25,7 @@ router.delete('/:eventImageId',requireAuth, async (req,res,next) =>{
     const eventImage = await EventImages.findByPk(eventImageId)
 
     if(!eventImage){
-        res.status(404).json({Error:"Event Image not found"})
+        res.status(404).json({"message":"Event Image not found"})
     }
     const event_id = eventImage.dataValues.event_id
 
@@ -62,7 +62,7 @@ router.delete('/:eventImageId',requireAuth, async (req,res,next) =>{
           })
 
     }else{
-        res.status(404).json({Error:"Not Authorized. Current User must already be the organizer or host "})
+        res.status(404).json({"message":"Not Authorized. Current User must already be the organizer or host "})
     }
 
 

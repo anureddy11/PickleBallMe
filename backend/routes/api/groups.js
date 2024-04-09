@@ -529,7 +529,7 @@ const validateVenueCreation = [
     check('lng')
         .isFloat({ min: -180, max: 180 })
         .withMessage('Longitude must be within -180 and 180'),
-    handleValidationErrors // Include handleValidationErrors middleware
+    handleValidationErrors
 ];
 
 router.post('/:groupId/venues',requireAuth,checkGroup,validateVenueCreation ,async(req,res) => {
@@ -539,7 +539,7 @@ router.post('/:groupId/venues',requireAuth,checkGroup,validateVenueCreation ,asy
 
         const group= await Group.findByPk(groupId) // to check if the group exits
 
-        console.log(group)
+
         const  newVenueData = req.body
 
         //check if organizer
@@ -632,7 +632,7 @@ const validateGroupCreate = [
     check('name')
         .exists().withMessage('Group name is required')
         .notEmpty().withMessage('Group name cannot be empty')
-        .isLength({ max: 60 }).withMessage('Group name cannot be more than 6 characters')
+        .isLength({ max: 60 }).withMessage('Group name cannot be more than 60 characters')
         .custom(async (value, { req }) => {
             // Perform a query to check if a group with the same name exists
             const existingGroup = await Group.findOne({
@@ -960,7 +960,7 @@ router.get('/:id',async(req,res,next) =>{
                 include: [
                     {
                         model: GroupImage,
-                        attributes: ['id', 'image_url', 'preview_image'] // Attributes should be in quotes
+                        attributes: ['id', 'image_url', 'preview_image']
                     },
                     {
                         model: Venue,
@@ -974,7 +974,7 @@ router.get('/:id',async(req,res,next) =>{
 
             // If group is not found, return 404 error
             if (!groupCheck) {
-                return res.status(404).json({ error:  "Group not found" });
+                return res.status(404).json({ "message": "Group couldn't be found" });
             }
 
 

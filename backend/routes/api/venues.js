@@ -43,13 +43,13 @@ router.put('/:venueId',requireAuth,validateVenueEdit, async(req,res,next) =>{
 
          //check if venue exist
        if(!venue){
-        return res.status(404).json({error:"Venue does not exist"})
+        return res.status(404).json({"message":"Venue does not exist"})
        }
 
         //find group
        const group = await Group.findByPk(venue.group_id)
        if(!group){
-         return res.status(404).json({error:"Group does not exist"})
+         return res.status(404).json({"message": "Group couldn't be found"})
        }
 
         //check if organizer
@@ -64,7 +64,7 @@ router.put('/:venueId',requireAuth,validateVenueEdit, async(req,res,next) =>{
         })
 
         if(!membership){
-            return res.status(404).json({error:"membership does not exist"})
+            return res.status(404).json({"message":"membership does not exist"})
         }
 
         console.log(group.organizer_id,req.user.id,isOrganizer,membership.status)
