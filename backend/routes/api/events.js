@@ -583,7 +583,7 @@ router.delete('/:eventId',requireAuth, async(req,res,next) =>{
     })
 
     if (!eventData) {
-        return res.status(404).json({ error: 'Event not found' });
+        return res.status(404).json({ "message": 'Event not found' });
     }
 
     //check if organizer
@@ -593,7 +593,7 @@ router.delete('/:eventId',requireAuth, async(req,res,next) =>{
     const users = eventData.Group.Users
     let isCohost
     for (let i=0;i<users.length;i++){
-        if(users[i].Member.user_id===userId && users[i].Member.status === 'active'){ //need to change active to cohost
+        if(users[i].Member.user_id===userId && users[i].Member.status === 'co-host'){ //need to change active to cohost
             isCoHost=true
 
         }

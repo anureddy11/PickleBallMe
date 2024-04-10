@@ -648,11 +648,16 @@ const validateGroupCreate = [
         }),
     check('type')
         .exists().withMessage('Group type is required')
-        .notEmpty().withMessage('Group type cannot be empty'),
+        .notEmpty().withMessage('Group type cannot be empty')
+        .isIn(['Online', 'In person'])
+        .withMessage('Type must be either Online or In person'),
     check('private')
         .exists().withMessage('Private status is required')
         .isBoolean().withMessage('Private status must be a boolean value')
         .notEmpty().withMessage('Private status cannot be empty'),
+    check('about')
+        .notEmpty()
+        .withMessage('Description is required'),
     check('city')
         .exists().withMessage("City must exist")
         .notEmpty().withMessage('City cannot be empty'),
