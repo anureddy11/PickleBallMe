@@ -213,9 +213,8 @@ router.put('/:groupId/membership', requireAuth,checkGroup, async(req,res,next) =
         }
     })
 
-
     if (!memberToUpdate) {
-        return res.status(404).json({ error: "Membership between the user and the group does not exist" })
+        return res.status(404).json({ "message": "Membership between the user and the group does not exist" })
     }
 
     console.log(isOrganizer,membership_status,status)
@@ -229,7 +228,7 @@ router.put('/:groupId/membership', requireAuth,checkGroup, async(req,res,next) =
                 res.status(200).json({"message":"Membership successfully updated"})
 
             }else{
-                res.status(404).json("Not Authorized. Current User must already be the organizer ")
+                res.status(404).json({"message":"Not Authorized. Current User must already be the organizer "})
             }
 
         } else if (status === 'member') {
@@ -238,11 +237,11 @@ router.put('/:groupId/membership', requireAuth,checkGroup, async(req,res,next) =
                 await memberToUpdate.save()
                 res.status(200).json({"message":"Membership successfully updated"})
             }else{
-                res.status(404).json("Not Authorized. Current User must already be the organizer or the co-host ")
+                res.status(404).json({"message":"Not Authorized. Current User must already be the organizer or the co-host "})
             }
 
         } else {
-            return res.status(400).json({ error: 'Invalid memebership status' })
+            return res.status(400).json({ "message": 'Invalid memebership status' })
         }
 
 

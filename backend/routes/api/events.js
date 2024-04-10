@@ -19,9 +19,25 @@ router.post("/:eventId/attendance", requireAuth, async (req,res,next) => {
     const {eventId} = req.params
     const event = await Event.findByPk(eventId)
     const userId = req.user.id
+    console.log(event)
+    const groupId = event.dataValues.group_id
 
     if(!event){
         res.status(404).json({"message":"event not found"})
+    }
+
+        //check if the user is a member of the group
+         // find the membership to update
+        const memberToUpdate = await Member.findOne({
+            where: {
+                user_id:userId,
+                group_id: groupId
+
+            }
+        })
+
+    if (!memberToUpdate) {
+        return res.status(404).json({ "message": "Membership between the user and the group does not exist" })
     }
 
         //check if user already is an attendee
@@ -38,8 +54,12 @@ router.post("/:eventId/attendance", requireAuth, async (req,res,next) => {
             }]
         })
 
+
+
         let pendingRequest = false;
         let isAttendee = false;
+
+
 
         // Check if pending membership or already a member
         const checkAttendee = attendeeData.toJSON();
@@ -54,10 +74,10 @@ router.post("/:eventId/attendance", requireAuth, async (req,res,next) => {
         });
 
         if (pendingRequest) {
-            res.status(400).json({"message":"Request Pending"});
+            return res.status(400).json({"message":"Request Pending"});
         }
         if (isAttendee) {
-            res.status(400).json({"message":"Already an attendee"});
+            return res.status(400).json({"message":"Already an attendee"});
         }
 
             //adding new attendee data
@@ -92,12 +112,20 @@ router.put('/:eventId/attendance', requireAuth, async(req,res,next) => {
         res.status(404).json({"message": "Event couldn't be found"})
     }
 
+    // Check if the user exists
+    const user = await User.findByPk(userId)
+    if(!user){
+        res.status(404).json({"message": "User couldn't be found"})
+    }
+
 
     const groupId = event.group_id
+
     // Check if the group exists
     const group = await Group.findByPk(groupId)
+    console.log(group)
 
-        // find the membership to update
+        // find the attendance to update
         const attendanceToUpdate = await Attendee.findOne({
             where: {
                 user_id:userId,
@@ -149,7 +177,7 @@ router.put('/:eventId/attendance', requireAuth, async(req,res,next) => {
                 };
                 res.status(200).json(output);
             } else {
-                res.status(404).json({error: "Not Authorized. Current User must already be the organizer or co-host "});
+                res.status(404).json({"message": "Not Authorized. Current User must already be the organizer or co-host "});
         }
     }
 
@@ -160,6 +188,7 @@ router.put('/:eventId/attendance', requireAuth, async(req,res,next) => {
 router.delete('/:eventId/attendance/:userId', requireAuth, async(req,res,next)=>{
 
     const { eventId,userId } = req.params
+    console.log(req.params)
     const loggerUserId = req.user.id
 
     // Check if the event exists
@@ -168,18 +197,25 @@ router.delete('/:eventId/attendance/:userId', requireAuth, async(req,res,next)=>
         res.status(404).json({"message": "Event couldn't be found"})
     }
 
+     // Check if the user exists
+     const user = await User.findByPk(userId)
+     if(!user){
+         res.status(404).json({"message": "User couldn't be found"})
+     }
+
 
     const groupId = event.group_id
     // Check if the group exists
     const group = await Group.findByPk(groupId)
 
-        // find the membership to update
+        // find the attendece to update
         const attendeeToDelete = await Attendee.findOne({
             where: {
                 user_id:userId,
                 event_id: eventId
             }
         })
+
 
         if (!attendeeToDelete) {
             return res.status(404).json({ "message": "Attendance between the user and the event does not exist" })
@@ -188,7 +224,7 @@ router.delete('/:eventId/attendance/:userId', requireAuth, async(req,res,next)=>
 
     // Check if the user is the organizer
     const isOrganizer = group.organizer_id === loggerUserId
-    console.log(isOrganizer)
+
 
     // Check if the user has a membership
     let membership_status = null
@@ -206,7 +242,7 @@ router.delete('/:eventId/attendance/:userId', requireAuth, async(req,res,next)=>
 
 
     // Authorization logic
-            if(isOrganizer || membership_status==="host" || userId===loggerUserId){
+            if(membership_status==="host" || Number(userId)===Number(loggerUserId)){
                 await attendeeToDelete.destroy();
                 res.status(200).json({
                     "message": "Successfully deleted attendance from event"
