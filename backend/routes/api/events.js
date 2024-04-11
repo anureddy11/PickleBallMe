@@ -1,7 +1,7 @@
 const express = require('express')
 const bcrypt = require('bcryptjs');
 
-const { check } = require('express-validator');
+const { check,query,param } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
 
@@ -399,16 +399,25 @@ router.post('/:eventId/images',requireAuth, async(req,res,next) =>{
 
 })
 
+// Define validation rules for query params for events
+const validateQuery = [
+    query('page').optional().isInt({ min: 1 }).withMessage('Page must be greater than or equal to 1 and an integer'),
+    query('size').optional().isInt({ min: 1 }).withMessage('Size must be greater than or equal to 1 and an integer'),
+    query('name').optional().isString().withMessage('Name must be a string'),
+    query('type').optional().isIn(['Online', 'In Person']).withMessage("Type must be 'Online' or 'In Person'"),
+    query('startDate').optional().isISO8601().withMessage('Start date must be a valid datetime'),
+    handleValidationErrors
+  ];
+
 
 
 //Get all Events
-router.get('/', async(req,res,next) => {
+router.get('/', validateQuery,async(req,res,next) => {
 
     //pagination section
-
+    console.log(req.query)
     let {page,size,name,type,startDate} = req.query
-    console.log(req)
-    // console.log(page,size,name,type,startDate)
+
 
     if (isNaN(page) || page < 1){
         page = 1
