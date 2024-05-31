@@ -29,7 +29,7 @@ const validateSignup = [
     .not()
     .isEmail()
     .withMessage('Username cannot be an email.'),
-  check('firstName')
+    check('firstName')
     .exists({checkFalsy:true})
     .withMessage("First Name is required"),
    check('lastName')
