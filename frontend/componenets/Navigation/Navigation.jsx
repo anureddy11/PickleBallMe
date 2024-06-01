@@ -5,6 +5,7 @@ import OpenModalButton from '../OpenModalButton/OpenModalButton';
 import LoginFormModal from '../LoginFormModal/LoginFormModal';
 import './Navigation.css';
 import SignUpFormModal from '../SignUpFormModal/SignUpFormModal';
+import UserMenu from './UserMenu';
 
 function Navigation({ isLoaded }) {
     const sessionUser = useSelector((state) => state.session.user);
@@ -12,6 +13,7 @@ function Navigation({ isLoaded }) {
     const sessionLinks = sessionUser ? (
       <li>
         <ProfileButton user={sessionUser} />
+        <UserMenu user={sessionUser} />
       </li>
     ) : (
       <>
@@ -37,8 +39,12 @@ function Navigation({ isLoaded }) {
                 <li >
                 <NavLink to="/">Home</NavLink>
                 </li>
-                {isLoaded && sessionLinks}
             </ul>
+
+            <div >
+                {isLoaded && sessionLinks}
+             </div>
+
         </nav>
     );
   }

@@ -1,6 +1,6 @@
 // frontend/src/components/LoginFormModal/LoginFormModal.jsx
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as sessionActions from '../../src/store/session';
 import { useDispatch } from 'react-redux';
 import { useModal } from '../../src/Context/Modal';
@@ -10,7 +10,30 @@ function LoginFormModal() {
   const dispatch = useDispatch();
   const [credential, setCredential] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({});
+
+  //form validation for username>=4 and password>=6
+  const [errors, setErrors] = useState({
+    credential:'',
+    password: ''
+  });
+
+  useEffect(()=>{
+
+    const newErrors ={credential:'',password:''}
+    if(credential.length<4){
+      newErrors.credential = "Credential must be 4 or more charectors"
+    }else if(password.length<6){
+      newErrors.password = "Password must be 6 or more charectors"
+    }
+
+    setErrors(newErrors)
+
+  },[credential,password])
+
+  // console.log(errors)
+
+
+
   const { closeModal } = useModal();
 
   const handleSubmit = (e) => {
@@ -51,7 +74,12 @@ function LoginFormModal() {
         {errors.credential && (
           <p>{errors.credential}</p>
         )}
-        <button type="submit">Log In</button>
+        <button
+        type="submit"
+        disabled = {errors.credential || errors.password}
+        >
+
+          Log In</button>
       </form>
     </>
   );

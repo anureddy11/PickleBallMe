@@ -1,0 +1,57 @@
+.profile-button-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 80px;
+}/* Ensure the button container is above other elements */
+
+
+  .profile-button {
+    background: white;
+    border: none;
+    cursor: pointer;
+  }
+
+  .profile-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 80px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: none;
+    z-index: 2; /* Ensure the dropdown is above the navbar */
+  }
+
+  .profile-dropdown li {
+    color: black !important; 
+    padding: 10px;
+  }
+
+  .profile-dropdown li:hover {
+    background-color: #f0f0f0;
+  }
+
+  .profile-button-container:hover .profile-dropdown {
+    display: block;
+  }
+
+  .logout-button {
+    margin-top: 10px;
+    z-index: 3; /* Ensure the logout button is above the navbar */
+  }
+
+  .logout-button button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+  }
+
+  .logout-button button:hover {
+    text-decoration: underline;
+  }
