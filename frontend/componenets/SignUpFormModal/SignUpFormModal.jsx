@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import * as sessionActions from '../../src/store/session'
@@ -39,6 +39,31 @@ function SignUpFormModal() {
       confirmPassword: "Confirm Password field must be the same as the Password field"
     });
   };
+
+  useEffect(() => {
+    const newErrors ={ email:'', username:'', firstName:'', lastName:'', password:'', confirmPassword:''}
+
+    // Check for empty fields
+    const fields = { email, username, firstName, lastName, password, confirmPassword };
+    for (const [key, value] of Object.entries(fields)) {
+        if (value.length < 1) {
+            newErrors[key] = `${key} cannot be empty`;
+        }
+    }
+
+    // Additional validations only if the fields are not empty
+    if (email.length >= 1 && username.length >= 1 && firstName.length >= 1 && lastName.length >= 1 && password.length >= 1 && confirmPassword.length >= 1) {
+        if (username.length < 4) {
+            newErrors.username = "Username must be 4 or more characters";
+        }
+        if (password.length < 6) {
+            newErrors.password = "Password must be 6 or more characters";
+        }
+    }
+
+    setErrors(newErrors)
+
+  },[email,username,firstName,lastName,password,confirmPassword])
 
   return (
     <>
@@ -104,7 +129,10 @@ function SignUpFormModal() {
           />
         </label>
         {errors.confirmPassword && <p>{errors.confirmPassword}</p>}
-        <button type="submit">Sign Up</button>
+        <button
+        type="submit"
+        disabled = {errors.username || errors.firstName || errors.lastName || errors.password || errors.email || errors.confirmPassword}
+        >Sign Up</button>
       </form>
     </>
   );
