@@ -287,7 +287,7 @@ router.get('/:groupId/events',checkGroup,async(req,res,next)=>{
         groupId: event.group_id,
         startDate: event.start_date,
         endDate: event.end_date,
-        previewImages: event.previewImage,
+        previewImages: event.preview_image,
         Group:{
             id:event.Group.id,
             name:event.Group.name,
@@ -300,9 +300,6 @@ router.get('/:groupId/events',checkGroup,async(req,res,next)=>{
             state:event.Venue.state
 
         },
-
-
-
         //find # of attendees
         numAttendees: event.Users.length
     }));

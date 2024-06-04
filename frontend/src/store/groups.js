@@ -42,7 +42,7 @@ export const fetchGroupById = (groupId) => async (dispatch) => {
     });
 
     const data = await res.json();
-    console.log(data)
+    // console.log(data)
     dispatch(getGroupByid(data));
 };
 

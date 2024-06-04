@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import { fetchGroupById } from '../../src/store/groups';
+import EventsByGroupPage from "../EventsByGroupPage";
 
 const GroupDetailPage = () => {
     const dispatch = useDispatch();
@@ -11,7 +12,7 @@ const GroupDetailPage = () => {
 
     const [isLoaded, setIsLoaded] = useState(false);
 
-    console.log(currGroup)
+   const eventsArray = currGroup.Events
 
 
 
@@ -22,6 +23,9 @@ const GroupDetailPage = () => {
     return  isLoaded && currGroup ? (
         <div>
             <h1>{currGroup.name}</h1>
+            <div>
+                <NavLink to = '/groups'>Groups</NavLink>
+            </div>
             <div className="group-item">
                 <span>{currGroup.city}, {currGroup.state}</span><br />
                 {/* <span>Group Image: {currGroup[groupId].previewImage}</span><br /> */}
@@ -32,7 +36,11 @@ const GroupDetailPage = () => {
                 <span> {currGroup.private ? 'Private' : 'Public'}</span><br />
                 <span>Organized By:  </span>
                 <span>{currGroup.Organizer.firstName} </span>
-                <span>{currGroup.Organizer.lastName}</span>
+                <span>{currGroup.Organizer.lastName}</span><br/>
+                <span>{currGroup.about}</span><br/>
+            </div>
+            <div>
+                <EventsByGroupPage />
             </div>
         </div>
     ) : (
