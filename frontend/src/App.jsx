@@ -4,6 +4,9 @@ import { useDispatch } from 'react-redux';
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import Navigation from '../componenets/Navigation/Navigation';
 import * as sessionActions from './store/session';
+import SplashPage from '../Pages/SplashPage'
+import Groups from '../Pages/GroupsPage';
+import GroupsEventsLandingPage from '../componenets/Navigation/Groups-Events-LandingPage';
 
 function Layout() {
   const dispatch = useDispatch();
@@ -16,10 +19,10 @@ function Layout() {
   }, [dispatch]);
 
   return (
-    <>
-      <Navigation isLoaded={isLoaded} />
-      {isLoaded && <Outlet />}
-    </>
+    <div className="app-container">
+    <Navigation isLoaded={isLoaded} />
+    {isLoaded && <div className="content"><Outlet /></div>}
+  </div>
   );
 }
 
@@ -29,12 +32,17 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <h1>Welcome!</h1>
+        element: <SplashPage />
+      },
+      {
+        path:'/groups',
+        element:<Groups />
       },
       {
         path: '*',
         element: <h1>404 - Not Found</h1>
-      }
+      },
+
     ]
   }
 ]);

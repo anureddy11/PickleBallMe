@@ -599,6 +599,9 @@ router.get('/',async(req,res) => {
             {
                 model: GroupImage,
                 attributes: ['preview_image','image_url']
+            },
+            {
+                model: Event, // Include the Event model
             }
     ]
 
@@ -607,6 +610,7 @@ router.get('/',async(req,res) => {
         Groups.forEach(group => {
             group.dataValues.numMembers = group.dataValues.Users.length
             group.dataValues.organizerId = group.dataValues.organizer_id
+            group.dataValues.numEvents = group.dataValues.Events.length
              //finding image url
              let previewImage = null;
              if (group.GroupImages.length > 0) {

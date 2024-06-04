@@ -1,0 +1,19 @@
+.dot {
+    margin: 0 5px; /* Adjust margin as needed */
+    color: #000; /* Adjust color as needed */
+}
+
+.group-list li {
+    border-bottom: 1px solid #ccc; /* Adjust border properties as needed */
+    padding-bottom: 10px; /* Adjust padding as needed */
+    margin-bottom: 10px; /* Adjust margin as needed */
+}
+
+.group-item {
+    cursor: pointer;
+}
+
+.group-item:hover {
+    /* Optional: Change cursor style on hover */
+    cursor: pointer;
+}
