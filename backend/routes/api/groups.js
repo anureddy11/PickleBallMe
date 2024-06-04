@@ -976,7 +976,11 @@ router.get('/:id',async(req,res,next) =>{
                     },
                     {
                         model:User
+                    },
+                    {
+                        model:Event
                     }
+
                 ]
             });
 
@@ -1034,7 +1038,8 @@ router.get('/:id',async(req,res,next) =>{
                     firstName: organizer.firstName,
                     lastName: organizer.lastName
                 },
-                Venues: group.Venues
+                Venues: group.Venues,
+                Events: group.Events
             };
 
             // Respond with the group object

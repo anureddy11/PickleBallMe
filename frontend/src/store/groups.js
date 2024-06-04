@@ -1,6 +1,9 @@
 import { csrfFetch } from './csrf';
 
+
 const LOAD_GROUPS = "groups/LOAD_GROUPS";
+const LOAD_GROUP_BY_ID = "groups/LOAD_GROUP_BY_ID"
+
 
 export const getGroups = (groupsArray) => {
     return {
@@ -8,6 +11,14 @@ export const getGroups = (groupsArray) => {
         groupsArray
     };
 };
+
+export const getGroupByid = (group) => {
+    return {
+        type:LOAD_GROUP_BY_ID,
+        group
+    }
+}
+
 
 // Fetch request thunk for getting all groups
 export const fetchAllGroups = () => async (dispatch) => {
@@ -23,8 +34,22 @@ export const fetchAllGroups = () => async (dispatch) => {
     // console.log(data.Groups)
 };
 
+//Fetch a group by groupId
 
-const initialState = { groups: {} };
+export const fetchGroupById = (groupId) => async (dispatch) => {
+    const res = await csrfFetch(`/api/groups/${groupId}`, {
+        method: 'GET'
+    });
+
+    const data = await res.json();
+    console.log(data)
+    dispatch(getGroupByid(data));
+};
+
+
+
+
+const initialState = { groups: {}, currGroup : {} };
 
 const groupsReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -34,8 +59,15 @@ const groupsReducer = (state = initialState, action) => {
                 newGroups[group.id] = group;
             });
             return {
-                ...newGroups
+                ...newGroups,
+                currGroup :{}
             };
+        case LOAD_GROUP_BY_ID:
+            return {
+                    ...state,
+                    currGroup: action.group
+            };
+            ;
         default:
             return state;
     }
