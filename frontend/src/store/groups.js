@@ -67,7 +67,7 @@ const groupsReducer = (state = initialState, action) => {
                     ...state,
                     currGroup: action.group
             };
-            ;
+            
         default:
             return state;
     }

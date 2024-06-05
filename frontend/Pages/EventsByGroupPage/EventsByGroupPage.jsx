@@ -33,39 +33,36 @@ const EventsByGroupPage =() =>{
 
     return(
         <div>
-            <div>Upcoming Events: {upcomingEvents.length}
-                {upcomingEvents.map(event =>{
-                    return(
-                        <div>
-                            <ul>
-                            <span>PreviewImage: {event.previewImages}</span><br />
-                            <span>{event.startDate}</span><br />
-                            <span>{event.name}</span><br />
-                            <span>Location: {event.Venue.city}, {event.Venue.state} </span><br />
-                            </ul>
 
-                        </div>
-                    )
-                })}
-            </div><br />
+                    <div>
+                                <h2>Upcoming Events: {upcomingEvents.length}</h2>
+                                {upcomingEvents.map(event => (
+                                    <div key={event.id}>
+                                        <NavLink to={`/events/${event.id}`}>
+                                            <img src={event.previewImages} alt="Preview" /> <br />
+                                            <span>{event.startDate}</span> <br />
+                                            <span>{event.name}</span> <br />
+                                            <span>Location: {event.Venue.city}, {event.Venue.state}</span> <br />
+                                        </NavLink>
+                                    </div>
+                                ))}
+                    </div>
+
+                    <div>
+                            <h2>Past Due Events: {pastEvents.length}</h2>
+                            {pastEvents.map(event => (
+                                <div key={event.id}>
+                                    <NavLink to={`/events/${event.id}`}>
+                                        <img src={event.previewImages} alt="Preview" /> <br />
+                                        <span>{event.startDate}</span> <br />
+                                        <span>{event.name}</span> <br />
+                                        <span>Location: {event.Venue.city}, {event.Venue.state}</span> <br />
+                                    </NavLink><br />
+                                </div>
+                            ))}
+                    </div>
 
 
-
-            <div>Past Events: {pastEvents.length}
-            {pastEvents.map(event =>{
-                    return(
-                        <div>
-                            <ul>
-                            <span>PreviewImage: {event.previewImages}</span><br />
-                            <span>{event.startDate}</span><br />
-                            <span>{event.name}</span><br />
-                            <span>Location: {event.Venue.city}, {event.Venue.state} </span><br />
-                            </ul>
-
-                        </div>
-                    )
-                })}
-            </div>
 
         </div>
     )

@@ -2,6 +2,7 @@ import { csrfFetch } from './csrf';
 
 const LOAD_ALL_EVENTS = "events/LOAD_ALL_EVENTS";
 const LOAD_EVENTS_BY_GROUP_ID = "events/LOAD_EVENTS_BY_GROUP_ID";
+const LOAD_EVENT_BY_ID = "groups/LOAD_EVENT_BY_ID"
 
 // Action creator
 
@@ -19,6 +20,27 @@ export const getEventsByGroupId = (Events) => {
         Events
     }
 }
+
+export const getEventByid = (event) => {
+    return {
+        type:LOAD_EVENT_BY_ID,
+        event
+    }
+}
+
+//Fetch a event by eventId
+
+export const fetchEventById = (eventId) => async (dispatch) => {
+    const res = await csrfFetch(`/api/events/${eventId}`, {
+        method: 'GET'
+    });
+
+    const data = await res.json();
+    // console.log(data)
+    dispatch(getEventByid(data));
+};
+
+
 
 // Fetch events by groupId
 export const fetchEventsByGroupId = (groupId) => async (dispatch) => {
@@ -63,12 +85,17 @@ const eventsReducer = (state = initialState, action) => {
             action.eventsArray.forEach(event => {
                 newEvents[event.id] = event;
             });
+
             return {
                 ...state,
                 eventsList:newEvents,
-
-
             };
+
+        case LOAD_EVENT_BY_ID:
+                return {
+                        ...state,
+                        currEvent: action.event
+                };
         default:
             return state;
     }
