@@ -9,6 +9,7 @@ import Groups from '../Pages/GroupsPage';
 import GroupsEventsLandingPage from '../componenets/Navigation/Groups-Events-LandingPage';
 import GroupDetailPage from '../Pages/GroupDetailPage';
 import EventsByGroupPage from '../Pages/EventsByGroupPage';
+import EventsPage from '../Pages/EventsPage';
 
 function Layout() {
   const dispatch = useDispatch();
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
       {
         path: '/groups/:groupId/events',
         element: <EventsByGroupPage />
+      },
+      {
+        path: '/events',
+        element: <EventsPage />
       },
       {
         path: '*',

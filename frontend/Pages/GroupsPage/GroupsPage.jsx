@@ -7,8 +7,8 @@ import './GroupsPage'
 
 const Groups = () => {
     const dispatch = useDispatch();
-    const allGroups = useSelector((state) => state.groups);
-    console.log(allGroups)
+    const allGroups = useSelector((state) => state.groups.groupsList);
+    // console.log(allGroups)
 
     useEffect(() => {
         dispatch(fetchAllGroups());

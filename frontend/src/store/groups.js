@@ -49,7 +49,7 @@ export const fetchGroupById = (groupId) => async (dispatch) => {
 
 
 
-const initialState = { groups: {}, currGroup : {} };
+const initialState = { groupsList: {}, currGroup : {} };
 
 const groupsReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -59,7 +59,7 @@ const groupsReducer = (state = initialState, action) => {
                 newGroups[group.id] = group;
             });
             return {
-                ...newGroups,
+                groupsList:newGroups,
                 currGroup :{}
             };
         case LOAD_GROUP_BY_ID:

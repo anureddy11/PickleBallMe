@@ -10,7 +10,7 @@ function GroupsEventsLandingPage() {
                     <NavLink to = '/groups'>Groups</NavLink>
                 </div>
                 <div>
-                    <NavLink to = '/api/events'>Events</NavLink>
+                    <NavLink to = '/events'>Events</NavLink>
                 </div>
             </div>
     )

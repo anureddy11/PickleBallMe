@@ -20,12 +20,12 @@ const EventsByGroupPage =() =>{
 
     });
 
-    console.log(events.previewImages)
-    console.log(upcomingEvents)
-    console.log(pastEvents)
+    // console.log(events.previewImages)
+    // console.log(upcomingEvents)
+    // console.log(pastEvents)
 
 
-    const [isLoaded, setIsLoaded] = useState(false);
+    // const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect (() =>{
         dispatch(fetchEventsByGroupId(groupId))
@@ -37,15 +37,17 @@ const EventsByGroupPage =() =>{
                 {upcomingEvents.map(event =>{
                     return(
                         <div>
+                            <ul>
                             <span>PreviewImage: {event.previewImages}</span><br />
                             <span>{event.startDate}</span><br />
                             <span>{event.name}</span><br />
                             <span>Location: {event.Venue.city}, {event.Venue.state} </span><br />
+                            </ul>
 
                         </div>
                     )
                 })}
-            </div>
+            </div><br />
 
 
 
@@ -53,10 +55,12 @@ const EventsByGroupPage =() =>{
             {pastEvents.map(event =>{
                     return(
                         <div>
+                            <ul>
                             <span>PreviewImage: {event.previewImages}</span><br />
                             <span>{event.startDate}</span><br />
                             <span>{event.name}</span><br />
                             <span>Location: {event.Venue.city}, {event.Venue.state} </span><br />
+                            </ul>
 
                         </div>
                     )

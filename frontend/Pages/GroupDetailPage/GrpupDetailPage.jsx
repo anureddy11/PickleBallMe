@@ -7,12 +7,33 @@ import EventsByGroupPage from "../EventsByGroupPage";
 const GroupDetailPage = () => {
     const dispatch = useDispatch();
     const allGroups = useSelector((state) => state.groups.groups);
+    const sessionUser = useSelector((state) => state.session.user);
     const currGroup = useSelector((state) => state.groups.currGroup);
     const { groupId } = useParams();
 
     const [isLoaded, setIsLoaded] = useState(false);
 
-   const eventsArray = currGroup.Events
+
+    // functionality for join this group button
+    const isUserLoggedIn = !!sessionUser;
+    const isUserGroupCreator = isUserLoggedIn && sessionUser.id === currGroup.id;
+    const buttonStyle = isUserGroupCreator ? {} : { backgroundColor: 'red', color: 'white' };
+    const handleJoinThisGroupButtonClick = () =>{
+        alert('Feature coming soon');
+    }
+
+    //buttons if the sessionUser is the Organizer
+    const handleCreateEventClick = () => {
+        alert('Create event feature coming soon');
+    };
+
+    const handleUpdateGroupClick = () => {
+        alert('Update group feature coming soon');
+    };
+
+    const handleDeleteGroupClick = () => {
+        alert('Delete group feature coming soon');
+    };
 
 
 
@@ -38,10 +59,44 @@ const GroupDetailPage = () => {
                 <span>{currGroup.Organizer.firstName} </span>
                 <span>{currGroup.Organizer.lastName}</span><br/>
                 <span>{currGroup.about}</span><br/>
-            </div>
+            </div><br/>
+
             <div>
                 <EventsByGroupPage />
             </div>
+
+            <div>{(!isUserLoggedIn || isUserGroupCreator)? null :(
+                    <button
+                        style={buttonStyle}
+                        onClick={handleJoinThisGroupButtonClick}>
+                        Join this group
+                    </button>
+                )}
+            </div>
+
+            {isUserGroupCreator && (
+                <div>
+                    <button
+                        style={{ backgroundColor: 'darkgrey', color: 'white', marginRight: '10px' }}
+                        onClick={handleCreateEventClick}
+                    >
+                        Create event
+                    </button>
+                    <button
+                        style={{ backgroundColor: 'darkgrey', color: 'white', marginRight: '10px' }}
+                        onClick={handleUpdateGroupClick}
+                    >
+                        Update
+                    </button>
+                    <button
+                        style={{ backgroundColor: 'darkgrey', color: 'white' }}
+                        onClick={handleDeleteGroupClick}
+                    >
+                        Delete
+                    </button>
+                </div>
+            )}
+
         </div>
     ) : (
         <h1>Is loading</h1>
