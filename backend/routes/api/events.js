@@ -565,7 +565,11 @@ router.get("/:eventId", async(req,res,next)=>{
     const output= {
         id: myEvent.id,
         name: myEvent.name,
+        previewImage: myEvent.preview_image,
         price: parseFloat((myEvent.price).toFixed(2)),
+        about:myEvent.description,
+        capacity:myEvent.capacity,
+        type:myEvent.type,
         venueId: myEvent.venue_id,
         groupId: myEvent.group_id,
         startDate: new Date(myEvent.start_date).toLocaleString(),
@@ -574,7 +578,10 @@ router.get("/:eventId", async(req,res,next)=>{
             id:myEvent.Group.id,
             name:myEvent.Group.name,
             city:myEvent.Group.city,
-            State:myEvent.Group.state
+            State:myEvent.Group.state,
+            about:myEvent.Group.about,
+            type:myEvent.Group.private,
+
             },
         Venue:{
             id:myEvent.Venue.id,
