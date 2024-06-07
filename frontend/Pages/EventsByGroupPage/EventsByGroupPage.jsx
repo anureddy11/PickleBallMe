@@ -20,48 +20,47 @@ const EventsByGroupPage =() =>{
 
     });
 
-    // console.log(events.previewImages)
-    // console.log(upcomingEvents)
-    // console.log(pastEvents)
-
-
-    // const [isLoaded, setIsLoaded] = useState(false);
-
     useEffect (() =>{
         dispatch(fetchEventsByGroupId(groupId))
     },[dispatch,groupId])
 
-    return(
+  return(
         <div>
 
-                    <div>
-                                <h2>Upcoming Events: {upcomingEvents.length}</h2>
-                                {upcomingEvents.map(event => (
+            {upcomingEvents.length > 0 || pastEvents.length > 0 ? (
+                <>
+                        <div>
+                                    <h2>Upcoming Events: {upcomingEvents.length}</h2>
+                                    {upcomingEvents.map(event => (
+                                        <div key={event.id}>
+                                            <NavLink to={`/events/${event.id}`}>
+                                                <img src={event.previewImages} alt="Preview" /> <br />
+                                                <span>{event.startDate}</span> <br />
+                                                <span>{event.name}</span> <br />
+                                                <span>Location: {event.Venue.city}, {event.Venue.state}</span> <br />
+                                            </NavLink>
+                                        </div>
+                                    ))}
+                        </div>
+
+                        <div>
+                                <h2>Past Due Events: {pastEvents.length}</h2>
+                                {pastEvents.map(event => (
                                     <div key={event.id}>
                                         <NavLink to={`/events/${event.id}`}>
                                             <img src={event.previewImages} alt="Preview" /> <br />
                                             <span>{event.startDate}</span> <br />
                                             <span>{event.name}</span> <br />
                                             <span>Location: {event.Venue.city}, {event.Venue.state}</span> <br />
-                                        </NavLink>
+                                        </NavLink><br />
                                     </div>
                                 ))}
-                    </div>
-
-                    <div>
-                            <h2>Past Due Events: {pastEvents.length}</h2>
-                            {pastEvents.map(event => (
-                                <div key={event.id}>
-                                    <NavLink to={`/events/${event.id}`}>
-                                        <img src={event.previewImages} alt="Preview" /> <br />
-                                        <span>{event.startDate}</span> <br />
-                                        <span>{event.name}</span> <br />
-                                        <span>Location: {event.Venue.city}, {event.Venue.state}</span> <br />
-                                    </NavLink><br />
-                                </div>
-                            ))}
-                    </div>
-
+                        </div>
+                </>
+                ): (
+                <p>No Upcoming Events</p>
+            )
+            }
 
 
         </div>

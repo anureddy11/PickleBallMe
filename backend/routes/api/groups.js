@@ -408,7 +408,8 @@ router.post('/:groupId/events',requireAuth,checkGroup,validateEventBody,async(re
                     price: newEventData.price,
                     description: newEventData.description,
                     start_date: newEventData.startDate,
-                    end_date: newEventData.endDate
+                    end_date: newEventData.endDate,
+                    preview_image:newEventData.previewImage
                 })
 
 

@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { NavLink, useParams } from "react-router-dom";
 import { fetchGroupById } from '../../src/store/groups';
 import EventsByGroupPage from "../EventsByGroupPage";
+import { useNavigate } from "react-router-dom";
 
 const GroupDetailPage = () => {
     const dispatch = useDispatch();
@@ -10,6 +11,7 @@ const GroupDetailPage = () => {
     const sessionUser = useSelector((state) => state.session.user);
     const currGroup = useSelector((state) => state.groups.currGroup);
     const { groupId } = useParams();
+    const navigate = useNavigate();
 
     const [isLoaded, setIsLoaded] = useState(false);
 
@@ -24,7 +26,7 @@ const GroupDetailPage = () => {
 
     //buttons if the sessionUser is the Organizer
     const handleCreateEventClick = () => {
-        alert('Create event feature coming soon');
+        navigate(`/events/createEvent`)
     };
 
     const handleUpdateGroupClick = () => {

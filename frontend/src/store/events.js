@@ -3,6 +3,7 @@ import { csrfFetch } from './csrf';
 const LOAD_ALL_EVENTS = "events/LOAD_ALL_EVENTS";
 const LOAD_EVENTS_BY_GROUP_ID = "events/LOAD_EVENTS_BY_GROUP_ID";
 const LOAD_EVENT_BY_ID = "groups/LOAD_EVENT_BY_ID"
+const ADD_ONE = '/events/ADD_ONE'
 
 // Action creator
 
@@ -24,6 +25,13 @@ export const getEventsByGroupId = (Events) => {
 export const getEventByid = (event) => {
     return {
         type:LOAD_EVENT_BY_ID,
+        event
+    }
+}
+
+export const addEvent =(event) =>{
+    return {
+        type: ADD_ONE,
         event
     }
 }
@@ -66,6 +74,28 @@ export const fetchAllEvents = () => async (dispatch) => {
 
 };
 
+
+//Create an event
+export const createEvent = (payload,groupId) => async (dispatch) => {
+    console.log(JSON.stringify(payload))
+
+    const res = await csrfFetch (`/api/groups/${groupId}/events`, {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+    })
+
+    if (res.ok) {
+        const data = await res.json();
+        return data;
+    } else {
+        throw Error(res);
+    }
+}
+
+
 const initialState = { eventsList: {}, eventsByGroupId: {}, currEvent: {} };
 
 const eventsReducer = (state = initialState, action) => {
@@ -96,6 +126,11 @@ const eventsReducer = (state = initialState, action) => {
                         ...state,
                         currEvent: action.event
                 };
+        case ADD_ONE:
+                return{
+                    ...state,
+                    currEvent: action.event
+                }
         default:
             return state;
     }
