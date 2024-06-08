@@ -84,10 +84,10 @@ export const fetchGroupById = (groupId) => async (dispatch) => {
 
 //create a group thunk
 
-export const createGroup = (payload, groupId) => async (dispatch) => {
+export const createGroup = (payload) => async (dispatch) => {
     console.log(JSON.stringify(payload))
 
-    const res = await csrfFetch (`/api/groups/${groupId}`, {
+    const res = await csrfFetch (`/api/groups`, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json",

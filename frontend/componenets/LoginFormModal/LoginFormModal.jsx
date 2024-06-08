@@ -49,6 +49,13 @@ function LoginFormModal() {
       });
   };
 
+  const handleDemoLogin = (e) =>{
+    e.preventDefault();
+    closeModal()
+    dispatch(sessionActions.login({credential:"Demo-lition", password:"password"}))
+
+  }
+
   return (
     <>
       <h1>Log In</h1>
@@ -80,6 +87,8 @@ function LoginFormModal() {
         >
 
           Log In</button>
+
+        <button onClick={handleDemoLogin}>Log in as Demo User</button>
       </form>
     </>
   );

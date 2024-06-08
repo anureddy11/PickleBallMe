@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { FaChevronUp, FaChevronDown } from 'react-icons/fa';
 import * as sessionActions from '../../src/store/session';
 import './UserMenu.css';
+import { NavLink } from 'react-router-dom';
 
 function UserMenu({ user }) {
     const dispatch = useDispatch();
@@ -25,7 +26,7 @@ function UserMenu({ user }) {
     const logout = (e) => {
         e.preventDefault();
         dispatch(sessionActions.logout());
-        setIsOpen(false); 
+        setIsOpen(false);
     };
 
     const handleClick = (e) => {
@@ -47,6 +48,20 @@ function UserMenu({ user }) {
                     <span>Hello, {user.firstName}</span>
                     <span>Email: {user.email}</span>
                     <button onClick={logout}>Log Out</button>
+
+                        <ul className="profile-dropdown">
+                            <li>Username: {user.username}</li>
+                            <li>Name:{user.firstName} {user.lastName}</li>
+                            <li>email: {user.email}</li>
+                        </ul>
+                    <span>
+                        <NavLink to = "/groups">View All Groups</NavLink>
+                    </span>
+
+                    <span>
+                        <NavLink to = "/events">View All Events</NavLink>
+                    </span>
+
                 </div>
             )}
         </div>

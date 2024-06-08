@@ -14,6 +14,8 @@ import EventDetailsPage from '../Pages/EventDetailsPage';
 import CreateNewGroupForm from '../Pages/CreateNewGroupForm';
 import CreateNewEventForm from '../Pages/CreateNewEventForm';
 import UpdateGroupForm from '../Pages/UpdateGroupForm';
+import { ModalProvider,Modal } from './Context/Modal';
+
 
 function Layout() {
   const dispatch = useDispatch();
@@ -29,6 +31,7 @@ function Layout() {
     <div className="app-container">
     <Navigation isLoaded={isLoaded} />
     {isLoaded && <div className="content"><Outlet /></div>}
+    <Modal />
   </div>
   );
 }
@@ -83,7 +86,11 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+   
+      <RouterProvider router={router} />
+
+  )
 }
 
 export default App;

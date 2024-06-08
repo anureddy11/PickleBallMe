@@ -10,7 +10,6 @@ const CreateNewGroupForm = () => {
     const [description, setDescription] = useState('');
     const [inPerson, setInPerson] = useState('');
     const [isPrivate, setIsPrivate] = useState('');
-    const [isNewForm, setIsNewForm] = useState(isNewForm)
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
     const dispatch = useDispatch();

@@ -47,7 +47,9 @@ const EventsPage = () =>{
 
             <div>Upcoming Events :</div>
             <ul>
+
                     {sortedUpcomingEvents.map(event => (
+                         <NavLink key={event.id} to={`/events/${event.id}`}>
                         <li key={event.id}>
                             <div>
                                 <span>Image: {event.preview} </span><br/>
@@ -58,12 +60,14 @@ const EventsPage = () =>{
 
                             </div><br/>
                         </li>
+                        </NavLink>
                     ))}
                 </ul>
 
             <div>Past Due Events :</div>
                 <ul>
                     {sortedPastDueEvents.map(event => (
+                        <NavLink key={event.id} to={`/events/${event.id}`}>
                         <li key={event.id}>
                             <div>
                                 <span>Image: {event.preview} </span><br/>
@@ -74,6 +78,7 @@ const EventsPage = () =>{
 
                             </div><br/>
                         </li>
+                         </NavLink>
                     ))}
                 </ul>
 
