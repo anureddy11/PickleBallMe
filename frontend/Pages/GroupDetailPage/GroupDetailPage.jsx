@@ -6,6 +6,9 @@ import EventsByGroupPage from "../EventsByGroupPage";
 import { useNavigate } from "react-router-dom";
 import OpenModalButton from '../../componenets/OpenModalButton/OpenModalButton'
 import DeleteGroupModal from "../../componenets/DeleteGroupModal/DeleteGroupModal";
+import CreateNewEventForm from "../CreateNewEventForm";
+import CreateNewGroupForm from "../CreateNewGroupForm";
+import UpdateGroupForm from "../UpdateGroupForm";
 
 const GroupDetailPage = () => {
     const dispatch = useDispatch();
@@ -32,12 +35,13 @@ const GroupDetailPage = () => {
     };
 
     const handleUpdateGroupClick = () => {
-        alert('Update group feature coming soon');
+      navigate(`/groups/${groupId}/update`)
+
     };
 
-    const handleDeleteGroupClick = () => {
-        setModalContent(<DeleteGroupModal onClose={() => setIsLoaded(false)} groupId={groupId} />);
-    };
+    // const handleDeleteGroupClick = () => {
+    //     setModalContent(<DeleteGroupModal onClose={() => setIsLoaded(false)} groupId={groupId} />);
+    // };
 
 
 

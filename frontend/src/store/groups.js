@@ -5,6 +5,7 @@ const LOAD_GROUPS = "groups/LOAD_GROUPS";
 const LOAD_GROUP_BY_ID = "groups/LOAD_GROUP_BY_ID"
 const ADD_ONE = '/groups/ADD_ONE'
 const REMOVE_ONE = '/groups/REMOVE_ONE'
+const UPDATE_GROUP = 'groups/UPDATE_GROUP'
 
 
 export const getGroups = (groupsArray) => {
@@ -32,6 +33,13 @@ export const removeGroup =(groupId) =>{
     return {
         type: REMOVE_ONE,
         groupId
+    }
+}
+
+export const changeGroup =(group) =>{
+    return {
+        type: UPDATE_GROUP,
+        group
     }
 }
 
@@ -76,10 +84,10 @@ export const fetchGroupById = (groupId) => async (dispatch) => {
 
 //create a group thunk
 
-export const createGroup = (payload) => async (dispatch) => {
+export const createGroup = (payload, groupId) => async (dispatch) => {
     console.log(JSON.stringify(payload))
 
-    const res = await csrfFetch (`/api/groups`, {
+    const res = await csrfFetch (`/api/groups/${groupId}`, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json",
@@ -89,10 +97,34 @@ export const createGroup = (payload) => async (dispatch) => {
 
     if (res.ok) {
         const data = await res.json();
+        dispatch(addGroup(payload))
         return data;
     } else {
         throw Error(res);
     }
+}
+
+//update a group thunk
+
+export const updateGroup = (payload,groupId) => async (dispatch) => {
+
+    console.log(payload,groupId)
+    const res = await csrfFetch(`/api/groups/${groupId}`, {
+        method: 'PUT',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+    })
+
+    if (res.ok) {
+        const data = await res.json();
+        dispatch(changeGroup(payload))
+        return data;
+    } else {
+        throw Error(res);
+    }
+
 }
 
 
@@ -127,6 +159,16 @@ const groupsReducer = (state = initialState, action) => {
                ...state,
                groupsList: remainingGroups,
                currGroup: state.currGroup.id === action.groupId ? {} : state.currGroup
+            };
+        case UPDATE_GROUP:
+            const updatedGroup = action.group;
+            return {
+                ...state,
+                groupsList: {
+                    ...state.groupsList,
+                   [action.groupId]: updatedGroup
+                },
+                currGroup: updatedGroup
             };
 
         default:
