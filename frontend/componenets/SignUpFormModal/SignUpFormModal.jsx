@@ -30,7 +30,12 @@ function SignUpFormModal() {
         })
       ).catch(async (res) => {
         const data = await res.json();
+        console.log(Object.values(data.errors))
         if (data?.errors) {
+          Object.values(data.errors).forEach(error => {
+            alert(error);
+            // Handle each error as needed
+          });
           setErrors(data.errors);
         }
       });
