@@ -4,8 +4,8 @@ import { NavLink, useParams } from "react-router-dom";
 import { deleteGroup, fetchGroupById } from '../../src/store/groups';
 import EventsByGroupPage from "../EventsByGroupPage";
 import { useNavigate } from "react-router-dom";
-import OpenModalButton from '../../componenets/OpenModalButton/OpenModalButton'
-import DeleteGroupModal from "../../componenets/DeleteGroupModal/DeleteGroupModal";
+import OpenModalButton from '../../Componenets/OpenModalButton/OpenModalButton'
+import DeleteGroupModal from "../../Componenets/DeleteGroupModal/DeleteGroupModal";
 import CreateNewEventForm from "../CreateNewEventForm";
 import CreateNewGroupForm from "../CreateNewGroupForm";
 import UpdateGroupForm from "../UpdateGroupForm";

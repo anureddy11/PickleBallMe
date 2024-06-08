@@ -2,11 +2,11 @@
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
-import Navigation from '../componenets/Navigation/Navigation';
+import Navigation from '../Componenets/Navigation/Navigation';
 import * as sessionActions from './store/session';
 import SplashPage from '../Pages/SplashPage'
 import Groups from '../Pages/GroupsPage';
-import GroupsEventsLandingPage from '../componenets/Navigation/Groups-Events-LandingPage';
+import GroupsEventsLandingPage from '../Componenets/Navigation/Groups-Events-LandingPage';
 import GroupDetailPage from '../Pages/GroupDetailPage';
 import EventsByGroupPage from '../Pages/EventsByGroupPage';
 import EventsPage from '../Pages/EventsPage';
@@ -87,7 +87,7 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-   
+
       <RouterProvider router={router} />
 
   )

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { NavLink, Outlet, useParams } from "react-router-dom";
 import { fetchAllGroups } from '../../src/store/groups';
-import GroupsEventsLandingPage from "../../componenets/Navigation/Groups-Events-LandingPage";
+import GroupsEventsLandingPage from "../../Componenets/Navigation/Groups-Events-LandingPage";
 import './GroupsPage'
 
 const Groups = () => {

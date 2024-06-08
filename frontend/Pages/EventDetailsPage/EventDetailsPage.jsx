@@ -4,8 +4,8 @@ import { NavLink, useParams } from "react-router-dom";
 import { fetchGroupById } from '../../src/store/groups';
 import { fetchEventById } from '../../src/store/events';
 import EventsByGroupPage from "../EventsByGroupPage";
-import DeleteEventModal from "../../componenets/DeleteEventModal/DeleteEventModal"
-import OpenModalButton from '../../componenets/OpenModalButton/OpenModalButton'
+import DeleteEventModal from "../../Componenets/DeleteEventModal/DeleteEventModal"
+import OpenModalButton from '../../Componenets/OpenModalButton/OpenModalButton'
 import { CiMapPin } from "react-icons/ci";
 import { FaMoneyBillWave } from "react-icons/fa6";
 import { FaClock } from "react-icons/fa";
