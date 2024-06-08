@@ -1,3 +1,3 @@
-import GroupDetailPage from "./GrpupDetailPage";
+import GroupDetailPage from "./GroupDetailPage";
 
 export default GroupDetailPage

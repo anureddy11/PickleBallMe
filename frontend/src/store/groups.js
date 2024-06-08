@@ -4,6 +4,7 @@ import { csrfFetch } from './csrf';
 const LOAD_GROUPS = "groups/LOAD_GROUPS";
 const LOAD_GROUP_BY_ID = "groups/LOAD_GROUP_BY_ID"
 const ADD_ONE = '/groups/ADD_ONE'
+const REMOVE_ONE = '/groups/REMOVE_ONE'
 
 
 export const getGroups = (groupsArray) => {
@@ -25,6 +26,25 @@ export const addGroup =(group) =>{
         type: ADD_ONE,
         group
     }
+}
+
+export const removeGroup =(groupId) =>{
+    return {
+        type: REMOVE_ONE,
+        groupId
+    }
+}
+
+//Delete a group thunk
+
+export const deleteGroup =(groupId) => async (dispatch) =>{
+    const res = await csrfFetch(`/api/groups/${groupId}`, {
+        method: 'DELETE'
+    })
+
+    const data = await res.json()
+    dispatch(removeGroup(groupId))
+
 }
 
 
@@ -58,7 +78,7 @@ export const fetchGroupById = (groupId) => async (dispatch) => {
 
 export const createGroup = (payload) => async (dispatch) => {
     console.log(JSON.stringify(payload))
-    
+
     const res = await csrfFetch (`/api/groups`, {
         method: 'POST',
         headers: {
@@ -101,6 +121,13 @@ const groupsReducer = (state = initialState, action) => {
                 ...state,
                 currGroup: action.group
             }
+        case REMOVE_ONE:
+            const { [action.groupId]: _, ...remainingGroups } = state.groupsList;
+            return {
+               ...state,
+               groupsList: remainingGroups,
+               currGroup: state.currGroup.id === action.groupId ? {} : state.currGroup
+            };
 
         default:
             return state;

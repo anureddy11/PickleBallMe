@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { NavLink, useParams } from "react-router-dom";
-import { fetchGroupById } from '../../src/store/groups';
+import { deleteGroup, fetchGroupById } from '../../src/store/groups';
 import EventsByGroupPage from "../EventsByGroupPage";
 import { useNavigate } from "react-router-dom";
+import OpenModalButton from '../../componenets/OpenModalButton/OpenModalButton'
+import DeleteGroupModal from "../../componenets/DeleteGroupModal/DeleteGroupModal";
 
 const GroupDetailPage = () => {
     const dispatch = useDispatch();
@@ -18,7 +20,7 @@ const GroupDetailPage = () => {
 
     // functionality for join this group button
     const isUserLoggedIn = !!sessionUser;
-    const isUserGroupCreator = isUserLoggedIn && sessionUser.id === currGroup.id;
+    const isUserGroupCreator = isUserLoggedIn && sessionUser.id === currGroup.organizerId;
     const buttonStyle = isUserGroupCreator ? {} : { backgroundColor: 'red', color: 'white' };
     const handleJoinThisGroupButtonClick = () =>{
         alert('Feature coming soon');
@@ -34,7 +36,7 @@ const GroupDetailPage = () => {
     };
 
     const handleDeleteGroupClick = () => {
-        alert('Delete group feature coming soon');
+        setModalContent(<DeleteGroupModal onClose={() => setIsLoaded(false)} groupId={groupId} />);
     };
 
 
@@ -90,12 +92,18 @@ const GroupDetailPage = () => {
                     >
                         Update
                     </button>
-                    <button
+                    {/* <button
                         style={{ backgroundColor: 'darkgrey', color: 'white' }}
                         onClick={handleDeleteGroupClick}
                     >
                         Delete
-                    </button>
+                    </button> */}
+                    <OpenModalButton
+                        buttonText="Delete"
+                        modalComponent={<DeleteGroupModal
+                                        groupId={groupId} />}
+
+                    />
                 </div>
             )}
 

@@ -4,6 +4,7 @@ const LOAD_ALL_EVENTS = "events/LOAD_ALL_EVENTS";
 const LOAD_EVENTS_BY_GROUP_ID = "events/LOAD_EVENTS_BY_GROUP_ID";
 const LOAD_EVENT_BY_ID = "groups/LOAD_EVENT_BY_ID"
 const ADD_ONE = '/events/ADD_ONE'
+const REMOVE_ONE = '/events/REMOVE_ONE'
 
 // Action creator
 
@@ -34,6 +35,24 @@ export const addEvent =(event) =>{
         type: ADD_ONE,
         event
     }
+}
+
+export const removeEvent =(eventId) =>{
+    return {
+        type: REMOVE_ONE,
+        eventId
+    }
+}
+//Delete an event thunk
+
+export const deleteEvent =(eventId) => async (dispatch) =>{
+    const res = await csrfFetch(`/api/events/${eventId}`, {
+        method: 'DELETE'
+    })
+
+    const data = await res.json()
+    dispatch(removeEvent(eventId))
+
 }
 
 //Fetch a event by eventId
@@ -131,6 +150,13 @@ const eventsReducer = (state = initialState, action) => {
                     ...state,
                     currEvent: action.event
                 }
+         case REMOVE_ONE:
+            const { [action.eventId]: _, ...remainingEvents } = state.eventsList;
+            return {
+               ...state,
+               eventsList: remainingEvents,
+               currEvent: state.currEvent.id === action.eventId ? {} : state.currEvent
+            };
         default:
             return state;
     }

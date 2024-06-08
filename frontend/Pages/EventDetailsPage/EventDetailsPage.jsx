@@ -4,6 +4,9 @@ import { NavLink, useParams } from "react-router-dom";
 import { fetchGroupById } from '../../src/store/groups';
 import { fetchEventById } from '../../src/store/events';
 import EventsByGroupPage from "../EventsByGroupPage";
+import DeleteEventModal from "../../componenets/DeleteEventModal/DeleteEventModal"
+import OpenModalButton from '../../componenets/OpenModalButton/OpenModalButton'
+
 
 const EventDetailsPage = () => {
     const dispatch = useDispatch();
@@ -39,6 +42,13 @@ const EventDetailsPage = () => {
                     <span>Event Info: {currEvent.about}</span><br />
                     <span>Event Location: {currEvent.Venue.city}, {currEvent.Venue.state}</span><br />
                     <span>Group Info: {currEvent.Group.about}</span><br />
+                    <OpenModalButton
+                        buttonText="Delete"
+                        modalComponent={<DeleteEventModal
+                                        groupId={eventId} />}
+
+                    />
+
                 </div>
             </div>
         ) : (
