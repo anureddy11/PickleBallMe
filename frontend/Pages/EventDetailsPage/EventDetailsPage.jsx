@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { NavLink, useParams } from "react-router-dom";
-import { fetchGroupById } from '../../src/store/groups';
 import { fetchEventById } from '../../src/store/events';
-import EventsByGroupPage from "../EventsByGroupPage";
 import DeleteEventModal from "../../Componenets/DeleteEventModal/DeleteEventModal"
 import OpenModalButton from '../../Componenets/OpenModalButton/OpenModalButton'
 import { CiMapPin } from "react-icons/ci";

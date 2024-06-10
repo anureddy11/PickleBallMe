@@ -1,5 +1,5 @@
 import { useModal } from '../../src/Context/Modal';
-import { useNavigate } from 'react-router-dom';
+
 
 function OpenModalButton({
   modalComponent, // component to render inside the modal

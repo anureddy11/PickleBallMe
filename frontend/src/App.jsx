@@ -6,7 +6,6 @@ import Navigation from '../Componenets/Navigation/Navigation';
 import * as sessionActions from './store/session';
 import SplashPage from '../Pages/SplashPage'
 import Groups from '../Pages/GroupsPage';
-import GroupsEventsLandingPage from '../Componenets/Navigation/Groups-Events-LandingPage';
 import GroupDetailPage from '../Pages/GroupDetailPage';
 import EventsByGroupPage from '../Pages/EventsByGroupPage';
 import EventsPage from '../Pages/EventsPage';
@@ -14,7 +13,7 @@ import EventDetailsPage from '../Pages/EventDetailsPage';
 import CreateNewGroupForm from '../Pages/CreateNewGroupForm';
 import CreateNewEventForm from '../Pages/CreateNewEventForm';
 import UpdateGroupForm from '../Pages/UpdateGroupForm';
-import { ModalProvider,Modal } from './Context/Modal';
+import { Modal } from './Context/Modal';
 
 
 function Layout() {

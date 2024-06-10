@@ -50,7 +50,7 @@ export const deleteGroup =(groupId) => async (dispatch) =>{
         method: 'DELETE'
     })
 
-    const data = await res.json()
+    // const data = await res.json()
     dispatch(removeGroup(groupId))
 
 }
@@ -134,7 +134,7 @@ const initialState = { groupsList: {}, currGroup : {} };
 
 const groupsReducer = (state = initialState, action) => {
     switch (action.type) {
-        case LOAD_GROUPS:
+        case LOAD_GROUPS:{
             const newGroups = {};
             action.groupsArray.forEach(group => {
                 newGroups[group.id] = group;
@@ -143,24 +143,28 @@ const groupsReducer = (state = initialState, action) => {
                 groupsList:newGroups,
                 currGroup :{}
             };
-        case LOAD_GROUP_BY_ID:
+        }
+        case LOAD_GROUP_BY_ID:{
             return {
                     ...state,
                     currGroup: action.group
             };
-        case ADD_ONE:
+        }
+        case ADD_ONE:{
             return{
                 ...state,
                 currGroup: action.group
             }
-        case REMOVE_ONE:
+        }
+        case REMOVE_ONE:{
             const { [action.groupId]: _, ...remainingGroups } = state.groupsList;
             return {
                ...state,
                groupsList: remainingGroups,
                currGroup: state.currGroup.id === action.groupId ? {} : state.currGroup
             };
-        case UPDATE_GROUP:
+        }
+        case UPDATE_GROUP:{
             const updatedGroup = action.group;
             return {
                 ...state,
@@ -170,9 +174,11 @@ const groupsReducer = (state = initialState, action) => {
                 },
                 currGroup: updatedGroup
             };
+        }
 
-        default:
+        default:{
             return state;
+        }
     }
 };
 

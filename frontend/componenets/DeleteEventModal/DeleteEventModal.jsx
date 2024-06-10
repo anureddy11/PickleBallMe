@@ -1,8 +1,7 @@
-import React from 'react';
+
 import { useDispatch } from 'react-redux';
-import { deleteGroup } from '../../src/store/groups';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Navigate } from 'react-router-dom';
+
+import { useNavigate } from 'react-router-dom';
 import { deleteEvent } from '../../src/store/events';
 import { useModal } from '../../src/Context/Modal';
 

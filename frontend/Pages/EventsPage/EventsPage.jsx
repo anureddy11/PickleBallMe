@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import {  useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { NavLink, Outlet, useParams } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { fetchAllEvents } from "../../src/store/events";
 import GroupsEventsLandingPage from "../../Componenets/Navigation/Groups-Events-LandingPage";
 

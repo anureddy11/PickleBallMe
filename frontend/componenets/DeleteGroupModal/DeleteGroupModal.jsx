@@ -1,8 +1,7 @@
-import React from 'react';
+
 import { useDispatch } from 'react-redux';
 import { deleteGroup } from '../../src/store/groups';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useModal } from '../../src/Context/Modal';
 
 const DeleteEventModal = ({ groupId }) => {
@@ -23,7 +22,7 @@ const DeleteEventModal = ({ groupId }) => {
     const handleStay = (e) =>{
         e.preventDefault()
         closeModal();
-        navigate(`/groups/${groupId}`).then(setOnModalClose)
+        navigate(`/groups/${groupId}`)
 
 
     }

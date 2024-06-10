@@ -50,7 +50,7 @@ export const deleteEvent =(eventId) => async (dispatch) =>{
         method: 'DELETE'
     })
 
-    const data = await res.json()
+    // const data = await res.json()
     dispatch(removeEvent(eventId))
 
 }
@@ -108,6 +108,7 @@ export const createEvent = (payload,groupId) => async (dispatch) => {
 
     if (res.ok) {
         const data = await res.json();
+        dispatch(ADD_ONE(data.Events));
         return data;
     } else {
         throw Error(res);
@@ -129,7 +130,7 @@ const eventsReducer = (state = initialState, action) => {
                 eventsByGroupId: newEvents
             };
         }
-        case LOAD_ALL_EVENTS:
+        case LOAD_ALL_EVENTS:{
             const newEvents = {};
             action.eventsArray.forEach(event => {
                 newEvents[event.id] = event;
@@ -139,26 +140,31 @@ const eventsReducer = (state = initialState, action) => {
                 ...state,
                 eventsList:newEvents,
             };
+        }
 
-        case LOAD_EVENT_BY_ID:
+        case LOAD_EVENT_BY_ID:{
                 return {
                         ...state,
                         currEvent: action.event
                 };
-        case ADD_ONE:
+            }
+        case ADD_ONE: {
                 return{
                     ...state,
                     currEvent: action.event
                 }
-         case REMOVE_ONE:
+            }
+         case REMOVE_ONE:{
             const { [action.eventId]: _, ...remainingEvents } = state.eventsList;
             return {
                ...state,
                eventsList: remainingEvents,
                currEvent: state.currEvent.id === action.eventId ? {} : state.currEvent
             };
-        default:
+        }
+        default:{
             return state;
+        }
     }
 }
 

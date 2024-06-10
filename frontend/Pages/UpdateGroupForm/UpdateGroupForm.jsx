@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createGroup, updateGroup } from "../../src/store/groups";
+import {  updateGroup } from "../../src/store/groups";
 import { useNavigate, useParams } from "react-router-dom";
 
 
@@ -28,11 +28,11 @@ const UpdateGroupForm =() =>{
 
           // Check for empty fields
           const fields = { location, groupName, description, inPerson, isPrivate };
-          let hasErrors = false;
+
           for (const [key, value] of Object.entries(fields)) {
               if (value.length < 1) {
                   newErrors[key] = `${key} cannot be empty`;
-                  hasErrors = true;
+                 
               }
           }
 

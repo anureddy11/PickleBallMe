@@ -1,19 +1,19 @@
 // frontend/src/components/Navigation/ProfileButton.jsx
 
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+// import { useDispatch } from 'react-redux';
 import { FaUserCircle } from 'react-icons/fa';
-import * as sessionActions from '../../src/store/session';
+// import * as sessionActions from '../../src/store/session';
 import './ProfileButton.css'
 
 function ProfileButton({ user }) {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false)
 
-  const logout = (e) => {
-    e.preventDefault();
-    dispatch(sessionActions.logout());
-  };
+  // const logout = (e) => {
+  //   e.preventDefault();
+  //   dispatch(sessionActions.logout());
+  // };
 
   //toggle function for user drop down
 

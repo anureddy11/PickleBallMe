@@ -1,18 +1,16 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { NavLink, useParams } from "react-router-dom";
-import { deleteGroup, fetchGroupById } from '../../src/store/groups';
+import { fetchGroupById } from '../../src/store/groups';
 import EventsByGroupPage from "../EventsByGroupPage";
 import { useNavigate } from "react-router-dom";
 import OpenModalButton from '../../Componenets/OpenModalButton/OpenModalButton'
 import DeleteGroupModal from "../../Componenets/DeleteGroupModal/DeleteGroupModal";
-import CreateNewEventForm from "../CreateNewEventForm";
-import CreateNewGroupForm from "../CreateNewGroupForm";
-import UpdateGroupForm from "../UpdateGroupForm";
+
 
 const GroupDetailPage = () => {
     const dispatch = useDispatch();
-    const allGroups = useSelector((state) => state.groups.groups);
+    // const allGroups = useSelector((state) => state.groups.groups);
     const sessionUser = useSelector((state) => state.session.user);
     const currGroup = useSelector((state) => state.groups.currGroup);
     const { groupId } = useParams();
