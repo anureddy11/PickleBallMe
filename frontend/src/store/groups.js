@@ -49,7 +49,7 @@ export const deleteGroup =(groupId) => async (dispatch) =>{
     const res = await csrfFetch(`/api/groups/${groupId}`, {
         method: 'DELETE'
     })
-
+    console.log(res)
     // const data = await res.json()
     dispatch(removeGroup(groupId))
 
@@ -156,12 +156,13 @@ const groupsReducer = (state = initialState, action) => {
                 currGroup: action.group
             }
         }
-        case REMOVE_ONE:{
-            const { [action.groupId]: _, ...remainingGroups } = state.groupsList;
+        case REMOVE_ONE: {
+            const newGroupsList = { ...state.groupsList };
+            delete newGroupsList[action.groupId]
             return {
-               ...state,
-               groupsList: remainingGroups,
-               currGroup: state.currGroup.id === action.groupId ? {} : state.currGroup
+                ...state,
+                groupsList: newGroupsList,
+                currGroup: state.currGroup.id === action.groupId ? {} : state.currGroup
             };
         }
         case UPDATE_GROUP:{

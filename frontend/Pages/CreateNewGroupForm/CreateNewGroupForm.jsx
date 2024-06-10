@@ -39,7 +39,7 @@ const CreateNewGroupForm = () => {
 
         // Check for empty fields
         const fields = { location, groupName, description, inPerson, isPrivate };
-    
+
         for (const [key, value] of Object.entries(fields)) {
             if (value.length < 1) {
                 newErrors[key] = `${key} cannot be empty`;
@@ -75,10 +75,10 @@ const CreateNewGroupForm = () => {
         <section className="new-form-holder centered middled">
             <h1>Start a New Group</h1>
             <h2>Become an Organizer</h2>
-            <p>We'll walk you through a few steps to build your local community</p>
+            <p>We&apos;ll walk you through a few steps to build your local community</p>
             <form className="create-group-form" onSubmit={handleSubmit}>
-                <p>First, set your group's location.
-                Meetup groups meet locally, in person and online. We'll connect you with people
+                <p>First, set your group&apos;s location.
+                Meetup groups meet locally, in person and online. We&apos;ll connect you with people
                 in your area, and more can join you online</p>
                 <input
                     placeholder="City, State"
@@ -89,7 +89,7 @@ const CreateNewGroupForm = () => {
                 {errors.location && <p className="error">{errors.location}</p>}
                 <br /><br />
 
-                <p>What will your group's name be?
+                <p>What will your group&apos;s name be?
                 Choose a name that will give people a clear idea of what the group is about.
                 Feel free to get creative! You can edit this later if you change your mind.</p>
                 <input
@@ -102,8 +102,8 @@ const CreateNewGroupForm = () => {
                 <br /><br />
 
                 <p>Now describe what your group will be about
-                People will see this when we promote your group, but you'll be able to add to it later, too.
-                1. What's the purpose of the group?
+                People will see this when we promote your group, but you&apos;ll be able to add to it later, too.
+                1. What&apos;s the purpose of the group?
                 2. Who should join?
                 3. What will you do at your events?</p>
                 <textarea

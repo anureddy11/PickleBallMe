@@ -3,8 +3,8 @@ import { csrfFetch } from './csrf';
 const LOAD_ALL_EVENTS = "events/LOAD_ALL_EVENTS";
 const LOAD_EVENTS_BY_GROUP_ID = "events/LOAD_EVENTS_BY_GROUP_ID";
 const LOAD_EVENT_BY_ID = "groups/LOAD_EVENT_BY_ID"
-const ADD_ONE = '/events/ADD_ONE'
-const REMOVE_ONE = '/events/REMOVE_ONE'
+const ADD_ONE = 'events/ADD_ONE'
+const REMOVE_ONE = 'events/REMOVE_ONE'
 
 // Action creator
 
@@ -49,13 +49,13 @@ export const deleteEvent =(eventId) => async (dispatch) =>{
     const res = await csrfFetch(`/api/events/${eventId}`, {
         method: 'DELETE'
     })
-
+    console.group(res)
     // const data = await res.json()
     dispatch(removeEvent(eventId))
 
 }
 
-//Fetch a event by eventId
+//Fetch an event by eventId
 
 export const fetchEventById = (eventId) => async (dispatch) => {
     const res = await csrfFetch(`/api/events/${eventId}`, {
@@ -108,7 +108,7 @@ export const createEvent = (payload,groupId) => async (dispatch) => {
 
     if (res.ok) {
         const data = await res.json();
-        dispatch(ADD_ONE(data.Events));
+        dispatch(addEvent(data));
         return data;
     } else {
         throw Error(res);
@@ -155,11 +155,12 @@ const eventsReducer = (state = initialState, action) => {
                 }
             }
          case REMOVE_ONE:{
-            const { [action.eventId]: _, ...remainingEvents } = state.eventsList;
+            const newEventsList = { ...state.eventsList };
+            delete newEventsList[action.eventId];  
             return {
-               ...state,
-               eventsList: remainingEvents,
-               currEvent: state.currEvent.id === action.eventId ? {} : state.currEvent
+                ...state,
+                eventsList: newEventsList,
+                currEvent: state.currEvent.id === action.eventId ? {} : state.currEvent
             };
         }
         default:{
