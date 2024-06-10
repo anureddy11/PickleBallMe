@@ -111,6 +111,7 @@ export const createEvent = (payload,groupId) => async (dispatch) => {
         dispatch(addEvent(data));
         return data;
     } else {
+        console.log(res)
         throw Error(res);
     }
 }
@@ -156,7 +157,7 @@ const eventsReducer = (state = initialState, action) => {
             }
          case REMOVE_ONE:{
             const newEventsList = { ...state.eventsList };
-            delete newEventsList[action.eventId];  
+            delete newEventsList[action.eventId];
             return {
                 ...state,
                 eventsList: newEventsList,
