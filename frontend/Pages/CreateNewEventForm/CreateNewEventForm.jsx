@@ -190,6 +190,8 @@ const CreateNewEventForm = () => {
                 >
                     Create Event
                 </button>
+                {errors.error && <p className="error">{errors.error}</p>}
+                <br /><br />
             </form>
         </section>
     );

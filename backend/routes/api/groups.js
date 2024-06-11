@@ -385,7 +385,7 @@ router.post('/:groupId/events',requireAuth,checkGroup,validateEventBody,async(re
    if(isOrganizer || membership.status==='co-host'){
 
             //check if the venueId inserted has the group associated to it
-            const insertedVenueId = newEventData.venueId
+            // const insertedVenueId = newEventData.venueId
             // const venueData = await Venue.findByPk(insertedVenueId)
 
             // if(!venueData){
