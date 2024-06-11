@@ -29,8 +29,10 @@ const CreateNewEventForm = () => {
         if (description && description.length < 30) newErrors.description = 'Description must be at least 30 characters long';
         if (!inPerson) newErrors.inPerson = 'Event type cannot be empty';
         if (!isPrivate) newErrors.isPrivate = 'Event privacy cannot be empty';
-        if (!price) newErrors.price = 'Price cannot be empty';
-        if (!capacity) newErrors.capacity = 'Capacity cannot be empty';
+        // if (!price) newErrors.price = 'Price cannot be empty';
+        // if (!capacity) newErrors.capacity = 'Capacity cannot be empty';
+        if (!price.trim()) newErrors.price = 'Price cannot be empty';
+        if (!capacity.trim()) newErrors.capacity = 'Capacity cannot be empty';
         if (!startDate) newErrors.startDate = 'Start date cannot be empty';
         if (!endDate) newErrors.endDate = 'End date cannot be empty';
         if (!image) newErrors.image = 'Image URL cannot be empty';
@@ -44,7 +46,6 @@ const CreateNewEventForm = () => {
     }, [eventName, capacity,description, inPerson, isPrivate, price, startDate, endDate, image]);
 
     const handleSubmit = async (e) => {
-        try{
                 e.preventDefault();
 
 
@@ -63,7 +64,7 @@ const CreateNewEventForm = () => {
                     "endDate": endDate,
                     "previewImage":image
                 }
-
+    try{
                 // Dispatch the action to create the group/event
                 let createdEvent = await dispatch(createEvent(payload,currGroup.id))
                 console.log(createdEvent.body)
