@@ -19,6 +19,7 @@ const CreateNewEventForm = () => {
 
 
     const currGroup = useSelector((state) => state.groups.currGroup);
+    const currGroupId = currGroup.id
 
     useEffect(() => {
         const newErrors = {};
@@ -66,7 +67,7 @@ const CreateNewEventForm = () => {
                 }
     try{
                 // Dispatch the action to create the group/event
-                let createdEvent = await dispatch(createEvent(payload,currGroup.id))
+                let createdEvent = await dispatch(createEvent(payload,currGroupId))
                 console.log(createdEvent.body)
                 if(createdEvent){
                     navigate(`/events/${createdEvent.id}`)
