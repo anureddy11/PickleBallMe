@@ -39,33 +39,27 @@ function UserMenu({ user }) {
     };
 
     return (
-        <div className="dropdown-menu" ref={dropdownRef}>
+        <nav className="user-menu" ref={dropdownRef}>
             <button onClick={handleClick} className="dropdown-toggle">
                 {isOpen ? <FaChevronUp /> : <FaChevronDown />}
             </button>
             {isOpen && (
                 <div className="dropdown-content" onClick={handleContentClick}>
-                    <span>Hello, {user.firstName}</span>
-                    <span>Email: {user.email}</span>
-                    <button onClick={logout}>Log Out</button>
-
-                        <ul className="profile-dropdown">
-                            <li>Username: {user.username}</li>
-                            <li>Name:{user.firstName} {user.lastName}</li>
-                            <li>email: {user.email}</li>
-                        </ul>
-                    <span>
-                        <NavLink to = "/groups">View All Groups</NavLink>
-                    </span>
-
-                    <span>
-                        <NavLink to = "/events">View All Events</NavLink>
-                    </span>
-
+                    <p className="menu-item">Hello, {user.firstName}</p>
+                    <p className="menu-item">Email: {user.email}</p>
+                    <button onClick={logout} className="menu-item">Log Out</button>
+                    <div className="profile-details">
+                        <p className="profile-item">Username: {user.username}</p>
+                        <p className="profile-item">Name: {user.firstName} {user.lastName}</p>
+                        <p className="profile-item">Email: {user.email}</p>
+                    </div>
+                    <NavLink to="/groups" className="menu-link">View All Groups</NavLink>
+                    <NavLink to="/events" className="menu-link">View All Events</NavLink>
                 </div>
             )}
-        </div>
+        </nav>
     );
 }
 
 export default UserMenu;
+

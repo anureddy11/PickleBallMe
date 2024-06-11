@@ -11,44 +11,38 @@ function Navigation({ isLoaded }) {
     const sessionUser = useSelector((state) => state.session.user);
 
     const sessionLinks = sessionUser ? (
-      <li>
-        <ProfileButton user={sessionUser} />
-        <UserMenu user={sessionUser} />
-        <NavLink to ='/groups/createGroup'>Start a new Group</NavLink>
-      </li>
-
+        <div className="nav-item">
+            <ProfileButton user={sessionUser} />
+            <UserMenu user={sessionUser} />
+            <NavLink to='/groups/createGroup'>Start a new Group</NavLink>
+        </div>
     ) : (
-      <>
-        <li>
-          <OpenModalButton
-            buttonText="Log In"
-            modalComponent={<LoginFormModal />}
-          />
-        </li>
-        <li>
-          {/* <NavLink to="/signup">Sign Up</NavLink> */}
-          <OpenModalButton
-            buttonText= "Sign Up"
-            modalComponent={<SignUpFormModal />}
-            />
-        </li>
-      </>
+        <>
+            <div className="nav-item">
+                <OpenModalButton
+                    buttonText="Log In"
+                    modalComponent={<LoginFormModal />}
+                />
+            </div>
+            <div className="nav-item">
+                <OpenModalButton
+                    buttonText="Sign Up"
+                    modalComponent={<SignUpFormModal />}
+                />
+            </div>
+        </>
     );
 
     return (
-       <nav className='navbar'>
-            <ul >
-                <li >
+        <nav className='navbar'>
+            <div className='nav-brand'>
                 <NavLink to="/">PickleBallMe</NavLink>
-                </li>
-            </ul>
-
-            <div >
+            </div>
+            <div className='nav-links'>
                 {isLoaded && sessionLinks}
-             </div>
-
+            </div>
         </nav>
     );
-  }
+}
 
-  export default Navigation;
+export default Navigation;

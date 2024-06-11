@@ -54,10 +54,10 @@ const SplashPage = () =>{
                 </div>
             </div>
             <div className="section" id="section4">
-            <OpenModalButton
-            buttonText= "Join PickleBallMe"
-            modalComponent={<SignUpFormModal />}
-            />
+                    <OpenModalButton
+                    buttonText= "Join PickleBallMe"
+                    modalComponent={<SignUpFormModal />}
+                    />
             </div>
         </div>
     );

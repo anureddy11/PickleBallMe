@@ -1,17 +1,25 @@
 /* Navbar Styling */
 .navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 50px; /* Adjust the height as needed */
-    background-color: #333;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 9999; /* Ensure the navbar is above other content */
+    padding: 10px 20px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ccc;
+}
+.nav-brand {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: var(--secondary-color);
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+}
+
+.nav-item:not(:last-child) {
+    margin-right: 20px;
 }
 
 .navbar ul {
@@ -24,7 +32,7 @@
 
 .navbar ul li {
     margin-right: 20px;
-    color:white
+    color:black
 }
 
 .navbar ul li:last-child {
@@ -38,5 +46,5 @@
     padding: 0 80px;
 }
 .navbar ul li a {
-    color: white; /* Set the color to white */
+    color:black
 }
