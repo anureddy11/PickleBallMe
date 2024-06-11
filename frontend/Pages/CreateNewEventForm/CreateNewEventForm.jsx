@@ -46,7 +46,7 @@ const CreateNewEventForm = () => {
     const handleSubmit = async (e) => {
         try{
                 e.preventDefault();
-                
+
 
                 if (Object.keys(errors).length > 0) {
                     return;
@@ -192,7 +192,7 @@ const CreateNewEventForm = () => {
                     Create Event
                 </button>
                 {/* {errors} */}
-                {errors.error && <p className="error">{errors.error}</p>}
+                {/* {errors.error && <p className="error">{errors.error}</p>} */}
                 <br /><br />
             </form>
         </section>
