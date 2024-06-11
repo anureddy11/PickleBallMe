@@ -34,7 +34,7 @@ module.exports = {
         //   model:'Venues',
         //   key:'id'
         // },
-        onDelete:'CASCADE'
+        // onDelete:'CASCADE'
       },
       name: {
         type: Sequelize.STRING,
