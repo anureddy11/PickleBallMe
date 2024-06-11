@@ -386,22 +386,22 @@ router.post('/:groupId/events',requireAuth,checkGroup,validateEventBody,async(re
 
             //check if the venueId inserted has the group associated to it
             const insertedVenueId = newEventData.venueId
-            const venueData = await Venue.findByPk(insertedVenueId)
+            // const venueData = await Venue.findByPk(insertedVenueId)
 
-            if(!venueData){
-                return res.status(404).json({ error: 'Venue does not exist' })
-            }
+            // if(!venueData){
+            //     return res.status(404).json({ error: 'Venue does not exist' })
+            // }
 
-            if(venueData.group_id!==Number(groupId)){
-                return res.status(404).json({ error: 'Venue is not associated with this group' })
-            }
+            // if(venueData.group_id!==Number(groupId)){
+            //     return res.status(404).json({ error: 'Venue is not associated with this group' })
+            // }
 
 
             try {
                 // Attempt to create a new event
                 const newEvent = await Event.create({
                     group_id:groupId,
-                    venue_id: newEventData.venueId,
+                    // venue_id: newEventData.venueId,
                     name: newEventData.name,
                     type: newEventData.type,
                     capacity: newEventData.capacity,
@@ -418,12 +418,12 @@ router.post('/:groupId/events',requireAuth,checkGroup,validateEventBody,async(re
                 // If event creation is successful, respond with success message
                 const response = {
                     ...output,
-                    venueId: newEvent.venue_id,
+                    // venueId: newEvent.venue_id,
                     groupId: parseInt(newEvent.group_id),
                     starDate: new Date(newEvent.start_date).toLocaleString(),
                     endDate: new Date(newEvent.end_date).toLocaleString(),
                 };
-                delete response.venue_id
+                // delete response.venue_id
                 delete response.start_date
                 delete response.end_date
 
@@ -436,10 +436,10 @@ router.post('/:groupId/events',requireAuth,checkGroup,validateEventBody,async(re
 
 
                 return res.status(201).json(response)
-            } catch (error) {
+            }catch (error) {
                 // If an error occurs during event creation, log the error and respond with status code 400
-                console.error('Error creating event :', error)
-                res.status(400)
+                console.error('Error creating event:', error);
+                res.status(400).json({ error: 'Error creating event' });
             }
 
    }else{
@@ -502,7 +502,7 @@ router.get('/:groupId/venues',requireAuth,checkGroup, async(req,res,next) =>{
 
     }catch (error) {
         console.error('Error fetching venue data:', error)
-        res.status(500).json({ message: 'Internal Server Error' })
+        res.status(500).json({ error: 'Internal Server Error' })
       }
 })
 

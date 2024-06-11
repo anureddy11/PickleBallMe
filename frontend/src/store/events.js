@@ -111,7 +111,7 @@ export const createEvent = (payload,groupId) => async (dispatch) => {
         dispatch(addEvent(data));
         return data;
     } else {
-        console.log(res)
+       
         throw Error(res);
     }
 }

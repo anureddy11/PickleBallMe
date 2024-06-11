@@ -44,28 +44,35 @@ const CreateNewEventForm = () => {
     }, [eventName, capacity,description, inPerson, isPrivate, price, startDate, endDate, image]);
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        try{
+                e.preventDefault();
 
-        if (Object.keys(errors).length > 0) {
-            return;
-        }
+                if (Object.keys(errors).length > 0) {
+                    return;
+                }
 
-        const payload = {
-            "venueId": 1,
-            "name": eventName,
-            "type": inPerson,
-            "capacity": capacity,
-            "price": price,
-            "description": description,
-            "startDate": startDate,
-            "endDate": endDate,
-            "previewImage":image
-          }
+                const payload = {
+                    "venueId": 1,
+                    "name": eventName,
+                    "type": inPerson,
+                    "capacity": capacity,
+                    "price": price,
+                    "description": description,
+                    "startDate": startDate,
+                    "endDate": endDate,
+                    "previewImage":image
+                }
 
-        // Dispatch the action to create the group/event
-        let createdEvent = await dispatch(createEvent(payload,currGroup.id))
-        if(createdEvent){
-            navigate(`/events/${createdEvent.id}`)
+                // Dispatch the action to create the group/event
+                let createdEvent = await dispatch(createEvent(payload,currGroup.id))
+                console.log(createdEvent.body)
+                if(createdEvent){
+                    navigate(`/events/${createdEvent.id}`)
+                }
+    }
+        catch(error){
+            console.log(error);
+            setErrors({ error: error.message });
         }
 
     };
