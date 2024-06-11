@@ -65,18 +65,18 @@ const CreateNewEventForm = () => {
                     "endDate": endDate,
                     "previewImage":image
                 }
-    try{
+    // try{
                 // Dispatch the action to create the group/event
                 let createdEvent = await dispatch(createEvent(payload,currGroupId))
                 console.log(createdEvent.body)
                 if(createdEvent){
                     navigate(`/events/${createdEvent.id}`)
                 }
-    }
-        catch(error){
-            console.log(error);
-            setErrors({ error: error.message });
-        }
+    // }
+    //     catch(error){
+    //         console.log(error);
+    //         setErrors({ error: error.message });
+    //     }
 
     };
 
