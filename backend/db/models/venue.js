@@ -16,13 +16,13 @@ module.exports = (sequelize, DataTypes) => {
         {foreignKey: 'group_id'}
       )
 
-      Venue.hasMany(
-        models.Event,
-        {foreignKey: 'venue_id',
-        onDelete:'CASCADE',
-        hooks:true
-      }
-      )
+      // Venue.hasMany(
+      //   models.Event,
+      //   {foreignKey: 'venue_id',
+      //   onDelete:'CASCADE',
+      //   hooks:true
+      // }
+      // )
 
     }
   }
