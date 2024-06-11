@@ -16,40 +16,40 @@ module.exports = (sequelize, DataTypes) => {
         {foreignKey: 'group_id'}
       )
 
-      // Venue.hasMany(
-      //   models.Event,
-      //   {foreignKey: 'venue_id',
-      //   onDelete:'CASCADE',
-      //   hooks:true
-      // }
-      // )
+      Venue.hasMany(
+        models.Event,
+        {foreignKey: 'venue_id',
+        onDelete:'CASCADE',
+        hooks:true
+      }
+      )
 
     }
   }
   Venue.init({
     group_id: {
       type:DataTypes.INTEGER,
-      allowNull:false
+      allowNull:true
     },
     address: {
       type:DataTypes.STRING,
-      allowNull:false
+      allowNull:true
     },
     city: {
       type:DataTypes.STRING,
-      allowNull:false
+      allowNull:true
     },
     state: {
       type:DataTypes.STRING,
-      allowNull:false
+      allowNull:true
     },
     lat: {
       type:DataTypes.FLOAT,
-      allowNull:false
+      allowNull:true
     },
     lng: {
       type:DataTypes.FLOAT,
-      allowNull:false
+      allowNull:true
     },
     name: {
       type:DataTypes.STRING,

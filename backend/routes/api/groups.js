@@ -294,12 +294,12 @@ router.get('/:groupId/events',checkGroup,async(req,res,next)=>{
             city:event.Group.city,
             State:event.Group.state
             },
-        Venue:{
-            id:event.Venue.id,
-            city:event.Venue.city,
-            state:event.Venue.state
+        // Venue:{
+        //     id:event.Venue.id,
+        //     city:event.Venue.city,
+        //     state:event.Venue.state
 
-        },
+        // },
         //find # of attendees
         numAttendees: event.Users.length
     }));

@@ -17,10 +17,10 @@ module.exports = (sequelize, DataTypes) => {
         otherKey:'user_id'
       })
 
-      // Event.belongsTo(
-      //   models.Venue,
-      //   {foreignKey: 'venue_id'}
-      // )
+      Event.belongsTo(
+        models.Venue,
+        {foreignKey: 'venue_id'}
+      )
 
       Event.belongsTo(
         models.Group,
@@ -44,11 +44,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
 
     },
-    // venue_id: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: true,
+    venue_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
 
-    // },
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
