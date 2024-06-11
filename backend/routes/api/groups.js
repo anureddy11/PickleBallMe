@@ -270,7 +270,7 @@ router.get('/:groupId/events',checkGroup,async(req,res,next)=>{
             { model: User },
             { model: Group },
             {model: EventImages},
-            { model: Venue },
+            // { model: Venue },
         ]
     })
 
