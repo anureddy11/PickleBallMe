@@ -1,0 +1,37 @@
+/* Styles for the sections */
+.section {
+    padding: 20px;
+    margin: 20px;
+    border: 1px solid #ccc;
+  }
+
+  /* Styles for the headings */
+  h1, h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  /* Styles for the links */
+  NavLink {
+    text-decoration: none;
+    color: blue;
+    margin-right: 10px;
+  }
+
+  NavLink:hover {
+    text-decoration: underline;
+  }
+
+  /* Style for the button */
+  button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #0056b3;
+  }
