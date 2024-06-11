@@ -37,7 +37,7 @@ const EventsByGroupPage =() =>{
                                                 <img src={event.previewImages} alt="Preview" /> <br />
                                                 <span>{event.startDate}</span> <br />
                                                 <span>{event.name}</span> <br />
-                                                <span>Location: {event.Venue.city}, {event.Venue.state}</span> <br />
+                                                <span>Location: {event.city}, {event.state}</span> <br />
                                             </NavLink>
                                         </div>
                                     ))}
@@ -51,7 +51,7 @@ const EventsByGroupPage =() =>{
                                             <img src={event.previewImages} alt="Preview" /> <br />
                                             <span>{event.startDate}</span> <br />
                                             <span>{event.name}</span> <br />
-                                            <span>Location: {event.Venue.city}, {event.Venue.state}</span> <br />
+                                            <span>Location: {event.city}, {event.state}</span> <br />
                                         </NavLink><br />
                                     </div>
                                 ))}

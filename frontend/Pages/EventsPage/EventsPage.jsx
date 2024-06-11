@@ -55,7 +55,7 @@ const EventsPage = () =>{
                                 <span>Image: {event.preview} </span><br/>
                                 <span>Titele: {event.name} </span><br/>
                                 <span>Start Date: {event.startDate}</span><br/>
-                                <span>Location : {event.Venue.city},{event.Venue.state} </span>
+                                <span>Location : {event.city},{event.state} </span>
                                 <span>Description: Event API did not call for one</span><br/>
 
                             </div><br/>
@@ -73,7 +73,7 @@ const EventsPage = () =>{
                                 <span>Image: {event.preview} </span><br/>
                                 <span>Titele: {event.name} </span><br/>
                                 <span>Start Date: {event.startDate}</span><br/>
-                                <span>Location : {event.Venue.city},{event.Venue.state} </span>
+                                <span>Location : {event.city},{event.state} </span>
                                 <span>Description: Event API did not call for one</span><br/>
 
                             </div><br/>

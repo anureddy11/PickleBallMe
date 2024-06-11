@@ -57,7 +57,7 @@ const EventDetailsPage = () => {
                     <span>Image: <img src={currEvent.previewImage} alt="event" /></span><br />
                     <span><FaMoneyBillWave />Event Price: {currEvent.price===0 ? 'Free' : currEvent.price}</span><br />
                     <span><CiMapPin />Event Info: {currEvent.about}</span><br />
-                    <span>Event Location: {currEvent.Venue.city}, {currEvent.Venue.state}</span><br />
+                    <span>Event Location: {currEvent.Group.city}, {currEvent.Group.state}</span><br />
                     <span>Group Info: {currEvent.Group.about}</span><br />
                     <span>Hosted By: {hostFirstName} {hostLastName}</span><br /><br />
 

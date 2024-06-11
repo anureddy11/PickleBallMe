@@ -29,11 +29,11 @@ module.exports = {
       },
       venue_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
-        references:{
-          model:'Venues',
-          key:'id'
-        },
+        allowNull: true,
+        // references:{
+        //   model:'Venues',
+        //   key:'id'
+        // },
         onDelete:'CASCADE'
       },
       name: {

@@ -46,13 +46,14 @@ const CreateNewEventForm = () => {
     const handleSubmit = async (e) => {
         try{
                 e.preventDefault();
+                
 
                 if (Object.keys(errors).length > 0) {
                     return;
                 }
 
                 const payload = {
-                    // "venueId": 1,
+                    "venueId": 1,
                     "name": eventName,
                     "type": inPerson,
                     "capacity": capacity,
@@ -190,7 +191,7 @@ const CreateNewEventForm = () => {
                 >
                     Create Event
                 </button>
-                {errors}
+                {/* {errors} */}
                 {errors.error && <p className="error">{errors.error}</p>}
                 <br /><br />
             </form>

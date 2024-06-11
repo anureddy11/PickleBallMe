@@ -491,7 +491,7 @@ router.get('/', validateQuery,async(req,res,next) => {
                 model: EventImages,
                 attributes: ['image_url']
             },
-            { model: Venue },
+            // { model: Venue },
         ]
     })
 
@@ -516,12 +516,12 @@ router.get('/', validateQuery,async(req,res,next) => {
             city:event.Group.city,
             State:event.Group.state
             },
-        Venue:{
-            id:event.Venue.id,
-            city:event.Venue.city,
-            state:event.Venue.state
+        // Venue:{
+        //     id:event.Venue.id,
+        //     city:event.Venue.city,
+        //     state:event.Venue.state
 
-        },
+        // },
         // previewImages: event.EventImages[0].image_url,
 
 
@@ -544,7 +544,7 @@ router.get("/:eventId", async(req,res,next)=>{
         include: [
             { model: User },
             { model: Group },
-            { model: Venue },
+            // { model: Venue },
             { model: EventImages}
 
         ]
@@ -583,12 +583,12 @@ router.get("/:eventId", async(req,res,next)=>{
             type:myEvent.Group.private,
 
             },
-        Venue:{
-            id:myEvent.Venue.id,
-            city:myEvent.Venue.city,
-            state:myEvent.Venue.state
+        // Venue:{
+        //     id:myEvent.Venue.id,
+        //     city:myEvent.Venue.city,
+        //     state:myEvent.Venue.state
 
-        },
+        // },
         EventImages: myEvent.EventImages.map(image => ({
             id: image.id,
             url: image.image_url,
