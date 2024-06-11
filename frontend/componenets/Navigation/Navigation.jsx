@@ -39,7 +39,7 @@ function Navigation({ isLoaded }) {
        <nav className='navbar'>
             <ul >
                 <li >
-                <NavLink to="/">Home</NavLink>
+                <NavLink to="/">PickleBallMe</NavLink>
                 </li>
             </ul>
 

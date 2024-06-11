@@ -1,37 +1,77 @@
-/* Styles for the sections */
-.section {
+/* SplashPage.css */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+#section1, #section2, #section3, #section4 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     padding: 20px;
-    margin: 20px;
     border: 1px solid #ccc;
-  }
+    margin: 10px;
+}
 
-  /* Styles for the headings */
-  h1, h2 {
-    font-size: 24px;
-    margin-bottom: 10px;
-  }
+#section1 {
+    display: flex;
+    background-color: #efefef;
+    flex-direction: row;
+}
 
-  /* Styles for the links */
-  NavLink {
-    text-decoration: none;
-    color: blue;
-    margin-right: 10px;
-  }
+#section2 {
+    background-color: #efefef;
 
-  NavLink:hover {
-    text-decoration: underline;
-  }
+}
 
-  /* Style for the button */
-  button {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
+#section3 {
+    display: flex;
+    background-color: #efefef;
+    flex-direction: row;
+}
+
+#section4 {
+    background-color: #cfcfcf;
+}
+
+.section h1 {
+    margin: 10px 0;
+    font-size: 2em;
+}
+
+.section p {
+    margin: 10px 0;
+    font-size: 1.2em;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+}
+
+.column h2 {
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+}
+
+button {
     padding: 10px 20px;
-    font-size: 16px;
+    font-size: 1em;
     cursor: pointer;
-  }
+}
 
-  button:hover {
-    background-color: #0056b3;
-  }
+a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+a:hover {
+    text-decoration: underline;
+}
