@@ -43,6 +43,21 @@ const CreateNewEventForm = () => {
             newErrors.startDate = 'Start date cannot be after end date';
         }
 
+        // Convert inputs to numbers
+        const priceValue = Number(price);
+        const capacityValue = Number(capacity);
+
+        // Validate price
+        if (!Number.isInteger(priceValue) || priceValue < 0) {
+            newErrors.price = "Price needs to be 0 or more";
+        }
+
+        // Validate capacity
+        if (!Number.isInteger(capacityValue) || capacityValue <= 0) {
+            newErrors.capacity = "Capacity needs to be a positive integer";
+        }
+
+
         setErrors(newErrors);
     }, [eventName, capacity,description, inPerson, isPrivate, price, startDate, endDate, image]);
 
