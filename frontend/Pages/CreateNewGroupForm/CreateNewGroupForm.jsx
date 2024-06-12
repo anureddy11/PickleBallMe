@@ -5,7 +5,9 @@ import { useNavigate } from "react-router-dom";
 
 
 const CreateNewGroupForm = () => {
-    const [location, setLocation] = useState('');
+    // const [location, setLocation] = useState('');
+    const [city, setCity] = useState('')
+    const [state, setState] = useState('')
     const [groupName, setGroupName] = useState('');
     const [description, setDescription] = useState('');
     const [inPerson, setInPerson] = useState('');
@@ -15,10 +17,10 @@ const CreateNewGroupForm = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        const newErrors = { location: '', groupName: '', description: '', inPerson: '', isPrivate: '' };
+        const newErrors = { groupName: '', description: '', inPerson: '', isPrivate: '', city:'', state:'' };
 
         // Check for empty fields
-        const fields = { location, groupName, description, inPerson, isPrivate };
+        const fields = { groupName, description, inPerson, isPrivate,city, state };
         for (const [key, value] of Object.entries(fields)) {
             if (value.length < 1) {
                 newErrors[key] = `${key} cannot be empty`;
@@ -31,14 +33,14 @@ const CreateNewGroupForm = () => {
         }
 
         setErrors(newErrors);
-    }, [location, groupName, description, inPerson, isPrivate]);
+    }, [groupName, description, inPerson, isPrivate,city,state]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const newErrors = { location: '', groupName: '', description: '', inPerson: '', isPrivate: '' };
+        const newErrors = { groupName: '', description: '', inPerson: '', isPrivate: '', city:'', state:'' };
 
         // Check for empty fields
-        const fields = { location, groupName, description, inPerson, isPrivate };
+        const fields = {groupName, description, inPerson, isPrivate,city, state };
 
         for (const [key, value] of Object.entries(fields)) {
             if (value.length < 1) {
@@ -59,8 +61,10 @@ const CreateNewGroupForm = () => {
             "about":description,
             "type":inPerson,
             "private":isPrivate==="private" ? true : false,
-            "city": location.split(',')[0],
-            "state": location.split(',')[1]
+            // "city": location.split(',')[0],
+            // "state": location.split(',')[1]
+            "city": city,
+            "state": state
         }
 
                 let createdGroup = await dispatch(createGroup(payload))
@@ -80,13 +84,23 @@ const CreateNewGroupForm = () => {
                 <p>First, set your group&apos;s location.
                 Meetup groups meet locally, in person and online. We&apos;ll connect you with people
                 in your area, and more can join you online</p>
+                <p>Which City?</p>
                 <input
-                    placeholder="City, State"
+                    placeholder="City"
                     type="text"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
                 />
-                {errors.location && <p className="error">{errors.location}</p>}
+                {errors.city && <p className="error">{errors.city}</p>}
+                <br /><br />
+                <p>Which State?</p>
+                <input
+                    placeholder="State"
+                    type="text"
+                    value={state}
+                    onChange={(e) => setState(e.target.value)}
+                />
+                {errors.state && <p className="error">{errors.state}</p>}
                 <br /><br />
 
                 <p>What will your group&apos;s name be?
@@ -154,7 +168,8 @@ const CreateNewGroupForm = () => {
                 <button
                     disabled={
                         errors.groupName ||
-                        errors.location ||
+                        errors.city ||
+                        errors.state ||
                         errors.description ||
                         errors.isPrivate ||
                         errors.inPerson
