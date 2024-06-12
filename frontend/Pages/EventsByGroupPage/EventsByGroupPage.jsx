@@ -10,14 +10,17 @@ const EventsByGroupPage =() =>{
     const { groupId } = useParams();
     const events = useSelector((state) => Object.values(state.events.eventsByGroupId));
 
-    const upcomingEvents =[]
-    const pastEvents = []
-    const now = new Date()
+    const upcomingEvents = [];
+    const pastDueEvents = [];
+    const now = new Date();
 
     events.forEach(event => {
-        if(event.endDate>=now) upcomingEvents.push(event)
-        else pastEvents.push(event)
-
+        const eventStartDate = new Date(event.startDate); // Ensure event.startDate is a valid date
+        if (eventStartDate > now) {
+            upcomingEvents.push(event);
+        } else {
+            pastDueEvents.push(event);
+        }
     });
 
     useEffect (() =>{
@@ -27,7 +30,7 @@ const EventsByGroupPage =() =>{
   return(
         <div>
 
-            {upcomingEvents.length > 0 || pastEvents.length > 0 ? (
+            {upcomingEvents.length > 0 || pastDueEvents.length > 0 ? (
                 <>
                         <div>
                                     <h2>Upcoming Events: {upcomingEvents.length}</h2>
@@ -44,8 +47,8 @@ const EventsByGroupPage =() =>{
                         </div>
 
                         <div>
-                                <h2>Past Due Events: {pastEvents.length}</h2>
-                                {pastEvents.map(event => (
+                                <h2>Past Due Events: {pastDueEvents.length}</h2>
+                                {pastDueEvents.map(event => (
                                     <div key={event.id}>
                                         <NavLink to={`/events/${event.id}`}>
                                             <img src={event.previewImages} alt="Preview" /> <br />

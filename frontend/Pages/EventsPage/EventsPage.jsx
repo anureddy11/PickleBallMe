@@ -22,13 +22,18 @@ const EventsPage = () =>{
     }, [dispatch, allEventsObject]);
 
     //separating events into upcoming and past due
-    const upcomingEvents =[]
-    const pastDueEvents = []
-    const now = new Date()
-    allEvents.forEach(event =>{
-        if(event.start-now > 0) upcomingEvents.push(event)
-        else pastDueEvents.push(event)
-    })
+    const upcomingEvents = [];
+    const pastDueEvents = [];
+    const now = new Date();
+
+    allEvents.forEach(event => {
+        const eventStartDate = new Date(event.startDate); // Ensure event.startDate is a valid date
+        if (eventStartDate > now) {
+            upcomingEvents.push(event);
+        } else {
+            pastDueEvents.push(event);
+        }
+    });
 
     // console.log(upcomingEvents)
     // console.log(pastDueEvents)
