@@ -19,7 +19,7 @@ const EventsPage = () =>{
 
     useEffect(() => {
         dispatch(fetchAllEvents(allEventsObject));
-    }, [dispatch]);
+    }, [dispatch, allEventsObject]);
 
     //separating events into upcoming and past due
     const upcomingEvents =[]
