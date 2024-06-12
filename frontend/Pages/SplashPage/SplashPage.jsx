@@ -14,8 +14,8 @@ const SplashPage = () =>{
         <div>
             <div className="section" id="section1">
                 <div id="section 1.1">
-                    <h1>World's Best Platform for All Things Pickle Ball</h1>
-                    <p>Join us and be part of the fastest-growing sport community. Let's play, learn, and grow together!</p>
+                    <h1>World&apos;s Best Platform for All Things Pickle Ball</h1>
+                    <p>Join us and be part of the fastest-growing sport community. Let&apos;s play, learn, and grow together!</p>
                 </div>
                 <img src={pickleImage} alt="Pickleball Group" className="group-image" />
             </div>
