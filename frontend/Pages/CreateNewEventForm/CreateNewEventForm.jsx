@@ -30,10 +30,10 @@ const CreateNewEventForm = () => {
         if (description && description.length < 30) newErrors.description = 'Description must be at least 30 characters long';
         if (!inPerson) newErrors.inPerson = 'Event type cannot be empty';
         if (!isPrivate) newErrors.isPrivate = 'Event privacy cannot be empty';
-        // if (!price) newErrors.price = 'Price cannot be empty';
-        // if (!capacity) newErrors.capacity = 'Capacity cannot be empty';
-        if (!price.trim()) newErrors.price = 'Price cannot be empty';
-        if (!capacity.trim()) newErrors.capacity = 'Capacity cannot be empty';
+        if (!price) newErrors.price = 'Price cannot be empty';
+        if (!capacity) newErrors.capacity = 'Capacity cannot be empty';
+        // if (!price.trim()) newErrors.price = 'Price cannot be empty';
+        // if (!capacity.trim()) newErrors.capacity = 'Capacity cannot be empty';
         if (!startDate) newErrors.startDate = 'Start date cannot be empty';
         if (!endDate) newErrors.endDate = 'End date cannot be empty';
         if (!image) newErrors.image = 'Image URL cannot be empty';
