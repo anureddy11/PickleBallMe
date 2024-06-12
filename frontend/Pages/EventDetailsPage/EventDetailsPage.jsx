@@ -71,7 +71,7 @@ const EventDetailsPage = () => {
                             </button>
                             <OpenModalButton
                                 buttonText="Delete"
-                                modalComponent={<DeleteEventModal groupId={eventId} />}
+                                modalComponent={<DeleteEventModal eventId={eventId} />}
                             />
                         </div>
                     )}
