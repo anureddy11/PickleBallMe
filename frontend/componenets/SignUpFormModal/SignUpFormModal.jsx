@@ -3,7 +3,7 @@ import { useDispatch} from 'react-redux';
 import * as sessionActions from '../../src/store/session'
 
 function SignUpFormModal() {
-  
+
   const dispatch = useDispatch();
   // const sessionUser = useSelector((state) => state.session.user);
   const [email, setEmail] = useState("");
@@ -13,13 +13,14 @@ function SignUpFormModal() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
-
+  const { closeModal } = useModal();
   // if (sessionUser) return <Navigate to="/" replace={true} />;
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (password === confirmPassword) {
       setErrors({});
+      closeModal()
       return dispatch(
         sessionActions.signup({
           email,
