@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { NavLink} from "react-router-dom";
 import { fetchAllGroups } from '../../src/store/groups';
 import GroupsEventsLandingPage from "../../Componenets/Navigation/Groups-Events-LandingPage";
-import './GroupsPage'
+import './GroupsPage.css'
 
 const Groups = () => {
     const dispatch = useDispatch();
@@ -26,19 +26,22 @@ const Groups = () => {
                     <ul className="group-list">
                         {Object.values(allGroups).map((group) => (
                        <NavLink to={`/groups/${group.id}`} key={group.id} className="group-link">
-                            <li key={group.id} className="group-item" >
                             <div className="group-item">
-                                <span className="group-item">Group Name: {group.name},</span><br />
-                                <span>About: {group.about}</span><br />
-                                <span>Group Location: {group.city},{group.state},</span><br />
-                                <span>Group Image: {group.previewImage},</span><br />
-                                <span>Group Type: {group.type},</span><br />
-                                <span>{group.numEvents}  </span>
-                                <label>events</label>
-                                <span className="dot"> · </span>
-                                <span>Group Private: {group.private ? 'Private' : 'Public'}</span>
+                                <div className="groupImage">
+                                     <span>Group Image: {group.previewImage},</span><br />
+                                </div>
+                                <div className="groupDetails">
+                                    <span className="group-item">Group Name: {group.name},</span><br />
+                                    <span>About: {group.about}</span><br />
+                                    <span>Group Location: {group.city},{group.state},</span><br />
+                                    <span>Group Type: {group.type},</span><br />
+                                    <span>{group.numEvents}  </span>
+                                    <label>events</label>
+                                    <span className="dot"> · </span>
+                                    <span>Group Private: {group.private ? 'Private' : 'Public'}</span>
+                                </div>
                             </div>
-                            </li>
+
                             </NavLink>
                         ))}
                     </ul>

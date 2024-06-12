@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 import { fetchAllEvents } from "../../src/store/events";
 import GroupsEventsLandingPage from "../../Componenets/Navigation/Groups-Events-LandingPage";
 
-import './EventsPage'
+import './EventsPage.css'
 
 
 
@@ -55,16 +55,17 @@ const EventsPage = () =>{
 
                     {sortedUpcomingEvents.map(event => (
                          <NavLink key={event.id} to={`/events/${event.id}`}>
-                        <li key={event.id}>
-                            <div>
-                                <span>Image: {event.preview} </span><br/>
-                                <span>Titele: {event.name} </span><br/>
-                                <span>Start Date: {event.startDate}</span><br/>
-                                <span>Location : {event.city},{event.state} </span>
-                                <span>Description: Event API did not call for one</span><br/>
-
+                            <div className="event-item">
+                                <div>
+                                     <span>Image: {event.preview} </span><br/>
+                                </div>
+                                <div>
+                                    <span>Titele: {event.name} </span><br/>
+                                    <span>Start Date: {event.startDate}</span><br/>
+                                    <span>Location : {event.city},{event.state} </span>
+                                    <span>Description: Event API did not call for one</span><br/>
+                                </div>
                             </div><br/>
-                        </li>
                         </NavLink>
                     ))}
                 </ul>
@@ -73,16 +74,17 @@ const EventsPage = () =>{
                 <ul>
                     {sortedPastDueEvents.map(event => (
                         <NavLink key={event.id} to={`/events/${event.id}`}>
-                        <li key={event.id}>
-                            <div>
-                                <span>Image: {event.preview} </span><br/>
-                                <span>Titele: {event.name} </span><br/>
-                                <span>Start Date: {event.startDate}</span><br/>
-                                <span>Location : {event.city},{event.state} </span>
-                                <span>Description: Event API did not call for one</span><br/>
-
+                         <div className="event-item">
+                                <div>
+                                     <span>Image: {event.preview} </span><br/>
+                                </div>
+                                <div>
+                                    <span>Titele: {event.name} </span><br/>
+                                    <span>Start Date: {event.startDate}</span><br/>
+                                    <span>Location : {event.city},{event.state} </span>
+                                    <span>Description: Event API did not call for one</span><br/>
+                                </div>
                             </div><br/>
-                        </li>
                          </NavLink>
                     ))}
                 </ul>
