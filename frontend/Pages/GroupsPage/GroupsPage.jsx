@@ -20,29 +20,30 @@ const Groups = () => {
                 <GroupsEventsLandingPage />
             </div>
             {allGroups && Object.keys(allGroups).length > 0 ? (
-
                 <div>
                     <h1>Groups in Meetup</h1>
                     <ul className="group-list">
                         {Object.values(allGroups).map((group) => (
-                       <NavLink to={`/groups/${group.id}`} key={group.id} className="group-link">
-                            <div className="group-item">
-                                <div className="groupImage">
-                                     <span>Group Image: {group.previewImage},</span><br />
-                                </div>
-                                <div className="groupDetails">
-                                    <span className="group-item">Group Name: {group.name},</span><br />
-                                    <span>About: {group.about}</span><br />
-                                    <span>Group Location: {group.city},{group.state},</span><br />
-                                    <span>Group Type: {group.type},</span><br />
-                                    <span>{group.numEvents}  </span>
-                                    <label>events</label>
-                                    <span className="dot"> · </span>
-                                    <span>Group Private: {group.private ? 'Private' : 'Public'}</span>
-                                </div>
+                            <div key={group.id}>
+                                <NavLink to={`/groups/${group.id}`} className="group-link">
+                                    <div className="group-item">
+                                        <div className="groupImage">
+                                            <span>Group Image: {group.previewImage},</span><br />
+                                        </div>
+                                        <div className="groupDetails">
+                                            <span className="group-item">Group Name: {group.name},</span><br />
+                                            <span>About: {group.about}</span><br />
+                                            <span>Group Location: {group.city},{group.state},</span><br />
+                                            <span>Group Type: {group.type},</span><br />
+                                            <span>{group.numEvents}  </span>
+                                            <label>events</label>
+                                            <span className="dot"> · </span>
+                                            <span>Group Private: {group.private ? 'Private' : 'Public'}</span>
+                                        </div>
+                                    </div>
+                                </NavLink>
+                                <hr /> {/* Added horizontal line */}
                             </div>
-
-                            </NavLink>
                         ))}
                     </ul>
                 </div>
@@ -51,7 +52,7 @@ const Groups = () => {
             )}
         </div>
     );
-
 };
+
 
 export default Groups;

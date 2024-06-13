@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { NavLink, useParams } from "react-router-dom";
-import { fetchEventsByGroupId } from "../../src/store/events";
+import { fetchEventsByGroupId } from "../../src/store/events"
+import './EventsByGroupPage.css'
 
 
 const EventsByGroupPage =() =>{
@@ -35,28 +36,45 @@ const EventsByGroupPage =() =>{
                         <div>
                                     <h2>Upcoming Events: {upcomingEvents.length}</h2>
                                     {upcomingEvents.map(event => (
-                                        <div key={event.id}>
-                                            <NavLink to={`/events/${event.id}`}>
-                                                <img src={event.previewImages} alt="Preview" /> <br />
-                                                <span>{event.startDate}</span> <br />
-                                                <span>{event.name}</span> <br />
-                                                <span>Location: {event.city}, {event.state}</span> <br />
-                                            </NavLink>
-                                        </div>
+                                        <NavLink to={`/events/${event.id}`}>
+                                            <div key={event.id} className="main-card">
+
+                                                    <div>
+                                                        <img src={event.previewImages} alt="Preview" /> <br />
+                                                    </div>
+                                                    <div>
+                                                        <span>{event.startDate}</span> <br />
+                                                        <span>{event.name}</span> <br />
+                                                        <span>Location: {event.Group.city}, {event.Group.State}</span> <br />
+                                                    </div>
+
+
+                                            </div>
+                                            <hr />
+                                         </NavLink>
+
                                     ))}
                         </div>
 
                         <div>
                                 <h2>Past Due Events: {pastDueEvents.length}</h2>
                                 {pastDueEvents.map(event => (
-                                    <div key={event.id}>
-                                        <NavLink to={`/events/${event.id}`}>
-                                            <img src={event.previewImages} alt="Preview" /> <br />
-                                            <span>{event.startDate}</span> <br />
-                                            <span>{event.name}</span> <br />
-                                            <span>Location: {event.city}, {event.state}</span> <br />
-                                        </NavLink><br />
+                                    <NavLink to={`/events/${event.id}`}>
+                                    <div key={event.id} className="main-card">
+
+                                            <div>
+                                                <img src={event.previewImages} alt="Preview" /> <br />
+                                            </div>
+                                            <div>
+                                                <span>{event.startDate}</span> <br />
+                                                <span>{event.name}</span> <br />
+                                                <span>Location: {event.Group.city}, {event.Group.State}</span> <br />
+                                            </div>
+
+
                                     </div>
+                                    <hr />
+                                 </NavLink>
                                 ))}
                         </div>
                 </>

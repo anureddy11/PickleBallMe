@@ -7,6 +7,7 @@ import OpenModalButton from '../../Componenets/OpenModalButton/OpenModalButton'
 import { CiMapPin } from "react-icons/ci";
 import { FaMoneyBillWave } from "react-icons/fa6";
 import { FaClock } from "react-icons/fa";
+import './EventDetailsPage.css'
 
 
 
@@ -45,21 +46,36 @@ const EventDetailsPage = () => {
                 <br />
                 {/* eventName, hostName,image,event Info box, groupInfoBox */}
                 <div>
-                    <span>Event Name: {currEvent.name}</span><br />
-                    <span>Group Name: {currEvent.Group.name}</span><br />
-                    <span>Group is private? : {currEvent.Group.type ? 'true' : 'false'}</span><br />
-                    <span>Group Image: {currEvent.Group.image}</span><br />
-                    <span>Start Date: {currEvent.startDate.split(',')[0]}</span><br />
-                    <span><FaClock /> Start Time: {currEvent.startDate.split(',')[1]}</span><br />
-                    <span><FaClock /> End Date: {currEvent.endDate.split(',')[0]}</span><br />
-                    <span>End Time: {currEvent.endDate.split(',')[1]}</span><br />
-                    <span>Host Name: {currEvent.hostName}</span><br />
-                    <span>Image: <img src={currEvent.previewImage} alt="event" /></span><br />
-                    <span><FaMoneyBillWave />Event Price: {currEvent.price===0 ? 'Free' : currEvent.price}</span><br />
-                    <span>Event Info: {currEvent.about}</span><br />
-                    <span><CiMapPin />Event Location: {currEvent.Group.city}, {currEvent.Group.state}</span><br />
-                    <span>Group Info: {currEvent.Group.about}</span><br />
-                    <span>Hosted By: {hostFirstName} {hostLastName}</span><br /><br />
+                    <div className="main-card">
+                            <div>
+                                <span>Image: <img src={currEvent.previewImage} alt="event" /></span><br />
+                            </div><br />
+                            <div className="details-card">
+                                <div className="details-card-group">
+                                    <span>Group Name: {currEvent.Group.name}</span><br />
+                                    <span>Group Image: {currEvent.Group.image}</span><br />
+                                    <span>{currEvent.Group.type ? 'Private' : 'Public'}</span><br />
+
+                                </div><br />
+                                <div className="details-card-event">
+                                        <span>Event Name: {currEvent.name}</span><br />
+                                        <span>Start Date: {currEvent.startDate.split(',')[0]}</span>
+                                        <span><FaClock /> Start Time: {currEvent.startDate.split(',')[1]}</span><br />
+                                        <span>End Time: {currEvent.endDate.split(',')[1]}</span>
+                                        <span><FaClock /> End Date: {currEvent.endDate.split(',')[0]}</span><br />
+                                        <span>Host Name: {currEvent.hostName}</span><br />
+                                        <span><FaMoneyBillWave />Event Price: {currEvent.price===0 ? 'Free' : currEvent.price}</span><br />
+                                        <span>Event Info: {currEvent.about}</span><br />
+                                        <span><CiMapPin />Event Location: {currEvent.Group.city}, {currEvent.Group.state}</span><br />
+                                        <span>Group Info: {currEvent.Group.about}</span><br />
+                                        <span>Hosted By: {hostFirstName} {hostLastName}</span><br /><br />
+                                </div>
+                            </div>
+                    </div>
+                    <div className="description-card">
+                        Detials <br />
+                        <span>Group Info: {currEvent.Group.about}</span><br />
+                    </div>
 
                      {organizerLoggedIn && (
                         <div>

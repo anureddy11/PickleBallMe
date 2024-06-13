@@ -6,6 +6,7 @@ import EventsByGroupPage from "../EventsByGroupPage";
 import { useNavigate } from "react-router-dom";
 import OpenModalButton from '../../Componenets/OpenModalButton/OpenModalButton'
 import DeleteGroupModal from "../../Componenets/DeleteGroupModal/DeleteGroupModal";
+import './GroupsDetailPage.css'
 
 
 const GroupDetailPage = () => {
@@ -49,29 +50,24 @@ const GroupDetailPage = () => {
 
     return  isLoaded && currGroup ? (
         <div>
-            <h1>{currGroup.name}</h1>
+            <h1>{currGroup.name}</h1><br />
             <div>
                 <NavLink to = '/groups'>Groups</NavLink>
             </div>
-            <div className="group-item">
-                <span>{currGroup.city}, {currGroup.state}</span><br />
-                {/* <span>Group Image: {currGroup[groupId].previewImage}</span><br /> */}
-                {/* <span>Group Type: {currGroup[groupId].type}</span><br /> */}
-                <span>{currGroup.Events.length} </span>
-                <label>events</label>
-                <span className="dot"> · </span>
-                <span> {currGroup.private ? 'Private' : 'Public'}</span><br />
-                <span>Organized By:  </span>
-                <span>{currGroup.Organizer.firstName} </span>
-                <span>{currGroup.Organizer.lastName}</span><br/>
-                <span>{currGroup.about}</span><br/>
-            </div><br/>
-
-            <div>
-                <EventsByGroupPage />
-            </div>
-
-            <div>{(!isUserLoggedIn || isUserGroupCreator)? null :(
+            <div className="group-item-1">
+                <div>
+                    <span>Image:     {currGroup.GroupImages[0]} </span><br/>
+                </div>
+                <div>
+                    <span>Location: {currGroup.city}, {currGroup.state}</span><br />
+                    <span>{currGroup.Events.length} </span>
+                    <label>events</label>
+                    <span className="dot"> · </span>
+                    <span> {currGroup.private ? 'Private' : 'Public'}</span><br />
+                    <span>Organized By:  </span>
+                    <span>{currGroup.Organizer.firstName} </span>
+                    <span>{currGroup.Organizer.lastName}</span><br/>
+                    <div>{(!isUserLoggedIn || isUserGroupCreator)? null :(
                     <button
                         style={buttonStyle}
                         onClick={handleJoinThisGroupButtonClick}>
@@ -79,6 +75,27 @@ const GroupDetailPage = () => {
                     </button>
                 )}
             </div>
+                </div>
+
+
+            </div><br/>
+
+            <div className="group-item-detail-section">
+                <div>
+                    <span>Organizer: </span>
+                    <span>{currGroup.Organizer.firstName} </span>
+                    <span>{currGroup.Organizer.lastName}</span><br/>
+                </div><br/>
+                <div>
+                        <span>What we are About</span><br/>
+                        <span>{currGroup.about}</span>
+                </div>
+            </div>
+
+            <div className="event-item">
+                <EventsByGroupPage />
+            </div>
+
 
             {isUserGroupCreator && (
                 <div>
