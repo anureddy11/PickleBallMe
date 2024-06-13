@@ -17,15 +17,15 @@ const EventDetailsPage = () => {
     const dispatch = useDispatch();
     const currEvent = useSelector((state) => state.events.currEvent);
     const currGroup = useSelector((state) => state.groups.currGroup);
-    const hostFirstName = useSelector((state) =>state.groups.currGroup.Organizer.firstName)
-    const hostLastName = useSelector((state) =>state.groups.currGroup.Organizer.lastName)
-    const sessionUser = useSelector((state) => state.session)
+    const sessionUser = useSelector((state) => state.session);
     const { eventId } = useParams();
 
-
+    // Check if currGroup and Organizer exist before accessing Organizer's properties
+    const hostFirstName = currGroup?.Organizer?.firstName;
+    const hostLastName = currGroup?.Organizer?.lastName;
 
     // Check if sessionUser is not null before accessing its properties
-    let organizerLoggedIn = sessionUser && sessionUser.user && sessionUser.user.id === currGroup.organizerId;
+    const organizerLoggedIn = sessionUser?.user?.id === currGroup?.organizerId;
 
     const [isLoaded, setIsLoaded] = useState(false);
 
@@ -68,7 +68,7 @@ const EventDetailsPage = () => {
                                         <span>Event Info: {currEvent.about}</span><br />
                                         <span><CiMapPin />Event Location: {currEvent.Group.city}, {currEvent.Group.state}</span><br />
                                         <span>Group Info: {currEvent.Group.about}</span><br />
-                                        <span>Hosted By: {hostFirstName} {hostLastName}</span><br /><br />
+                                        <span>Host: {hostFirstName} {hostLastName}</span><br /><br />
                                 </div>
                             </div>
                     </div>
