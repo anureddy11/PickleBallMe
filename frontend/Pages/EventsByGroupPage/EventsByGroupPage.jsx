@@ -36,7 +36,7 @@ const EventsByGroupPage =() =>{
                         <div>
                                     <h2>Upcoming Events: {upcomingEvents.length}</h2>
                                     {upcomingEvents.map(event => (
-                                        <NavLink to={`/events/${event.id}`}>
+                                        <NavLink to={`/events/${event.id}`} key={event.id}>
                                             <div key={event.id} className="main-card">
 
                                                     <div>
@@ -59,7 +59,7 @@ const EventsByGroupPage =() =>{
                         <div>
                                 <h2>Past Due Events: {pastDueEvents.length}</h2>
                                 {pastDueEvents.map(event => (
-                                    <NavLink to={`/events/${event.id}`}>
+                                    <NavLink to={`/events/${event.id}`} key={event.id}>
                                     <div key={event.id} className="main-card">
 
                                             <div>
