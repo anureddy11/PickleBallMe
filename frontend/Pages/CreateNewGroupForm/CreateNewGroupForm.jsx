@@ -15,6 +15,7 @@ const CreateNewGroupForm = () => {
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const [userPressedSubmitButton, setUserPressedSubmitButton] = useState(false);
 
     useEffect(() => {
         const newErrors = { groupName: '', description: '', inPerson: '', isPrivate: '', city:'', state:'' };
@@ -37,6 +38,9 @@ const CreateNewGroupForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setUserPressedSubmitButton(true);
+
+
         const newErrors = { groupName: '', description: '', inPerson: '', isPrivate: '', city:'', state:'' };
 
         // Check for empty fields
@@ -91,7 +95,7 @@ const CreateNewGroupForm = () => {
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                 />
-                {errors.city && <p className="error">{errors.city}</p>}
+                {userPressedSubmitButton && errors.city && <p className="error">{errors.city}</p>}
                 <br /><br />
                 <p>Which State?</p>
                 <input
@@ -100,7 +104,7 @@ const CreateNewGroupForm = () => {
                     value={state}
                     onChange={(e) => setState(e.target.value)}
                 />
-                {errors.state && <p className="error">{errors.state}</p>}
+                {userPressedSubmitButton && errors.state && <p className="error">{errors.state}</p>}
                 <br /><br />
 
                 <p>What will your group&apos;s name be?
@@ -112,7 +116,7 @@ const CreateNewGroupForm = () => {
                     value={groupName}
                     onChange={(e) => setGroupName(e.target.value)}
                 />
-                {errors.groupName && <p className="error">{errors.groupName}</p>}
+                {userPressedSubmitButton && errors.groupName && <p className="error">{errors.groupName}</p>}
                 <br /><br />
 
                 <p>Now describe what your group will be about
@@ -129,7 +133,7 @@ const CreateNewGroupForm = () => {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                 ></textarea>
-                {errors.description && <p className="error">{errors.description}</p>}
+                {userPressedSubmitButton && errors.description && <p className="error">{errors.description}</p>}
                 <br /><br />
 
                 <h1>Final Steps...</h1>
@@ -147,7 +151,7 @@ const CreateNewGroupForm = () => {
                         <option value="Online">Online</option>
                     </select>
                 </label>
-                {errors.inPerson && <p className="error">{errors.inPerson}</p>}
+                {userPressedSubmitButton && errors.inPerson && <p className="error">{errors.inPerson}</p>}
                 <br /><br />
 
                 <label>
@@ -162,18 +166,18 @@ const CreateNewGroupForm = () => {
                         <option value="public">Public</option>
                     </select>
                 </label>
-                {errors.isPrivate && <p className="error">{errors.isPrivate}</p>}
+                {userPressedSubmitButton && errors.isPrivate && <p className="error">{errors.isPrivate}</p>}
                 <br /><br />
 
                 <button
-                    disabled={
-                        errors.groupName ||
-                        errors.city ||
-                        errors.state ||
-                        errors.description ||
-                        errors.isPrivate ||
-                        errors.inPerson
-                    }
+                    // disabled={
+                    //     errors.groupName ||
+                    //     errors.city ||
+                    //     errors.state ||
+                    //     errors.description ||
+                    //     errors.isPrivate ||
+                    //     errors.inPerson
+                    // }
                 >
                     Create Group
                 </button>

@@ -16,6 +16,8 @@ const CreateNewEventForm = () => {
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const [userPressedSubmitButton, setUserPressedSubmitButton] = useState(false);
+
 
 
     const currGroup = useSelector((state) => state.groups.currGroup);
@@ -63,6 +65,7 @@ const CreateNewEventForm = () => {
 
     const handleSubmit = async (e) => {
                 e.preventDefault();
+                setUserPressedSubmitButton(true)
 
 
                 if (Object.keys(errors).length > 0) {
@@ -106,7 +109,7 @@ const CreateNewEventForm = () => {
                     value={eventName}
                     onChange={(e) => setEventName(e.target.value)}
                 />
-                {errors.eventName && <p className="error">{errors.eventName}</p>}
+                {userPressedSubmitButton && errors.eventName && <p className="error">{errors.eventName}</p>}
                 <br /><br />
 
                 <p>Please describe your event:</p>
@@ -119,7 +122,7 @@ const CreateNewEventForm = () => {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                 ></textarea>
-                {errors.description && <p className="error">{errors.description}</p>}
+                {userPressedSubmitButton && errors.description && <p className="error">{errors.description}</p>}
                 <br /><br />
 
                 <p>What is the price for your event?</p>
@@ -129,7 +132,7 @@ const CreateNewEventForm = () => {
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                 />
-                {errors.price && <p className="error">{errors.price}</p>}
+                {userPressedSubmitButton && errors.price && <p className="error">{errors.price}</p>}
                 <br /><br />
 
                 <p>What is the max capacity for your event?</p>
@@ -139,7 +142,7 @@ const CreateNewEventForm = () => {
                     value={capacity}
                     onChange={(e) => setCapacity(e.target.value)}
                 />
-                {errors.capacity && <p className="error">{errors.capacity}</p>}
+                {userPressedSubmitButton && errors.capacity && <p className="error">{errors.capacity}</p>}
                 <br /><br />
 
                 <p>When does your event start?</p>
@@ -149,7 +152,7 @@ const CreateNewEventForm = () => {
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
                 />
-                {errors.startDate && <p className="error">{errors.startDate}</p>}
+                {userPressedSubmitButton && errors.startDate && <p className="error">{errors.startDate}</p>}
                 <br /><br />
 
                 <p>When does your event end?</p>
@@ -159,7 +162,7 @@ const CreateNewEventForm = () => {
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
                 />
-                {errors.endDate && <p className="error">{errors.endDate}</p>}
+                {userPressedSubmitButton && errors.endDate && <p className="error">{errors.endDate}</p>}
                 <br /><br />
 
                 <p>Please add an image URL for your event below:</p>
@@ -169,7 +172,7 @@ const CreateNewEventForm = () => {
                     value={image}
                     onChange={(e) => setImage(e.target.value)}
                 />
-                {errors.image && <p className="error">{errors.image}</p>}
+                {userPressedSubmitButton && errors.image && <p className="error">{errors.image}</p>}
                 <br /><br />
 
                 <label>
@@ -184,7 +187,7 @@ const CreateNewEventForm = () => {
                         <option value="Online">Online</option>
                     </select>
                 </label>
-                {errors.inPerson && <p className="error">{errors.inPerson}</p>}
+                {userPressedSubmitButton && errors.inPerson && <p className="error">{errors.inPerson}</p>}
                 <br /><br />
 
                 <label>
@@ -199,12 +202,12 @@ const CreateNewEventForm = () => {
                         <option value="public">Public</option>
                     </select>
                 </label>
-                {errors.isPrivate && <p className="error">{errors.isPrivate}</p>}
+                {userPressedSubmitButton && errors.isPrivate && <p className="error">{errors.isPrivate}</p>}
                 <br /><br />
 
                 <button
                     type="submit"
-                    disabled={Object.keys(errors).length > 0}
+                    // disabled={Object.keys(errors).length > 0}
                 >
                     Create Event
                 </button>

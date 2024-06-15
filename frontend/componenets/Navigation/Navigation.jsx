@@ -6,6 +6,7 @@ import LoginFormModal from '../LoginFormModal/LoginFormModal';
 import './Navigation.css';
 import SignUpFormModal from '../SignUpFormModal/SignUpFormModal';
 import UserMenu from './UserMenu';
+import logo from '../../../Images/logopb.jpeg'
 
 function Navigation({ isLoaded }) {
     const sessionUser = useSelector((state) => state.session.user);
@@ -36,7 +37,9 @@ function Navigation({ isLoaded }) {
     return (
         <nav className='navbar'>
             <div className='nav-brand'>
-                <NavLink to="/">PickleBallMe</NavLink>
+                <NavLink to="/">
+                  <img src ={logo} />
+                </NavLink>
             </div>
             <div className='nav-links'>
                 {isLoaded && sessionLinks}

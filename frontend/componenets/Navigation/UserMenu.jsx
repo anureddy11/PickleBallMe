@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { FaChevronUp, FaChevronDown } from 'react-icons/fa';
 import * as sessionActions from '../../src/store/session';
 import './UserMenu.css';
@@ -9,6 +10,7 @@ function UserMenu({ user }) {
     const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
+    const navigate = useNavigate();
 
     const handleClickOutside = (event) => {
         if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -27,6 +29,7 @@ function UserMenu({ user }) {
         e.preventDefault();
         dispatch(sessionActions.logout());
         setIsOpen(false);
+        navigate('/'); // Navigate to home page
     };
 
     const handleClick = (e) => {
@@ -62,4 +65,3 @@ function UserMenu({ user }) {
 }
 
 export default UserMenu;
-
